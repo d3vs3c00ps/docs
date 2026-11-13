@@ -24,6 +24,7 @@ A distribution built from a declarative configuration by a purely functional pac
 | [[linux/distributions/nixos/introduction\|What NixOS is]] | concept | A distribution built on a purely functional package manager — the store, atomic generations, and what you give up in exchange |
 | [[linux/distributions/nixos/language\|The Nix language]] | concept | Attribute sets, functions, laziness, let and with, the module system, and the syntax that trips everyone up |
 | [[linux/distributions/nixos/server\|NixOS as a server]] | how-to | Service modules, secrets that must not go in the store, deployment tooling, and building a system image |
+| [[linux/distributions/nixos/sops\|Secrets with sops-nix]] | how-to | Encrypted secrets in the configuration repository — age keys derived from SSH keys, decryption at activation into /run/secrets, and what the host key being the root of trust implies |
 | [[linux/distributions/nixos/testing\|Testing NixOS configurations]] | how-to | Checking a configuration before it reaches a machine — build and dry-activate, throwaway VMs with build-vm, automated NixOS VM tests in nix flake check, and building ISO and disk images |
 | [[linux/distributions/nixos/workstation\|NixOS as a workstation]] | how-to | Desktop environments, home-manager for user configuration, per-project dev shells, and running binaries that expect a normal filesystem |
 
