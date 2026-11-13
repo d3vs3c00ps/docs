@@ -1,0 +1,17 @@
+# The runner container that checks and tests run in (tests/runner/Dockerfile).
+
+version: "3"
+
+tasks:
+  build:
+    desc: Build the runner image now (otherwise built on first use)
+    dir: "{{.ROOT_DIR}}"
+    cmds:
+      - scripts/runner.sh true
+
+  shell:
+    desc: Open a shell in the runner, with the repository and the host Docker
+    dir: "{{.ROOT_DIR}}"
+    interactive: true
+    cmds:
+      - scripts/runner.sh bash

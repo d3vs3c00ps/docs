@@ -1,0 +1,122 @@
+# --- Quartz build artifacts ---
+public
+.quartz-cache
+.quartz/
+prof
+tsconfig.tsbuildinfo
+quartz/cli/tui/dist/
+.turbo/
+
+# --- Dependencies ---
+node_modules
+
+# --- OS / editor junk ---
+.DS_Store
+.replit
+replit.nix
+
+# --- Obsidian vault: keep shared settings, drop per-machine state ---
+# The vault config lives at content/.obsidian and is excluded from the built
+# site by `ignorePatterns` in quartz.config.yaml. We track the settings so they
+# travel between machines, but not the volatile window/session state.
+content/.obsidian/workspace.json
+content/.obsidian/workspace-mobile.json
+content/.obsidian/cache
+# A second config at the repo root, for when the vault is opened here rather than
+# on content/. It exists only to carry `userIgnoreFilters`, which keep _tmp/,
+# todo/, node_modules/ and the Quartz machinery out of search and the graph view.
+/.obsidian/workspace.json
+/.obsidian/workspace-mobile.json
+/.obsidian/cache
+
+# Community plugin *code* is third-party (Front Matter Title is GPL-3.0) and is not
+# vendored into this CC BY 4.0 repository — install it per machine from Obsidian's
+# Community Plugins browser. Its *settings* are tracked, so the configuration
+# travels and only the download has to be repeated.
+.obsidian/plugins/**
+!.obsidian/plugins/*/
+!.obsidian/plugins/*/data.json
+content/.obsidian/plugins/**
+!content/.obsidian/plugins/*/
+!content/.obsidian/plugins/*/data.json
+
+# --- Vault content that must never be published ---
+# `private/` and `content/private/` are also in quartz.config.yaml ignorePatterns.
+private/
+content/private/
+content/archive/
+
+# --- Raw, unsanitised staging material ---
+# `_tmp/` holds the source documents that have already been processed into
+# `content/`. They are kept on disk for reference but must never be committed:
+# some contain employer identifiers, real MAC addresses and internal hostnames,
+# and one is a cloned private repository complete with its own .git directory.
+# `todo/ToDoc.md` — the remaining backlog — is deliberately NOT ignored.
+/_tmp/
+
+# --- Source material kept outside this repo, guarded here belt-and-braces ---
+# The original MkDocs site and the training archives live in ../docs and ../doc.
+# Nothing from them should ever be committed except deliberately migrated notes.
+*.zip
+*.pdf
+*.epub
+
+# Created by https://www.toptal.com/developers/gitignore/api/macos,linux
+# Edit at https://www.toptal.com/developers/gitignore?templates=macos,linux
+
+### Linux ###
+*~
+
+# temporary files which can be created if a process still has a handle open of a deleted file
+.fuse_hidden*
+
+# KDE directory preferences
+.directory
+
+# Linux trash folder which might appear on any partition or disk
+.Trash-*
+
+# .nfs files are created when an open file is removed but is still being accessed
+.nfs*
+
+### macOS ###
+# General
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Icon must end with two \r
+Icon
+
+
+# Thumbnails
+._*
+
+# Files that might appear in the root of a volume
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+# Directories potentially created on remote AFP share
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+### macOS Patch ###
+# iCloud generated files
+*.icloud
+
+# End of https://www.toptal.com/developers/gitignore/api/macos,linux
+# --- Note test output (scripts/test-notes.sh) ---
+.test-results/
+# --- NixOS installer ISOs (scripts/nixos-iso.sh) ---
+dist/
+
+# Local denylist of corporate identifiers (see scripts/lint-content.mjs); never published.
+scripts/leak-patterns.local.txt

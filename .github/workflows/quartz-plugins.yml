@@ -1,0 +1,74 @@
+name: Update Quartz plugins
+
+# Quartz v5 resolves its plugins through `quartz.lock.json`, a format dependabot
+# does not understand — so plugin updates would otherwise never be noticed. This
+# runs `plugin install --latest`, and opens a PR if the lockfile moved.
+#
+# Dependabot still covers package.json, the GitHub Actions and the devcontainer;
+# see .github/dependabot.yml.
+
+on:
+  schedule:
+    # Mondays, 06:00 UTC — a day after dependabot's weekly run, so the two do not
+    # land conflicting lockfile changes on the same morning.
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .node-version
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Update plugins to their latest versions
+        run: npx quartz plugin install --latest
+
+      - name: Record the installed versions
+        id: versions
+        run: |
+          {
+            echo 'list<<PLUGINS'
+            npx quartz plugin list || true
+            echo 'PLUGINS'
+          } >> "$GITHUB_OUTPUT"
+
+      # Prove the site still builds with the new plugin versions before proposing
+      # them. A plugin update that breaks the build should not become a PR that
+      # looks mergeable.
+      - name: Build with the updated plugins
+        run: npx quartz build
+
+      - name: Lint content
+        run: node scripts/lint-content.mjs
+
+      - name: Open a pull request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          branch: chore/quartz-plugins
+          delete-branch: true
+          add-paths: quartz.lock.json
+          commit-message: "chore(deps): update Quartz plugins"
+          title: "chore(deps): update Quartz plugins"
+          labels: dependencies
+          body: |
+            `npx quartz plugin install --latest` moved `quartz.lock.json`.
+
+            The site was built and the content lint run against these versions in
+            this workflow, so the build is known to pass.
+
+            Installed versions:
+
+            ```
+            ${{ steps.versions.outputs.list }}
+            ```

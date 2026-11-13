@@ -1,0 +1,9 @@
+# Notes that cannot be tested in a local container or kind cluster.
+# One per line: <note path relative to content/>  <reason>
+# Each note listed here must also carry a `> [!note] Not tested locally` callout.
+labs/nixos-homelab/gitea  needs macOS with vfkit, vmnet-helper and a Docker runtime; the harness runs Linux containers only
+labs/nixos-homelab/installer-iso  needs macOS with vfkit, vmnet-helper and a Docker runtime; the harness runs Linux containers only
+labs/nixos-homelab/kubernetes  needs macOS with vfkit, vmnet-helper and a Docker runtime; the harness runs Linux containers only
+labs/nixos-homelab/overview  needs macOS with vfkit, vmnet-helper and a Docker runtime; the harness runs Linux containers only
+labs/nixos-homelab/woodpecker  needs macOS with vfkit, vmnet-helper and a Docker runtime; the harness runs Linux containers only
+attribution  licence and credit notice; no commands to run

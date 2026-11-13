@@ -1,0 +1,51 @@
+# The shared test clusters, by hand. scripts/test-notes.sh creates them on demand too.
+
+version: "3"
+
+vars:
+  RUN: "{{.ROOT_DIR}}/scripts/runner.sh"
+  CLUSTER: '{{.CLUSTER | default "notes-test"}}'
+
+tasks:
+  kind-up:
+    desc: Create the shared kind test cluster
+    dir: "{{.ROOT_DIR}}"
+    cmds:
+      - mkdir -p .test-results
+      - >-
+        {{.RUN}} sh -c '. tests/versions.env; kind get clusters | grep -qx {{.CLUSTER}} ||
+        kind create cluster --name {{.CLUSTER}} --image "$KIND_NODE_IMAGE"
+        --config tests/k8s/kind.yaml --kubeconfig .test-results/kubeconfig-kind-{{.CLUSTER}} --wait 180s'
+      - task: kubeconfig
+
+  kind-down:
+    desc: Delete the kind test cluster
+    dir: "{{.ROOT_DIR}}"
+    cmds:
+      - "{{.RUN}} kind delete cluster --name {{.CLUSTER}}"
+
+  k3d-up:
+    desc: Create the k3d test cluster
+    dir: "{{.ROOT_DIR}}"
+    cmds:
+      - mkdir -p .test-results
+      - >-
+        {{.RUN}} sh -c '. tests/versions.env; k3d cluster list {{.CLUSTER}} >/dev/null 2>&1 ||
+        k3d cluster create {{.CLUSTER}} --image "$K3S_IMAGE" --agents 1 --wait
+        --k3s-arg "--kubelet-arg=eviction-hard=imagefs.available<1%,nodefs.available<1%@server:*;agent:*"
+        --kubeconfig-update-default=false --kubeconfig-switch-context=false;
+        k3d kubeconfig get {{.CLUSTER}} > .test-results/kubeconfig-k3d-{{.CLUSTER}}'
+      - 'echo "export KUBECONFIG={{.ROOT_DIR}}/.test-results/kubeconfig-k3d-{{.CLUSTER}}"'
+
+  k3d-down:
+    desc: Delete the k3d test cluster
+    dir: "{{.ROOT_DIR}}"
+    cmds:
+      - "{{.RUN}} k3d cluster delete {{.CLUSTER}}"
+
+  kubeconfig:
+    desc: Write a kubeconfig for the kind test cluster, usable from this machine
+    dir: "{{.ROOT_DIR}}"
+    cmds:
+      - "{{.RUN}} kind export kubeconfig --name {{.CLUSTER}} --kubeconfig .test-results/kubeconfig-kind-{{.CLUSTER}}"
+      - 'echo "export KUBECONFIG={{.ROOT_DIR}}/.test-results/kubeconfig-kind-{{.CLUSTER}}"'

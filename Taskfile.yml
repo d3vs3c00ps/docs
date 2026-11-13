@@ -1,0 +1,46 @@
+# Local tasks for the vault: preview the site, run the checks, run the note tests.
+# `task` with no name lists them. Needs Task (https://taskfile.dev) and Docker.
+#
+# Checks and tests run in the runner container (tests/runner/Dockerfile), the same on
+# macOS arm64 and Linux amd64. RUNNER=native runs them on this machine instead; that is
+# automatic in CI and in the devcontainer. See scripts/runner.sh.
+
+version: "3"
+
+dotenv: [tests/versions.env]
+
+includes:
+  site: taskfiles/site.yml
+  checks: taskfiles/checks.yml
+  tests: taskfiles/tests.yml
+  k8s: taskfiles/k8s.yml
+  nixos: taskfiles/nixos.yml
+  runner: taskfiles/runner.yml
+
+tasks:
+  default:
+    silent: true
+    cmds:
+      - task --list
+
+  check:
+    desc: All fast checks (lint, MOCs, coverage, shellcheck, prettier)
+    cmds:
+      - task: checks:all
+
+  test:
+    desc: "Run note tests. NOTE=linux/cli/tar or ENV=leap-systemd to narrow, JOBS=4"
+    cmds:
+      - task: tests:run
+
+  serve:
+    desc: Build and serve the site with live reload (PORT=8080)
+    cmds:
+      - task: site:serve
+
+  clean:
+    desc: Remove build output, caches, test results and test clusters
+    cmds:
+      - rm -rf public .quartz-cache .test-results dist
+      - cmd: scripts/runner.sh sh -c 'kind delete cluster --name "${CLUSTER:-notes-test}"; k3d cluster delete "${CLUSTER:-notes-test}"' >/dev/null 2>&1
+        ignore_error: true

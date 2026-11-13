@@ -1,0 +1,13 @@
+# In a container, systemd enables cgroup controllers for child cgroups only when a unit
+# asks. The kubelet checks them before that, so k3s fails its first start. Enable all.
+[Unit]
+Description=Enable every cgroup controller for child cgroups
+DefaultDependencies=no
+Before=sysinit.target
+
+[Service]
+Type=oneshot
+ExecStart=/bin/sh -c 'for c in $(cat /sys/fs/cgroup/cgroup.controllers); do echo "+$c" >/sys/fs/cgroup/cgroup.subtree_control || true; done'
+
+[Install]
+WantedBy=sysinit.target

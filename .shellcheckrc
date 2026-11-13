@@ -1,0 +1,5 @@
+# Follow `source` lines, resolved relative to the script that sources them.
+external-sources=true
+source-path=SCRIPTDIR
+# Tests pass code to `bash -c` or `docker exec` in single quotes on purpose.
+disable=SC2016

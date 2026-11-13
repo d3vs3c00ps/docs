@@ -1,0 +1,107 @@
+{
+  "collapse-filter": true,
+  "search": "",
+  "showTags": false,
+  "showAttachments": false,
+  "hideUnresolved": true,
+  "showOrphans": false,
+  "collapse-color-groups": false,
+  "colorGroups": [
+    {
+      "query": "path:kubernetes/",
+      "color": {
+        "a": 1,
+        "rgb": 5017087
+      }
+    },
+    {
+      "query": "path:linux/",
+      "color": {
+        "a": 1,
+        "rgb": 16761419
+      }
+    },
+    {
+      "query": "path:security/",
+      "color": {
+        "a": 1,
+        "rgb": 16735324
+      }
+    },
+    {
+      "query": "path:dev/",
+      "color": {
+        "a": 1,
+        "rgb": 10980346
+      }
+    },
+    {
+      "query": "path:servers/",
+      "color": {
+        "a": 1,
+        "rgb": 5099680
+      }
+    },
+    {
+      "query": "path:containers/",
+      "color": {
+        "a": 1,
+        "rgb": 2277846
+      }
+    },
+    {
+      "query": "path:virtualization/",
+      "color": {
+        "a": 1,
+        "rgb": 15764676
+      }
+    },
+    {
+      "query": "path:ai/",
+      "color": {
+        "a": 1,
+        "rgb": 12644442
+      }
+    },
+    {
+      "query": "path:automation/",
+      "color": {
+        "a": 1,
+        "rgb": 16748608
+      }
+    },
+    {
+      "query": "path:networking/",
+      "color": {
+        "a": 1,
+        "rgb": 8180991
+      }
+    },
+    {
+      "query": "path:storage/",
+      "color": {
+        "a": 1,
+        "rgb": 12102026
+      }
+    },
+    {
+      "query": "path:windows/",
+      "color": {
+        "a": 1,
+        "rgb": 10135480
+      }
+    }
+  ],
+  "collapse-display": false,
+  "showArrow": false,
+  "textFadeMultiplier": -0.5,
+  "nodeSizeMultiplier": 1.1,
+  "lineSizeMultiplier": 0.7,
+  "collapse-forces": true,
+  "centerStrength": 0.4,
+  "repelStrength": 8,
+  "linkStrength": 0.7,
+  "linkDistance": 180,
+  "scale": 0.6423430687510098,
+  "close": true
+}

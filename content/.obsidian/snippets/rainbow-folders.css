@@ -1,0 +1,54 @@
+/* Rainbow folders without the Style Settings plugin.
+ *
+ * AnuPpuccin already assigns a per-folder colour to --rainbow-folder-color
+ * (theme.css, "RAINBOW FOLDERS" section) and that assignment is NOT gated behind
+ * any toggle class — only the rules that *consume* it are. So all this snippet
+ * has to do is read the variable.
+ *
+ * The value is a raw "r, g, b" triplet, hence rgb(var(...)) / rgba(var(...), a).
+ *
+ * Enable in: Settings -> Appearance -> CSS snippets.
+ * If you later install Style Settings, turn this off to avoid fighting it.
+ */
+
+/* Folder names */
+.nav-files-container .nav-folder > .nav-folder-title .nav-folder-title-content {
+  color: rgb(var(--rainbow-folder-color));
+  font-weight: var(--font-semibold);
+}
+
+/* Collapse arrow, matched to the folder */
+.nav-files-container .nav-folder > .nav-folder-title .collapse-icon svg {
+  color: rgb(var(--rainbow-folder-color));
+}
+
+/* Indent guide down the left of an expanded folder */
+.nav-files-container .nav-folder-children {
+  border-left: 1px solid rgba(var(--rainbow-folder-color), 0.35);
+}
+
+/* --- Optional extras: uncomment what you want ----------------------------- */
+
+/* Subfolders inherit the parent's colour instead of cycling independently.
+   Without this, kubernetes/networking gets its own colour rather than matching
+   kubernetes. Same specificity as the theme's rule, and snippets load last. */
+/*
+.nav-folder-children .nav-folder-children > .nav-folder {
+  --rainbow-folder-color: inherit;
+}
+*/
+
+/* Tint the files inside a folder too, not just the folder title. */
+/*
+.nav-files-container .nav-folder-children > .nav-file .nav-file-title-content {
+  color: rgba(var(--rainbow-folder-color), 0.75);
+}
+*/
+
+/* "Full" style: a tinted background block behind each folder row. */
+/*
+.nav-files-container .nav-folder > .nav-folder-title {
+  background-color: rgba(var(--rainbow-folder-color), 0.12);
+  border-radius: var(--radius-s);
+}
+*/

@@ -1,0 +1,42 @@
+# Note tests (tests/README.md). They need Docker. Kubernetes tests use the shared
+# cluster named by CLUSTER (default notes-test), kept between runs.
+
+version: "3"
+
+# CLI variables (NOTE=x) do not reach file-level vars of an included Taskfile in Task
+# v3.54, so they are read in each task's own vars.
+vars:
+  RUN: "{{.ROOT_DIR}}/scripts/runner.sh"
+
+tasks:
+  run:
+    desc: "Run note tests. NOTE=linux/cli/tar or ENV=leap-systemd to narrow"
+    dir: "{{.ROOT_DIR}}"
+    vars: &args
+      JOBS: '{{.JOBS | default "4"}}'
+      # NOTE=x or `task test -- x y`: a note, a test or a folder.
+      TARGETS: "{{.NOTE}} {{.CLI_ARGS}}"
+    cmds:
+      - "{{.RUN}} scripts/test-notes.sh -j {{.JOBS}} {{if .ENV}}--env {{.ENV}}{{end}} {{.TARGETS}}"
+
+  changed:
+    desc: Run only the tests for notes changed on this branch
+    dir: "{{.ROOT_DIR}}"
+    vars: *args
+    cmds:
+      - "{{.RUN}} scripts/test-notes.sh -j {{.JOBS}} --changed"
+
+  k8s:
+    desc: Run the Kubernetes tests (kind, then the k3d smoke test)
+    dir: "{{.ROOT_DIR}}"
+    vars: *args
+    cmds:
+      - "{{.RUN}} scripts/test-notes.sh --env kind {{.TARGETS}}"
+      - "{{.RUN}} scripts/test-notes.sh --env k3d {{.TARGETS}}"
+
+  tools:
+    desc: Install kind, k3d, kubectl, helm, shellcheck, task on this Linux machine
+    dir: "{{.ROOT_DIR}}"
+    platforms: [linux]
+    cmds:
+      - scripts/install-test-tools.sh

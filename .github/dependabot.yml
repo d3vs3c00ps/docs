@@ -1,0 +1,37 @@
+version: 2
+updates:
+  # Quartz's own npm dependencies, including the @quartz-community/* plugin
+  # packages that are published to the registry.
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      quartz:
+        applies-to: version-updates
+        patterns:
+          - "@quartz-community/*"
+          - "@quartz-themes/*"
+      dependencies:
+        applies-to: version-updates
+        patterns:
+          - "*"
+        exclude-patterns:
+          - "@quartz-community/*"
+          - "@quartz-themes/*"
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      ci:
+        applies-to: version-updates
+        patterns:
+          - "*"
+
+  - package-ecosystem: devcontainers
+    directory: /
+    schedule:
+      interval: monthly

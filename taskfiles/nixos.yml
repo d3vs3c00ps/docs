@@ -1,0 +1,65 @@
+# NixOS test systems and the installer ISO. They need Docker, not Nix.
+
+version: "3"
+
+vars:
+  RUN: "{{.ROOT_DIR}}/scripts/runner.sh"
+
+tasks:
+  image:
+    desc: Build a NixOS system into a Docker image. MODULE=x.nix NOTE=... optional
+    dir: "{{.ROOT_DIR}}"
+    vars: &note
+      # Derived from a CLI variable: must be a task var, not a file var (Task v3.54).
+      NOTE_ARG: "{{if .NOTE}}--note {{.NOTE}}{{end}}"
+    cmds:
+      - "{{.RUN}} scripts/nixos-image.sh {{.NOTE_ARG}} {{.MODULE}}"
+
+  shell:
+    desc: Boot a NixOS system in Docker and open a root shell. MODULE, NOTE as above
+    dir: "{{.ROOT_DIR}}"
+    vars: *note
+    interactive: true
+    cmds:
+      - >-
+        {{.RUN}} bash -c 'image=$(scripts/nixos-image.sh {{.NOTE_ARG}} {{.MODULE}}) &&
+        cid=$(docker run -d --rm --privileged --cgroupns=private --tmpfs /run --tmpfs /run/lock
+        -v "$PWD:/repo:ro" -e container=docker "$image") &&
+        trap "docker stop $cid >/dev/null" EXIT &&
+        until docker exec "$cid" systemctl is-system-running 2>/dev/null | grep -qE "^(running|degraded)$"; do sleep 1; done;
+        docker exec -it -e NIXOS_NOTE={{.NOTE}} -e NIXOS_MODULE={{if .MODULE}}/repo/{{.MODULE}}{{end}} "$cid" bash -l'
+
+  update:
+    desc: Move the NixOS test systems to the latest nixpkgs of their branch
+    dir: "{{.ROOT_DIR}}"
+    cmds:
+      - >-
+        {{.RUN}} bash -c '. tests/lib/nix-store.sh && ensure_nix_store "$PWD" &&
+        docker run --rm -v "$NIX_STORE_VOLUME:/nix" -v "$PWD/tests/nixos:/f" -w /f "$NIX_IMAGE"
+        sh -c "nix flake update && chown $(id -u):$(id -g) flake.lock"'
+
+  gc:
+    desc: "Free the space NixOS tests use: old images, unused store paths"
+    dir: "{{.ROOT_DIR}}"
+    cmds:
+      - cmd: >-
+          docker images --filter label=notes-test.nixos --format '{{"{{"}}.Repository{{"}}"}}:{{"{{"}}.Tag{{"}}"}}'
+          | xargs docker rmi
+        ignore_error: true
+      - >-
+        {{.RUN}} bash -c '. tests/lib/nix-store.sh &&
+        docker run --rm -v "$NIX_STORE_VOLUME:/nix" "$NIX_IMAGE" nix-collect-garbage -d'
+
+  # QEMU runs on the host, not in the runner: it needs Linux, ideally with /dev/kvm.
+  iso:
+    desc: Build the unattended NixOS installer ISO into dist/ (nixos/autoinstall)
+    dir: "{{.ROOT_DIR}}"
+    cmds:
+      - "{{.RUN}} scripts/nixos-iso.sh build"
+
+  iso-test:
+    desc: Install from that ISO into a QEMU VM and boot the result (Linux, QEMU)
+    dir: "{{.ROOT_DIR}}"
+    platforms: [linux]
+    cmds:
+      - scripts/nixos-iso.sh test

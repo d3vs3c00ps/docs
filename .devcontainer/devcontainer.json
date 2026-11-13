@@ -1,0 +1,56 @@
+{
+  "name": "notes (Quartz v5 vault)",
+
+  // Node 22 to match .node-version (v22.16.0) and Quartz's engines: node >=22.
+  "image": "mcr.microsoft.com/devcontainers/typescript-node:1-22-bookworm",
+
+  "features": {
+    // gh is needed to create the publishing repo and manage Pages.
+    "ghcr.io/devcontainers/features/github-cli:1": {},
+    // So the migration can be driven from inside the container.
+    "ghcr.io/anthropics/devcontainer-features/claude-code:1": {},
+    // The note tests run each note's commands in throwaway containers and a kind
+    // cluster, so the devcontainer needs its own Docker daemon.
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {}
+  },
+
+  // npm ci for a reproducible install from the lockfile, then resolve the Quartz
+  // plugin lockfile. Plugins are separate packages in v5 and are NOT installed by
+  // npm ci alone. Then the pinned test tools (kind, k3d, kubectl, helm, shellcheck, task), and
+  // QEMU with UEFI firmware, to boot the NixOS installer ISO (scripts/nixos-iso.sh).
+  "postCreateCommand": "npm ci && npx quartz plugin install && scripts/install-test-tools.sh && scripts/install-vm-tools.sh",
+
+  // On a Linux host with KVM, pass it in, and VMs run at full speed instead of being
+  // emulated. Docker Desktop (macOS, Windows) has no /dev/kvm: leave this out there,
+  // or the container does not start.
+  // "runArgs": ["--device=/dev/kvm"],
+
+  // 8080 = Quartz dev server, 3001 = its hot-reload websocket.
+  "forwardPorts": [8080, 3001],
+  "portsAttributes": {
+    "8080": { "label": "Quartz site", "onAutoForward": "openPreview" },
+    "3001": { "label": "Quartz hot reload", "onAutoForward": "silent" }
+  },
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "redhat.vscode-yaml",
+        "esbenp.prettier-vscode",
+        "yzhang.markdown-all-in-one",
+        "bierner.markdown-mermaid",
+        "DavidAnson.vscode-markdownlint"
+      ],
+      "settings": {
+        "editor.formatOnSave": true,
+        "[markdown]": { "editor.formatOnSave": false },
+        "files.eol": "\n",
+        "yaml.schemas": {
+          "./quartz/plugins/quartz-plugins.schema.json": "quartz.config.yaml"
+        }
+      }
+    }
+  },
+
+  "remoteUser": "node"
+}

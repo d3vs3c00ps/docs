@@ -1,0 +1,122 @@
+name: Note tests
+
+# Runs the commands from the notes in throwaway containers and a kind cluster, and
+# checks what the notes claim. See tests/ and scripts/test-notes.sh.
+#
+# Pull requests run only the tests for changed notes. The weekly run covers every
+# note, because distribution packages change even when the notes do not.
+
+on:
+  pull_request:
+  push:
+    branches-ignore:
+      - main
+  schedule:
+    - cron: "0 5 * * 0"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: note-tests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  coverage:
+    name: Test coverage
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .node-version
+      - name: Every note has a test or a stated reason
+        run: node scripts/test-coverage.mjs
+      - name: Install shellcheck
+        run: scripts/install-test-tools.sh "$HOME/.local/bin" && echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+      - name: Shellcheck
+        run: shellcheck scripts/*.sh tests/lib/*.sh $(find tests -name "*.sh" -not -path "tests/lib/*")
+
+  containers:
+    name: Tests (${{ matrix.env }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        env: [leap, leap-systemd, rocky, rocky-systemd, nix, nixos, go, task, compose]
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          # --changed needs the merge base with main.
+          fetch-depth: 0
+      - name: Select tests
+        id: mode
+        run: |
+          if [ "${{ github.event_name }}" = pull_request ] || [ "${{ github.event_name }}" = push ]; then
+            git fetch --no-tags origin main:refs/remotes/origin/main || true
+            echo "args=--changed" >> "$GITHUB_OUTPUT"
+          fi
+      # The runners have /dev/kvm but only root may open it. NixOS VM tests need it.
+      - name: Enable KVM
+        if: matrix.env == 'nix'
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' |
+            sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: Run
+        run: scripts/test-notes.sh -j 4 --env ${{ matrix.env }} ${{ steps.mode.outputs.args }}
+      - name: Keep the logs
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: test-results-${{ matrix.env }}
+          path: .test-results/
+
+  nixos-iso:
+    name: NixOS installer ISO
+    runs-on: ubuntu-latest
+    # Weekly, on demand, or on a pull request labelled nixos-iso: it takes a while.
+    if: >-
+      github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' ||
+      contains(join(github.event.pull_request.labels.*.name), 'nixos-iso')
+    steps:
+      - uses: actions/checkout@v6
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' |
+            sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: Install QEMU
+        run: scripts/install-vm-tools.sh
+      - name: Build, install into a VM, boot it
+        run: scripts/nixos-iso.sh test
+
+  kubernetes:
+    name: Tests (kind, k3d)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - name: Install kind, k3d, kubectl, helm
+        run: scripts/install-test-tools.sh "$HOME/.local/bin" && echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+      - name: Select tests
+        id: mode
+        run: |
+          if [ "${{ github.event_name }}" = pull_request ] || [ "${{ github.event_name }}" = push ]; then
+            git fetch --no-tags origin main:refs/remotes/origin/main || true
+            echo "args=--changed" >> "$GITHUB_OUTPUT"
+          fi
+      - name: kind
+        run: scripts/test-notes.sh --env kind --delete-cluster ${{ steps.mode.outputs.args }}
+      - name: k3d
+        run: scripts/test-notes.sh --env k3d --delete-cluster ${{ steps.mode.outputs.args }}
+      - name: Keep the logs
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: test-results-kubernetes
+          path: .test-results/

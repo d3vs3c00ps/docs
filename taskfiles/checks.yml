@@ -1,0 +1,58 @@
+# Fast checks. No test containers, but they run in the runner so the tool versions
+# (Node, shellcheck) are the same everywhere.
+
+version: "3"
+
+vars:
+  RUN: "{{.ROOT_DIR}}/scripts/runner.sh"
+
+tasks:
+  all:
+    desc: All fast checks
+    cmds:
+      - task: lint
+      - task: mocs-check
+      - task: coverage
+      - task: shellcheck
+      - task: format
+
+  lint:
+    desc: Legacy markup, leaks, frontmatter, links
+    dir: "{{.ROOT_DIR}}"
+    cmds:
+      - "{{.RUN}} node scripts/lint-content.mjs"
+
+  mocs:
+    desc: Regenerate folder index pages and note uplinks
+    dir: "{{.ROOT_DIR}}"
+    cmds:
+      - "{{.RUN}} node scripts/generate-mocs.mjs"
+
+  mocs-check:
+    desc: Fail if index pages or uplinks are stale
+    dir: "{{.ROOT_DIR}}"
+    cmds:
+      - "{{.RUN}} node scripts/generate-mocs.mjs --check"
+
+  coverage:
+    desc: Every note has a test or a stated reason why not
+    dir: "{{.ROOT_DIR}}"
+    cmds:
+      - "{{.RUN}} node scripts/test-coverage.mjs"
+
+  shellcheck:
+    desc: Lint the test scripts and shell tooling
+    dir: "{{.ROOT_DIR}}"
+    cmds:
+      - >-
+        {{.RUN}} sh -c 'shellcheck scripts/*.sh tests/lib/*.sh
+        $(find tests -name "*.sh" -not -path "tests/lib/*")'
+
+  format:
+    desc: Prettier on config and scripts
+    dir: "{{.ROOT_DIR}}"
+    preconditions:
+      - sh: test -d node_modules/prettier
+        msg: "node_modules is missing: run `task site:install` first"
+    cmds:
+      - '{{.RUN}} npx --no-install prettier --check quartz.config.yaml "scripts/**/*.mjs"'

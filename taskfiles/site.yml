@@ -1,0 +1,39 @@
+# The Quartz site. Runs on this machine: Quartz needs Node (see .node-version) and its
+# native modules are built for the host, so it does not go through the runner.
+
+version: "3"
+
+vars:
+  PORT: '{{.PORT | default "8080"}}'
+  WSPORT: '{{.WSPORT | default "3001"}}'
+
+tasks:
+  install:
+    desc: Install npm packages and Quartz plugins
+    dir: "{{.ROOT_DIR}}"
+    sources: [package-lock.json]
+    generates: [node_modules/.package-lock.json]
+    cmds:
+      - npm ci
+      - npx quartz plugin install
+
+  serve:
+    desc: Build and serve the site with live reload (PORT=8080)
+    dir: "{{.ROOT_DIR}}"
+    deps: [install]
+    cmds:
+      - npx quartz build --serve --port {{.PORT}} --wsPort {{.WSPORT}}
+
+  build:
+    desc: Build the site into public/
+    dir: "{{.ROOT_DIR}}"
+    deps: [install]
+    cmds:
+      - npx quartz build
+
+  docker-serve:
+    desc: Serve the site from the Dockerfile image, without local Node
+    dir: "{{.ROOT_DIR}}"
+    cmds:
+      - docker build -t notes-site .
+      - docker run --rm -it -p {{.PORT}}:8080 -p {{.WSPORT}}:3001 notes-site
