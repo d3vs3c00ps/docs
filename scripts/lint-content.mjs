@@ -56,7 +56,8 @@ const LEGACY = [
  * file (one per line: regex TAB flags TAB reason) so the public repo does not name
  * them. LEAK_PATTERNS=path overrides the location.
  */
-const PATTERN_FILE = process.env.LEAK_PATTERNS ?? fileURLToPath(new URL("./leak-patterns.local.txt", import.meta.url))
+const PATTERN_FILE =
+  process.env.LEAK_PATTERNS ?? fileURLToPath(new URL("./leak-patterns.local.txt", import.meta.url))
 const SECRETS = existsSync(PATTERN_FILE)
   ? readFileSync(PATTERN_FILE, "utf8")
       .split("\n")

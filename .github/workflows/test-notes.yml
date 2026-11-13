@@ -27,8 +27,8 @@ jobs:
     name: Test coverage
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
         with:
           node-version-file: .node-version
       - name: Every note has a test or a stated reason
@@ -46,7 +46,7 @@ jobs:
       matrix:
         env: [leap, leap-systemd, rocky, rocky-systemd, nix, nixos, go, task, compose]
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           # --changed needs the merge base with main.
           fetch-depth: 0
@@ -69,7 +69,7 @@ jobs:
         run: scripts/test-notes.sh -j 4 --env ${{ matrix.env }} ${{ steps.mode.outputs.args }}
       - name: Keep the logs
         if: failure()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
           name: test-results-${{ matrix.env }}
           path: .test-results/
@@ -82,7 +82,7 @@ jobs:
       github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' ||
       contains(join(github.event.pull_request.labels.*.name), 'nixos-iso')
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
       - name: Enable KVM
         run: |
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' |
@@ -98,7 +98,7 @@ jobs:
     name: Tests (kind, k3d)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           fetch-depth: 0
       - name: Install kind, k3d, kubectl, helm
@@ -116,7 +116,7 @@ jobs:
         run: scripts/test-notes.sh --env k3d --delete-cluster ${{ steps.mode.outputs.args }}
       - name: Keep the logs
         if: failure()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
           name: test-results-kubernetes
           path: .test-results/
