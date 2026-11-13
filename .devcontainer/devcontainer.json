@@ -11,7 +11,7 @@
     "ghcr.io/anthropics/devcontainer-features/claude-code:1": {},
     // The note tests run each note's commands in throwaway containers and a kind
     // cluster, so the devcontainer needs its own Docker daemon.
-    "ghcr.io/devcontainers/features/docker-in-docker:2": {}
+    "ghcr.io/devcontainers/features/docker-in-docker:4": {}
   },
 
   // npm ci for a reproducible install from the lockfile, then resolve the Quartz
