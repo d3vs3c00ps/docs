@@ -1,9 +1,37 @@
 # Notes that cannot be tested in a local container or kind cluster.
 # One per line: <note path relative to content/>  <reason>
 # Each note listed here must also carry a `> [!note] Not tested locally` callout.
+containers/buildpacks  needs the pack CLI and a Paketo builder: over 1 GB of amd64-only images, emulated on Apple Silicon
+kubernetes/networking/k8gb  needs two clusters and a delegated DNS zone; the k8gb local demo creates two dedicated kind clusters, beyond the harness's two-cluster budget
+kubernetes/networking/externaldns  needs a real domain name and a public DNS provider API token (the lab uses Linode DNS)
+kubernetes/networking/ingress-canary  its only worked example is deliberately historical (Traefik v1, Ingress v1beta1); weighted routing today is tested in kubernetes/networking/gateway-api
+kubernetes/security/pod-security-policies  the PodSecurityPolicy API was removed in Kubernetes 1.25; the labs need an EOL 1.24 cluster (the replacement is tested in kubernetes/security/pod-security-admission)
+kubernetes/security/openid-connect  the demo needs a Google account and an interactive OAuth Playground login in a browser
 labs/nixos-homelab/gitea  needs macOS with vfkit, vmnet-helper and a Docker runtime; the harness runs Linux containers only
 labs/nixos-homelab/installer-iso  needs macOS with vfkit, vmnet-helper and a Docker runtime; the harness runs Linux containers only
 labs/nixos-homelab/kubernetes  needs macOS with vfkit, vmnet-helper and a Docker runtime; the harness runs Linux containers only
 labs/nixos-homelab/overview  needs macOS with vfkit, vmnet-helper and a Docker runtime; the harness runs Linux containers only
 labs/nixos-homelab/woodpecker  needs macOS with vfkit, vmnet-helper and a Docker runtime; the harness runs Linux containers only
 attribution  licence and credit notice; no commands to run
+kubernetes/storage/portworx  commercial software that installs itself on the nodes and needs loop block devices; the manifest targets Kubernetes 1.18 and kind nodes are containers
+kubernetes/cluster-setup/apilb  concept note comparing designs, no commands
+kubernetes/cluster-setup/cloud-controller-manager  a Cloud Controller Manager needs a cloud API; concept note with no commands
+kubernetes/cluster-setup/setup-overview  overview, no commands; the tools it names are tested in their own notes
+kubernetes/cluster-setup/setup-selfhosted  overview of distributions, no commands
+kubernetes/cluster-setup/setup-managed  every command needs a cloud account and creates paid resources (AKS, EKS, DigitalOcean, GKE, Scaleway)
+kubernetes/cluster-setup/aws-eks  needs an AWS account and an EKS cluster
+kubernetes/cluster-setup/access-eks-cluster  needs the course's shared EKS cluster and AWS credentials
+kubernetes/cluster-setup/dmuc-easy  needs Kubernetes 1.19 with dockershim and the insecure port 8080, both removed (1.24, 1.20)
+kubernetes/cluster-setup/multinode  builds on dmuc-easy: insecure port 8080, Docker runtime, kubenet; all removed by Kubernetes 1.24
+kubernetes/cluster-setup/dmuc-medium  not run in this test pass: a long manual lab (etcd, TLS, containerd, CNI, many processes by hand); could run later in a priv:leap container
+kubernetes/cluster-setup/dmuc-hard  not run in this test pass: needs the dmuc-medium control plane plus a second node
+kubernetes/cluster-setup/interco  needs several kube-router clusters peered over BGP with a route reflector, on a shared layer 2 network
+kubernetes/observability/cluster-sizing  concept note; evictions need real memory or disk pressure on a node, which would disturb the shared test host
+kubernetes/cicd-gitops/kuik  describes kuik v1 (CachedImage, localhost:7439 proxy), replaced by the v2 rewrite and the v3 beta; installing v1 would test obsolete software
+kubernetes/cicd-gitops/gitworkflows  concept page comparing GitOps tools, no commands; flux and argocd are tested in their own notes
+kubernetes/cicd-gitops/gitlab  needs a real domain, a public cluster and Let's Encrypt certificates; the helper script was read, not run
+kubernetes/extending/operators  concept page listing operators and their uses, no commands; the links were checked
+kubernetes/extending/operators-design  design discussion with no commands; the links were checked
+kubernetes/mlops/mlops-headsup  workshop introduction, no commands; the links were checked
+kubernetes/mlops/handson-mlops  workshop introduction, no commands; the links were checked
+kubernetes/mlops/queue-architecture  architecture discussion; the code blocks are pseudo-code

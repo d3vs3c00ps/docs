@@ -1,0 +1,991 @@
+---
+title: "Resource Limits"
+description: "We can attach resource indications to our pods"
+tags: [kubernetes, observability, monitoring]
+type: lab
+status: complete
+source: https://github.com/jpetazzo/container.training/blob/565636291ec03abf1f2ab8bf6b935478e00e69a2/slides/k8s/resource-limits.md
+license: CC-BY-4.0
+upstream_commit: 56563629
+upstream_sync: manual
+---
+
+# Resource Limits
+
+- We can attach resource indications to our pods
+
+  (or rather: to the *containers* in our pods; but [KEP 2837](https://kep.k8s.io/2837) is coming!)
+
+- We can specify *limits* and/or *requests*
+
+- We can specify quantities of CPU and/or memory and/or ephemeral storage
+
+## Requests vs limits
+
+- *Requests* are *guaranteed reservations* of resources
+
+- They are used for scheduling purposes
+
+- Kubelet will use cgroups to e.g. guarantee a minimum amount of CPU time
+
+- A container **can** use more than its requested resources
+
+- A container using *less* than what it requested should never be killed or throttled
+
+- A node **cannot** be overcommitted with requests
+
+  (the sum of all requests **cannot** be higher than resources available on the node)
+
+- A small amount of resources is set aside for system components
+
+  (this explains why there is a difference between "capacity" and "allocatable")
+
+## Requests vs limits
+
+- *Limits* are "hard limits" (a container **cannot** exceed its limits)
+
+- They aren't taken into account by the scheduler
+
+- A container exceeding its memory limit is killed instantly
+
+  (by the kernel out-of-memory killer)
+
+- A container exceeding its CPU limit is throttled
+
+- A container exceeding its disk limit is killed
+
+  (usually with a small delay, since this is checked periodically by kubelet)
+
+- On a given node, the sum of all limits **can** be higher than the node size
+
+## Compressible vs incompressible resources
+
+- CPU is a *compressible resource*
+
+  - it can be preempted immediately without adverse effect
+
+  - if we have N CPU and need 2N, we run at 50% speed
+
+- Memory is an *incompressible resource*
+
+  - it needs to be swapped out to be reclaimed; and this is costly
+
+  - if we have N GB RAM and need 2N, we might run at... 0.1% speed!
+
+- Disk is also an *incompressible resource*
+
+  - when the disk is full, writes will fail
+
+  - applications may or may not crash but persistent apps will be in trouble
+
+## Running low on CPU
+
+- Two ways for a container to "run low" on CPU:
+
+  - it's hitting its CPU limit
+
+  - all CPUs on the node are at 100% utilization
+
+- The app in the container will run slower
+
+  (compared to running without a limit, or if CPU cycles were available)
+
+- No other consequence
+
+  (but this could affect SLA/SLO for latency-sensitive applications!)
+
+> [!note]- Extra details
+> ## CPU limits implementation details
+>
+> - A container with a CPU limit will be "rationed" by the kernel
+>
+> - Every `cfs_period_us`, it will receive a CPU quota, like an "allowance"
+>
+>   (that interval defaults to 100ms)
+>
+> - Once it has used its quota, it will be stalled until the next period
+>
+> - This can easily result in throttling for bursty workloads
+>
+>   (see the example below)
+
+> [!note]- Extra details
+> ## A bursty example
+>
+> - Web service receives one request per minute
+>
+> - Each request takes 1 second of CPU
+>
+> - Average load: 1.66%
+>
+> - Let's say we set a CPU limit of 10%
+>
+> - This means CPU quotas of 10ms every 100ms
+>
+> - Obtaining the quota for 1 second of CPU will take 10 seconds
+>
+> - Observed latency will be 10 seconds (... actually 9.9s) instead of 1 second
+>
+>   (real-life scenarios will of course be less extreme, but they do happen!)
+
+> [!note]- Extra details
+> ## Multi-core scheduling details
+>
+> - Each core gets a small share of the container's CPU quota
+>
+>   (this avoids locking and contention on the "global" quota for the container)
+>
+> - By default, the kernel distributes that quota to CPUs in 5ms increments
+>
+>   (tunable with `kernel.sched_cfs_bandwidth_slice_us`)
+>
+> - If a containerized process (or thread) uses up its local CPU quota:
+>
+>   *it gets more from the "global" container quota (if there's some left)*
+>
+> - If it "yields" (e.g. sleeps for I/O) before using its local CPU quota:
+>
+>   *the quota is **soon** returned to the "global" container quota, **minus** 1ms*
+
+> [!note]- Extra details
+> ## Low quotas on machines with many cores
+>
+> - The local CPU quota is not immediately returned to the global quota
+>
+>   - this reduces locking and contention on the global quota
+>
+>   - but this can cause starvation when many threads/processes become runnable
+>
+> - That 1ms that "stays" on the local CPU quota is often useful
+>
+>   - if the thread/process becomes runnable, it can be scheduled immediately
+>
+>   - again, this reduces locking and contention on the global quota
+>
+>   - but if the thread/process doesn't become runnable, it is wasted!
+>
+>   - this can become a huge problem on machines with many cores
+
+> [!note]- Extra details
+> ## CPU limits in a nutshell
+>
+> - Beware if you run small bursty workloads on machines with many cores!
+>
+>   ("highly-threaded, user-interactive, non-cpu bound applications")
+>
+> - Check the `nr_throttled` and `throttled_time` metrics in `cpu.stat`
+>
+> - Possible solutions/workarounds:
+>
+>   - be generous with the limits
+>
+>   - make sure your kernel has the [appropriate patch](https://lkml.org/lkml/2019/5/17/581)
+>
+>   - use [static CPU manager policy](https://kubernetes.io/docs/tasks/administer-cluster/cpu-management-policies/#static-policy)
+>
+> For more details, check [this blog post](https://erickhun.com/posts/kubernetes-faster-services-no-cpu-limits/) or these: ([part 1](https://engineering.indeedblog.com/blog/2019/12/unthrottled-fixing-cpu-limits-in-the-cloud/), [part 2](https://engineering.indeedblog.com/blog/2019/12/cpu-throttling-regression-fix/)).
+
+## Running low on memory
+
+- When the kernel runs low on memory, it starts to *reclaim* used memory
+
+- Option 1: free up some *clean* file pages (e.g. disk cache, mmap...)
+
+  → minimal performance impact, except when these pages get very scarce
+
+- Option 2: write and free up some *dirty* file pages (that have been modified)
+
+  → slower as it requires to write things to disk first
+
+- Option 3: write some *anonymous* memory pages to swap so they can be freed up
+
+  → similar to option 2, but that memory might be more likely to be used later
+
+- Option 4: terminate a process and reclaim all its memory
+
+  → fast, effective, but kills processes (with the OOM / Out Of Memory Killer)
+
+## Memory limits on Kubernetes
+
+- If a container exceeds its memory *limit*, it gets killed immediately
+
+  - we're only counting *anonymous* memory here; not *file* pages
+
+  - the "kill" is enforced by cgroups + OOM killer (`memory.max` in cgroups v2)
+
+- If a node memory usage gets too high, kubelet will *evict* some pods
+
+  - kubelet continuously monitors available memory
+
+  - it reacts when a (configurable) threshold is reached
+
+  - more on that later!
+
+## Kubernetes and swap
+
+- Kubernetes did not support swap initially
+
+- If kubelet detects that swap is enabled, it refuses to start
+
+  (unless we use the `failSwapOn` configuration option)
+
+- [KEP 2400] introduces "Node memory swap support"
+
+  (alpha in 1.22, beta in 1.28, GA in 1.34 🎉)
+
+- We can now set the `memorySwap.swapBehavior` kubelet configuration option:
+
+  - `NoSwap` (default) = containers will not use any swap
+
+  - `LimitedSwap` = containers can use *some* amount of swap
+
+[KEP 2400]: https://github.com/kubernetes/enhancements/blob/master/keps/sig-node/2400-node-swap/README.md#implementation-history
+
+> [!note]- Extra details
+> ## `LimitedSwap` policy
+>
+> The exact formula is given in the [Kubernetes documentation][limited-swap-formula].
+>
+> A container can use the following quantity of swap:
+>
+> `total node swap * container memory request / total node memory`
+>
+> Example:
+>
+> - node has 10 GB of RAM
+>
+> - container has requested 1 GB of memory
+>
+> - therefore, the container can use 10% of the node's swap
+>
+> - if the node has 4 GB of swap, the container can use 400 MB of swap
+>
+> This ensures fair, deterministic access to swap.
+>
+> [limited-swap-formula]: https://kubernetes.io/docs/concepts/cluster-administration/swap-memory-management/#how-is-the-swap-limit-being-determined-with-limitedswap
+
+> [!note]- Extra details
+> ## Why did it take so long to support swap?
+>
+> - With cgroups v1, it wasn't possible to disable swap for a cgroup
+>
+>   (the closest option is to [reduce "swappiness"](https://unix.stackexchange.com/questions/77939/turning-off-swapping-for-only-one-process-with-cgroups))
+>
+> - It is possible with cgroups v2 (see the [kernel docs](https://www.kernel.org/doc/html/latest/admin-guide/cgroup-v2.html) and the [fbatx docs](https://facebookmicrosites.github.io/cgroup2/docs/memory-controller.html#using-swap))
+>
+> - Cgroups v2 were merged in Linux kernel 4.5, in 2016
+>
+>   (i.e. after Kubernetes came out)
+>
+> - It took a long time for distros to move to cgroups v2
+>
+> - It took a long time for Kubernetes to adopt / adapt to cgroups v2
+
+> [!note]- Extra details
+> ## One point of view...
+>
+> - The architects of Kubernetes wanted to ensure that Guaranteed pods never swap
+>
+> - The simplest solution was to disable swap entirely
+>
+> - Kubelet will refuse to start if it detects that swap is enabled!
+
+> [!note]- Extra details
+> ## Another point of view...
+>
+> - Swap enables paging¹ of anonymous² memory
+>
+> - Even when swap is disabled, Linux will still page memory for:
+>
+>   - executables, libraries
+>
+>   - mapped files
+>
+> - Disabling swap *will reduce performance and available resources*
+>
+> ¹Paging: reading/writing memory pages from/to disk to reclaim physical memory
+>
+> ²Anonymous memory: memory that is not backed by files or blocks
+
+> [!note]- Extra details
+> ## Do you want to know more?
+>
+> - 🍿 GitHub issue [kubernetes/kubernetes#53533](https://github.com/kubernetes/kubernetes/issues/53533)
+>
+> - 💡 [Swapping, memory limits, and cgroups](https://jvns.ca/blog/2017/02/17/mystery-swap/)
+>
+>   *excellent technical introduction by [Julia Evans](https://jvns.ca/)*
+>
+> - 📚️ [In defence of swap: common misconceptions](https://chrisdown.name/2018/01/02/in-defence-of-swap.html)
+>
+>   *another excellent technical article by [Chris Down](https://chrisdown.name/)*
+
+## Enabling swap anyway
+
+- If you want to run Kubernetes on machines that have swap...
+
+- ...And can't/won't disable swap...
+
+- ...You will need to add the flag `--fail-swap-on=false` to kubelet
+
+## Running low on disk
+
+- When the kubelet runs low on disk, it starts to reclaim disk space
+
+  (similarly to what the kernel does, but in different categories)
+
+- Option 1: garbage collect dead pods and containers
+
+  (no consequence, but their logs will be deleted)
+
+- Option 2: remove unused images
+
+  (no consequence, but these images will have to be repulled if we need them later)
+
+- Option 3: evict pods and remove them to reclaim their disk usage
+
+- Note: this only applies to *ephemeral storage*, not to e.g. Persistent Volumes!
+
+## Ephemeral storage?
+
+- This includes:
+
+  - the *read-write layer* of the container
+    (any file creation/modification outside of its volumes)
+
+  - `emptyDir` volumes mounted in the container
+
+  - the container logs stored on the node
+
+- This does not include:
+
+  - the container image
+
+  - other types of volumes (e.g. Persistent Volumes, `hostPath`, or `local` volumes)
+
+> [!note]- Extra details
+> ## Disk limit enforcement
+>
+> - Disk usage is periodically measured by kubelet
+>
+>   (with something equivalent to `du`)
+>
+> - There can be a small delay before pod termination when disk limit is exceeded
+>
+> - It's also possible to enable filesystem *project quotas*
+>
+>   (e.g. with EXT4 or XFS)
+>
+> - Remember that container logs are also accounted for!
+>
+>   (container log rotation/retention is managed by kubelet)
+
+> [!note]- Extra details
+> ## `nodefs` and `imagefs`
+>
+> - `nodefs` is the main filesystem of the node
+>
+>   (holding, notably, `emptyDir` volumes and container logs)
+>
+> - Optionally, the container engine can be configured to use an `imagefs`
+>
+> - `imagefs` will store container images and container writable layers
+>
+> - When there is a separate `imagefs`, its disk usage is tracked independently
+>
+> - If `imagefs` usage gets too high, kubelet will remove old images first
+>
+>   (conversely, if `nodefs` usage gets too high, kubelet won't remove old images)
+
+> [!note]- Extra details
+> ## All the details...
+>
+> - [Documentation about ephemeral local storage](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#local-ephemeral-storage)
+>
+> - [Blog post about local storage capacity isolation](https://kubernetes.io/blog/2022/09/19/local-storage-capacity-isolation-ga/)
+
+> [!note]- Extra details
+> ## CPU and RAM reservation
+>
+> - Kubernetes passes resources requests and limits to the container engine
+>
+> - The container engine applies these requests and limits with specific mechanisms
+>
+> - Example: on Linux, this is typically done with control groups aka cgroups
+>
+> - When Kubernetes came out, Linux was using cgroups v1
+>
+> - Cgroups v2 were merged into the kernel later; and then were slowly rolled out
+>
+>   (e.g. openSUSE Leap 16 supports only v2, with no v1 fallback)
+>
+> - Cgroups v2 have new, interesting features for memory control:
+>
+>   - ability to set "minimum" memory amounts (to effectively reserve memory)
+>
+>   - better control on the amount of swap used by a container
+
+## Pod quality of service
+
+Each pod is assigned a QoS class (visible in `status.qosClass`).
+
+- If limits = requests:
+
+  - as long as the container uses less than the limit, it won't be affected
+
+  - if all containers in a pod have *(limits=requests)*, QoS is considered "Guaranteed"
+
+- If requests < limits:
+
+  - as long as the container uses less than the request, it won't be affected
+
+  - otherwise, it might be killed/evicted if the node gets overloaded
+
+  - if at least one container has *(requests < limits)*, QoS is considered "Burstable"
+
+  (Guaranteed also needs *both* CPU and memory set in *every* container)
+
+- If a pod doesn't have any request nor limit, QoS is considered "BestEffort"
+
+## Quality of service impact
+
+- When a node is overloaded, BestEffort pods are killed first
+
+- Then, Burstable pods that exceed their requests
+
+- Burstable and Guaranteed pods below their requests are never killed
+
+  (except if their node fails)
+
+- If we only use Guaranteed pods, no pod should ever be killed
+
+  (as long as they stay within their limits)
+
+(Pod QoS is also explained in [this page](https://kubernetes.io/docs/tasks/configure-pod-container/quality-service-pod/) of the Kubernetes documentation and in [this blog post](https://medium.com/google-cloud/quality-of-service-class-qos-in-kubernetes-bb76a89eb2c6).)
+
+## Specifying resources
+
+- Resource requests are expressed at the *container* level
+
+- CPU is expressed in "virtual CPUs"
+
+  (corresponding to the virtual CPUs offered by some cloud providers)
+
+- CPU can be expressed with a decimal value, or even a "milli" suffix
+
+  (so 100m = 0.1)
+
+- Memory and ephemeral disk storage are expressed in bytes
+
+- These can have k, M, G, T, ki, Mi, Gi, Ti suffixes
+
+  (corresponding to 10^3, 10^6, 10^9, 10^12, 2^10, 2^20, 2^30, 2^40)
+
+## Specifying resources in practice
+
+This is what the spec of a Pod with resources will look like:
+
+```yaml
+containers:
+- name: blue
+  image: jpetazzo/color
+  resources:
+    limits:
+      cpu: "100m"
+      ephemeral-storage: 10M
+      memory: "100Mi"
+    requests:
+      cpu: "10m"
+      ephemeral-storage: 10M
+      memory: "100Mi"
+```
+
+This set of resources makes sure that this service won't be killed (as long as it stays below 100 MB of RAM), but allows its CPU usage to be throttled if necessary.
+
+## Default values
+
+- If we specify a limit without a request:
+
+  the request is set to the limit
+
+- If we specify a request without a limit:
+
+  there will be no limit
+
+  (which means that the limit will be the size of the node)
+
+- If we don't specify anything:
+
+  the request is zero and the limit is the size of the node
+
+*Unless there are default values defined for our namespace!*
+
+## We need to specify resource values
+
+- If we do not set resource values at all:
+
+  - the limit is "the size of the node"
+
+  - the request is zero
+
+- This is generally *not* what we want
+
+  - a container without a limit can use up all the resources of a node
+
+  - if the request is zero, the scheduler can't make a smart placement decision
+
+- This is fine when learning/testing, absolutely not in production!
+
+## How should we set resources?
+
+- Option 1: manually, for each container
+
+  - simple, effective, but tedious
+
+- Option 2: automatically, with the [Vertical Pod Autoscaler (VPA)][vpa]
+
+  - relatively simple, very minimal involvement beyond initial setup
+
+  - not compatible with HPAv1, can disrupt long-running workloads (see [limitations][vpa-limitations])
+
+- Option 3: semi-automatically, with tools like [Robusta KRR][robusta]
+
+  - good compromise between manual work and automation
+
+- Option 4: by creating LimitRanges in our Namespaces
+
+  - relatively simple, but "one-size-fits-all" approach might not always work
+
+[robusta]: https://github.com/robusta-dev/krr
+[vpa]: https://github.com/kubernetes/autoscaler/tree/master/vertical-pod-autoscaler
+[vpa-limitations]: https://github.com/kubernetes/autoscaler/tree/master/vertical-pod-autoscaler#known-limitations
+
+> [!note]- Extra details
+> ## In-place Pod Resize
+>
+> - New feature (alpha in 1.27, beta and enabled by default in 1.33; it works out of the
+>   box on Kubernetes 1.37 in our tests)
+>
+> - It uses the `resize` subresource:
+>   `kubectl patch pod NAME --subresource resize --patch '{"spec":{"containers":[...]}}'`
+>
+> - Lets us change CPU and memory requests and limits for existing Pods
+>
+> - Can resize up and down
+>
+> - Resize up can be deferred if there aren't enough resources on the node
+>
+>   (but may complete at a later point if resources become available)
+>
+> - Memory resize down can be deferred if it would trigger OOM killer
+>
+>   (but there is no guarantee that the container won't be killed by a race condition!)
+
+> [!note]- Extra details
+> ## Limitations
+>
+> - Cannot change Pod QoS:
+>
+>   - can't add resources to a BestEffort Pod
+>
+>   - can't remove requests from a Burstable / Guaranteed Pod
+>
+>   - can't set request==limit unless the Pod was already Guaranteed
+>
+> - Not integrated with controllers in the `apps` API group at this point
+>
+>   (=Pods must be resized manually or by custom controllers)
+>
+> - Containers using swap need to be restarted
+
+> [!note]- Extra details
+> ## More info about in-place resize
+>
+> - [Kubernetes 1.33 blog announcement](https://kubernetes.io/blog/2025/05/16/kubernetes-v1-33-in-place-pod-resize-beta/)
+>
+> - [Kubernetes documentation](https://kubernetes.io/docs/tasks/configure-pod-container/resize-container-resources/)
+>
+> - [KEP 1287: In-place Update of Pod Resources ](https://github.com/kubernetes/enhancements/tree/master/keps/sig-node/1287-in-place-update-pod-resources)
+
+> [!note]- Extra details
+> ## Extended resources aka [Device Plugins](https://kubernetes.io/docs/concepts/extend-kubernetes/compute-storage-net/device-plugins/)
+>
+> - GA since Kubernetes 1.26
+>
+> - Plugins can register arbitrary custom resources to kubelet
+>
+>   (e.g.: "this node has 4 GPUs of class K2000!")
+>
+> - Containers can request custom resources
+>
+>   (e.g.: "I want 2 GPUs of class K2000!")
+>
+> - Scheduler will make it happen and keep track of available resources
+>
+> - Resources are discrete, exclusive, atomic units
+>
+>   (can't ask a specific amount of VRAM, or a GPU "at least of class X", etc.)
+>
+> - That last limitation can be partially worked around thanks to [NFD](https://github.com/kubernetes-sigs/node-feature-discovery) and node selectors
+
+> [!note]- Extra details
+> ## [Dynamic Resource Allocation](https://kubernetes.io/docs/concepts/scheduling-eviction/dynamic-resource-allocation/)
+>
+> - GA since Kubernetes 1.34
+>
+> - More powerful than Device Plugins:
+>
+>   - devices can have e.g. quantity of VRAM or other features
+>
+>   - pods can ask for e.g. a specific amount of VRAM
+>
+>   - devices can be shared across multiple pods
+>
+> - More complex concepts:
+>
+>   - drivers create ResourceSlices representing available thingies
+>
+>   - users create ResourceClaims or ResourceClaimTemplates
+>
+>   - users create Pods referencing ResourceClaims or ResourceClaimTemplates
+
+# Defining min, max, and default resources
+
+- We can create LimitRange objects to indicate any combination of:
+
+  - min and/or max resources allowed per pod
+
+  - default resource *limits*
+
+  - default resource *requests*
+
+  - maximal burst ratio (*limit/request*)
+
+- LimitRange objects are namespaced
+
+- They apply to their namespace only
+
+## LimitRange example
+
+```yaml
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: my-very-detailed-limitrange
+spec:
+  limits:
+  - type: Container
+    min:
+      cpu: "100m"
+    max:
+      cpu: "2000m"
+      memory: "1Gi"
+    default:
+      cpu: "500m"
+      memory: "250Mi"
+    defaultRequest:
+      cpu: "500m"
+```
+
+## Example explanation
+
+The YAML above shows an example LimitRange object specifying very detailed limits on CPU usage,
+and providing defaults on RAM usage.
+
+Note the `type: Container` line. A LimitRange can also use `type: Pod`: then `min` and
+`max` apply to the sum of all containers in the Pod (there are no Pod defaults).
+
+> [!warning] Correction
+> The original said that per-Pod limits were "not officially documented yet". The
+> `Pod` type is documented and enforced: with `max: {cpu: 200m}`, a Pod with two
+> containers of 150m each is refused ("maximum cpu usage per Pod is 200m").
+
+## LimitRange details
+
+- LimitRange restrictions are enforced only when a Pod is created
+
+  (they don't apply retroactively)
+
+- They don't prevent creation of e.g. an invalid Deployment or DaemonSet
+
+  (but the pods will not be created as long as the LimitRange is in effect)
+
+- If there are multiple LimitRange restrictions, they all apply together
+
+  (which means that it's possible to specify conflicting LimitRanges,
+  preventing any Pod from being created)
+
+- If a LimitRange specifies a `max` for a resource but no `default`,
+  that `max` value becomes the `default` limit too
+
+# Namespace quotas
+
+- We can also set quotas per namespace
+
+- Quotas apply to the total usage in a namespace
+
+  (e.g. total CPU limits of all pods in a given namespace)
+
+- Quotas can apply to resource limits and/or requests
+
+  (like the CPU and memory limits that we saw earlier)
+
+- Quotas can also apply to other resources:
+
+  - "extended" resources (like GPUs)
+
+  - storage size
+
+  - number of objects (number of pods, services...)
+
+## Creating a quota for a namespace
+
+- Quotas are enforced by creating a ResourceQuota object
+
+- ResourceQuota objects are namespaced, and apply to their namespace only
+
+- We can have multiple ResourceQuota objects in the same namespace
+
+- The most restrictive values are used
+
+## Limiting total CPU/memory usage
+
+- The following YAML specifies an upper bound for *limits* and *requests*:
+  ```yaml
+    apiVersion: v1
+    kind: ResourceQuota
+    metadata:
+      name: a-little-bit-of-compute
+    spec:
+      hard:
+        requests.cpu: "10"
+        requests.memory: 10Gi
+        limits.cpu: "20"
+        limits.memory: 20Gi
+  ```
+
+These quotas will apply to the namespace where the ResourceQuota is created.
+
+## Limiting number of objects
+
+- The following YAML specifies how many objects of specific types can be created:
+  ```yaml
+    apiVersion: v1
+    kind: ResourceQuota
+    metadata:
+      name: quota-for-objects
+    spec:
+      hard:
+        pods: 100
+        services: 10
+        secrets: 10
+        configmaps: 10
+        persistentvolumeclaims: 20
+        services.nodeports: 0
+        services.loadbalancers: 0
+        count/roles.rbac.authorization.k8s.io: 10
+  ```
+
+(The `count/` syntax allows limiting arbitrary objects, including CRDs.)
+
+## YAML vs CLI
+
+- Quotas can be created with a YAML definition
+
+- ...Or with the `kubectl create quota` command
+
+- Example:
+  ```bash
+  kubectl create quota my-resource-quota --hard=pods=300,limits.memory=300Gi
+  ```
+
+- With both YAML and CLI form, the values are always under the `hard` section
+
+  (there is no `soft` quota)
+
+## Viewing current usage
+
+When a ResourceQuota is created, we can see how much of it is used:
+
+```
+kubectl describe resourcequota my-resource-quota
+
+Name:                            my-resource-quota
+Namespace:                       default
+Resource                         Used  Hard
+--------                         ----  ----
+pods                             12    100
+services                         1     5
+services.loadbalancers           0     0
+services.nodeports               0     0
+```
+
+## Advanced quotas and PriorityClass
+
+- Pods can have a *priority*
+
+- The priority is a number up to 1000000000 (it can also be negative)
+
+  (higher values are reserved for system classes, e.g. `system-node-critical` is
+  2000001000)
+
+- High number = high priority = "more important" Pod
+
+- Pods with a higher priority can *preempt* Pods with lower priority
+
+  (= low priority pods will be *evicted* if needed)
+
+- Useful when mixing workloads in resource-constrained environments
+
+## Setting the priority of a Pod
+
+- Create a PriorityClass
+
+  (or use an existing one)
+
+- When creating the Pod, set the field `spec.priorityClassName`
+
+- If the field is not set:
+
+  - if there is a PriorityClass with `globalDefault`, it is used
+
+  - otherwise, the default priority will be zero
+
+> [!note]- Extra details
+> ## PriorityClass and ResourceQuotas
+>
+> - A ResourceQuota can include a list of *scopes* or a *scope selector*
+>
+> - In that case, the quota will only apply to the scoped resources
+>
+> - Example: limit the resources allocated to "high priority" Pods
+>
+> - In that case, make sure that the quota is created in every Namespace
+>
+>   (or use *admission configuration* to enforce it)
+>
+> - See the [resource quotas documentation][quotadocs] for details
+>
+> [quotadocs]: https://kubernetes.io/docs/concepts/policy/resource-quotas/#resource-quota-per-priorityclass
+
+# Limiting resources in practice
+
+- We have at least three mechanisms:
+
+  - requests and limits per Pod
+
+  - LimitRange per namespace
+
+  - ResourceQuota per namespace
+
+- Let's see one possible strategy to get started with resource limits
+
+## Set a LimitRange
+
+- In each namespace, create a LimitRange object
+
+- Set a small default CPU request and CPU limit
+
+  (e.g. "100m")
+
+- Set a default memory request and limit depending on your most common workload
+
+  - for Java, Ruby: start with "1G"
+
+  - for Go, Python, PHP, Node: start with "250M"
+
+- Set upper bounds slightly below your expected node size
+
+  (80-90% of your node size, with at least a 500M memory buffer)
+
+## Set a ResourceQuota
+
+- In each namespace, create a ResourceQuota object
+
+- Set generous CPU and memory limits
+
+  (e.g. half the cluster size if the cluster hosts multiple apps)
+
+- Set generous objects limits
+
+  - these limits should not be here to constrain your users
+
+  - they should catch a runaway process creating many resources
+
+  - example: a custom controller creating many pods
+
+## Observe, refine, iterate
+
+- Observe the resource usage of your pods
+
+  (see [[kubernetes/observability/metrics-server]] and [[kubernetes/observability/prometheus]])
+
+- Adjust individual pod limits
+
+- If you see trends: adjust the LimitRange
+
+  (rather than adjusting every individual set of pod limits)
+
+- Observe the resource usage of your namespaces
+
+  (with `kubectl describe resourcequota ...`)
+
+- Rinse and repeat regularly
+
+## Underutilization
+
+- Remember: when assigning a pod to a node, the scheduler looks at *requests*
+
+  (not at current utilization on the node)
+
+- If pods request resources but don't use them, this can lead to underutilization
+
+  (because the scheduler will consider that the node is full and can't fit new pods)
+
+## Viewing a namespace limits and quotas
+
+- `kubectl describe namespace` will display resource limits and quotas
+
+> [!example] Hands-on
+> - Try it out:
+>   ```bash
+>   kubectl describe namespace default
+>   ```
+>
+> - View limits and quotas for *all* namespaces:
+>   ```bash
+>   kubectl describe namespace
+>   ```
+
+## Additional resources
+
+- [A Practical Guide to Setting Kubernetes Requests and Limits](http://blog.kubecost.com/blog/requests-and-limits/)
+
+  - explains what requests and limits are
+
+  - provides guidelines to set requests and limits
+
+  - gives PromQL expressions to compute good values
+    (our app needs to be running for a while)
+
+- [Kube Resource Report](https://codeberg.org/hjacobs/kube-resource-report)
+
+  - generates web reports on resource usage
+
+- [nsinjector](https://github.com/blakelead/nsinjector)
+
+  - controller to automatically populate a Namespace when it is created
+
+---
+
+> [!info] Adapted from container.training
+> This page is derived from [`slides/k8s/resource-limits.md`](https://github.com/jpetazzo/container.training/blob/565636291ec03abf1f2ab8bf6b935478e00e69a2/slides/k8s/resource-limits.md)
+> in **[container.training](https://github.com/jpetazzo/container.training)** by Jérôme Petazzoni and contributors,
+> used under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
+> **Changes were made**: restructured from slides into a single page, remark
+> markup converted to Obsidian callouts, referenced files inlined or linked,
+> LimitRange `Pod` type and priority range corrected, resize command added, claims
+> about QoS, defaults, LimitRange, quotas and resize tested on kind.
+
+<!-- uplink -->
+Part of [[kubernetes/observability/index|Observability and scaling]].

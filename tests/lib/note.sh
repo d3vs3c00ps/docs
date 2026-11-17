@@ -47,6 +47,12 @@ note_block() {
       }
     }
     END { if (!found) exit 1 }
-  ' "$file") || { echo "note_block: block '$sel' #$n not found in $note" >&2; return 1; }
+  ' "$file") || {
+    echo "note_block: block '$sel' #$n not found in $note" >&2
+    # Inside $(...) the failure is lost and the caller runs an empty command, which
+    # passes. Record it so _t_finish fails the test.
+    [[ -n ${_T_NB_MISSING:-} ]] && echo "'$sel' #$n in $note" >>"$_T_NB_MISSING"
+    return 1
+  }
   printf '%s\n' "$out"
 }

@@ -18,7 +18,7 @@ by the NixOS `services.kubernetes` module — not k3s. The module's default netw
 plugin is flannel; this cluster uses **Cilium** instead, which needed six changes
 to the module's defaults, a fix for a certificate renewal loop, and more
 changes once Cilium replaced kube-proxy. On vfkit, one more was needed for DNS. See [[labs/nixos-homelab/overview]], and
-Cilium for what Cilium does.
+[[kubernetes/networking/cilium/index|Cilium]] for what Cilium does.
 
 | Host | IP | Role |
 | --- | --- | --- |

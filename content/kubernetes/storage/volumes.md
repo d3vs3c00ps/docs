@@ -1,0 +1,461 @@
+---
+title: "Volumes"
+description: "Volumes are special directories that are mounted in containers"
+tags: [kubernetes, storage, volumes]
+type: lab
+status: complete
+source: https://github.com/jpetazzo/container.training/blob/565636291ec03abf1f2ab8bf6b935478e00e69a2/slides/k8s/volumes.md
+license: CC-BY-4.0
+upstream_commit: 56563629
+upstream_sync: manual
+---
+
+# Volumes
+
+> [!important] These labs expect the upstream repository
+> Commands below reference files by their path in a local clone. Get it with:
+>
+> ```bash
+> git clone https://github.com/jpetazzo/container.training
+> ```
+>
+> The manifests can also be browsed at the pinned commit
+> [`56563629`](https://github.com/jpetazzo/container.training/tree/565636291ec03abf1f2ab8bf6b935478e00e69a2).
+
+- Volumes are special directories that are mounted in containers
+
+- Volumes can have many different purposes:
+
+  - share files and directories between containers running on the same machine
+
+  - share files and directories between containers and their host
+
+  - centralize configuration information in Kubernetes and expose it to containers
+
+  - manage credentials and secrets and expose them securely to containers
+
+  - store persistent data for stateful services
+
+  - access storage systems (like Ceph, EBS, NFS, Portworx, and many others)
+
+> [!note]- Extra details
+> ## Kubernetes volumes vs. Docker volumes
+>
+> - Kubernetes and Docker volumes are very similar
+>
+>   (the [Kubernetes documentation](https://kubernetes.io/docs/concepts/storage/volumes/) says otherwise ...
+>   <br/>
+>   but it refers to Docker 1.7, which was released in 2015!)
+>
+> - Docker volumes allow us to share data between containers running on the same host
+>
+> - Kubernetes volumes allow us to share data between containers in the same pod
+>
+> - Both Docker and Kubernetes volumes enable access to storage systems
+>
+> - Kubernetes volumes are also used to expose configuration and secrets
+>
+> - Docker has specific concepts for configuration and secrets
+>   <br/>
+>   (but under the hood, the technical implementation is similar)
+>
+> - If you're not familiar with Docker volumes, you can safely ignore this slide!
+
+## Volumes ≠ Persistent Volumes
+
+- Volumes and Persistent Volumes are related, but very different!
+
+- *Volumes*:
+
+  - appear in Pod specifications (we'll see that in a few slides)
+
+  - do not exist as API resources (**cannot** do `kubectl get volumes`)
+
+- *Persistent Volumes*:
+
+  - are API resources (**can** do `kubectl get persistentvolumes`)
+
+  - correspond to concrete volumes (e.g. on a SAN, EBS, etc.)
+
+  - cannot be associated with a Pod directly; but through a Persistent Volume Claim
+
+  - won't be discussed further in this section
+
+## Adding a volume to a Pod
+
+- We will start with the simplest Pod manifest we can find
+
+- We will add a volume to that Pod manifest
+
+- We will mount that volume in a container in the Pod
+
+- By default, this volume will be an `emptyDir`
+
+  (an empty directory)
+
+- It will "shadow" the directory where it's mounted
+
+## Our basic Pod
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-without-volume
+spec:
+  containers:
+  - name: nginx
+    image: nginx
+```
+
+This is a MVP! (Minimum Viable Pod😉)
+
+It runs a single NGINX container.
+
+## Trying the basic pod
+
+> [!example] Hands-on
+> - Create the Pod:
+>   ```bash
+>   kubectl create -f ~/container.training/k8s/nginx-1-without-volume.yaml
+>   ```
+>
+> - Get its IP address:
+>   ```bash
+>   IPADDR=$(kubectl get pod nginx-without-volume -o jsonpath={.status.podIP})
+>   ```
+>
+> - Send a request with curl:
+>   ```bash
+>   curl $IPADDR
+>   ```
+
+(We should see the "Welcome to NGINX" page.)
+
+## Adding a volume
+
+- We need to add the volume in two places:
+
+  - at the Pod level (to declare the volume)
+
+  - at the container level (to mount the volume)
+
+- We will declare a volume named `www`
+
+- No type is specified, so it will default to `emptyDir`
+
+  (as the name implies, it will be initialized as an empty directory at pod creation)
+
+- In that pod, there is also a container named `nginx`
+
+- That container mounts the volume `www` to path `/usr/share/nginx/html/`
+
+## The Pod with a volume
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-with-volume
+spec:
+  volumes:
+  - name: www
+  containers:
+  - name: nginx
+    image: nginx
+    volumeMounts:
+    - name: www
+      mountPath: /usr/share/nginx/html/
+```
+
+## Trying the Pod with a volume
+
+> [!example] Hands-on
+> - Create the Pod:
+>   ```bash
+>   kubectl create -f ~/container.training/k8s/nginx-2-with-volume.yaml
+>   ```
+>
+> - Get its IP address:
+>   ```bash
+>   IPADDR=$(kubectl get pod nginx-with-volume -o jsonpath={.status.podIP})
+>   ```
+>
+> - Send a request with curl:
+>   ```bash
+>   curl $IPADDR
+>   ```
+
+(We should now see a "403 Forbidden" error page.)
+
+## Populating the volume with another container
+
+- Let's add another container to the Pod
+
+- Let's mount the volume in *both* containers
+
+- That container will populate the volume with static files
+
+- NGINX will then serve these static files
+
+- To populate the volume, we will clone the Spoon-Knife repository
+
+  - this repository is https://github.com/octocat/Spoon-Knife
+
+  - it's very popular (more than 100K stars!)
+
+## Sharing a volume between two containers
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-with-git
+spec:
+  volumes:
+  - name: www
+  containers:
+  - name: nginx
+    image: nginx
+    volumeMounts:
+    - name: www
+      mountPath: /usr/share/nginx/html/
+  - name: git
+    image: alpine
+    command: [ "sh", "-c", "apk add git && git clone https://github.com/octocat/Spoon-Knife /www" ]
+    volumeMounts:
+    - name: www
+      mountPath: /www/
+  restartPolicy: OnFailure
+```
+
+## Sharing a volume, explained
+
+- We added another container to the pod
+
+- That container mounts the `www` volume on a different path (`/www`)
+
+- It uses the `alpine` image
+
+- When started, it installs `git` and clones the `octocat/Spoon-Knife` repository
+
+  (that repository contains a tiny HTML website)
+
+- As a result, NGINX now serves this website
+
+## Trying the shared volume
+
+- This one will be time-sensitive!
+
+- We need to catch the Pod IP address *as soon as it's created*
+
+- Then send a request to it *as fast as possible*
+
+> [!example] Hands-on
+> - Watch the pods (so that we can catch the Pod IP address)
+>   ```bash
+>   kubectl get pods -o wide --watch
+>   ```
+>   (and set `IP` to the IP address we see)
+
+## Shared volume in action
+
+> [!example] Hands-on
+> - Create the pod:
+>   ```bash
+>   kubectl create -f ~/container.training/k8s/nginx-3-with-git.yaml
+>   ```
+>
+> - As soon as we see its IP address, access it:
+>   ```bash
+>   curl $IP
+>   ```
+>
+> - A few seconds later, the state of the pod will change; access it again:
+>   ```bash
+>   curl $IP
+>   ```
+
+The first time, we should see "403 Forbidden".
+
+The second time, we should see the HTML file from the Spoon-Knife repository.
+
+## Explanations
+
+- Both containers are started at the same time
+
+- NGINX starts very quickly
+
+  (it can serve requests immediately)
+
+- But at this point, the volume is empty
+
+  (NGINX serves "403 Forbidden")
+
+- The other container installs git and clones the repository
+
+  (this takes a bit longer)
+
+- When the other container is done, the volume holds the repository
+
+  (NGINX serves the HTML file)
+
+## The devil is in the details
+
+- The default `restartPolicy` is `Always`
+
+- This would cause our `git` container to run again ... and again ... and again
+
+  (with an exponential back-off delay, as explained [in the documentation](https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/#restart-policy))
+
+- That's why we specified `restartPolicy: OnFailure`
+
+## Inconsistencies
+
+- There is a short period of time during which the website is not available
+
+  (because the `git` container hasn't done its job yet)
+
+- With a bigger website, we could get inconsistent results
+
+  (where only a part of the content is ready)
+
+- In real applications, this could cause incorrect results
+
+- How can we avoid that?
+
+## Init Containers
+
+- We can define containers that should execute *before* the main ones
+
+- They will be executed in order
+
+  (instead of in parallel)
+
+- They must all succeed before the main containers are started
+
+- This is *exactly* what we need here!
+
+- Let's see one in action
+
+*See [Init Containers](https://kubernetes.io/docs/concepts/workloads/pods/init-containers/) documentation for all the details.*
+
+## Defining Init Containers
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-with-init
+spec:
+  volumes:
+  - name: www
+  containers:
+  - name: nginx
+    image: nginx
+    volumeMounts:
+    - name: www
+      mountPath: /usr/share/nginx/html/
+  initContainers:
+  - name: git
+    image: alpine
+    command: [ "sh", "-c", "apk add git && sleep 5 && git clone https://github.com/octocat/Spoon-Knife /www" ]
+    volumeMounts:
+    - name: www
+      mountPath: /www/
+```
+
+## Trying the init container
+
+> [!example] Hands-on
+> - Create the pod:
+>   ```bash
+>   kubectl create -f ~/container.training/k8s/nginx-4-with-init.yaml
+>   ```
+>
+> - Try to send HTTP requests as soon as the pod comes up
+
+- This time, instead of "403 Forbidden" we get a "connection refused"
+
+- NGINX doesn't start until the git container has done its job
+
+- We never get inconsistent results
+
+  (a "half-ready" container)
+
+## Volume lifecycle
+
+- The lifecycle of a volume is linked to the pod's lifecycle
+
+- This means that a volume is created when the pod is created
+
+- This is mostly relevant for `emptyDir` volumes
+
+  (other volumes, like remote storage, are not "created" but rather "attached" )
+
+- A volume survives across container restarts
+
+- A volume is destroyed (or, for remote storage, detached) when the pod is destroyed
+
+## Other uses of init containers
+
+- Load content, data sets...
+
+- Generate configuration (or certificates)
+
+- Database migrations
+
+- Wait for other services to be up
+
+  (to avoid flurry of connection errors in main container)
+
+- etc.
+
+## Init containers vs sidecars
+
+- Init containers run *before* the main container(s)
+
+- Sidecars run *in parallel* to the main container(s)
+
+- What's the difference between a sidecar and a "main container"?
+
+  - sidecar might need to start *before* the main container(s)
+    <br/>(e.g. if it provides "ambassador"-style connectivity service)
+
+  - sidecar might need to stop *after* the main container(s)
+    <br/>(ditto)
+
+  - sidecar might need to be stopped automatically when main container(s) complete
+    <br/>(e.g. for batch jobs)
+
+- Kubernetes has special support for sidecars!
+
+## Sidecars
+
+- Introduced as an alpha feature in K8S 1.28; GA in K8S 1.33
+
+- A sidecar is an `initContainer` with a `restartPolicy: Always`
+
+- Sidecars are started in the order defined by the `initContainers` list
+
+- They can have healthchecks
+
+- Kubernetes doesn't wait for them to complete
+
+  (they run asynchronously)
+
+- When all the main containers have completed, sidecars are shutdown automatically
+
+  (they don't prevent jobs from completing!)
+
+---
+
+> [!info] Adapted from container.training
+> This page is derived from [`slides/k8s/volumes.md`](https://github.com/jpetazzo/container.training/blob/565636291ec03abf1f2ab8bf6b935478e00e69a2/slides/k8s/volumes.md)
+> in **[container.training](https://github.com/jpetazzo/container.training)** by Jérôme Petazzoni and contributors,
+> used under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
+> **Changes were made**: restructured from slides into a single page, remark
+> markup converted to Obsidian callouts, referenced files inlined or linked.
+
+<!-- uplink -->
+Part of [[kubernetes/storage/index|Storage]].

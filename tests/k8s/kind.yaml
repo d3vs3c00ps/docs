@@ -1,0 +1,10 @@
+# Shared cluster for the Kubernetes note tests. The node image comes from
+# tests/versions.env (passed with --image), so it is not repeated here.
+# Three nodes, because several notes cover scheduling, DaemonSets and drains.
+# Since kind v0.24, the default CNI (kindnet) enforces NetworkPolicy.
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+nodes:
+  - role: control-plane
+  - role: worker
+  - role: worker

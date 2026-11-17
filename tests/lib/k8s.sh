@@ -14,8 +14,15 @@ use_test_namespace() {
 }
 
 # Extra kind clusters a test creates. Deleted on exit, even when the test fails.
+# `kind create` switches the current context of $KUBECONFIG, so work on a private
+# copy: the shared file must keep pointing at the shared cluster for the runner
+# (which deletes TEST_NS there) and for other tests.
 _k8s_clusters=()
 kind_cluster() {
+  local copy
+  copy=$(mktemp)
+  cp "$KUBECONFIG" "$copy"
+  export KUBECONFIG=$copy
   _k8s_clusters+=("$1")
 }
 _k8s_cleanup() {
@@ -77,10 +84,13 @@ helm() {
 export -f helm
 
 # The assert.sh EXIT trap prints the TAP plan. Chain cluster cleanup in front of it.
+# A test that sets its own EXIT trap must start it with `_k8s_rc=$?;` and end it with
+# _k8s_exit. Its cleanup commands overwrite $?; the exit status survives anyway, but
+# without _k8s_rc the log shows "N ok, 0 fail" and no "aborted" line explaining it.
 _k8s_exit() {
-  local rc=$?
+  local rc=${_k8s_rc:-$?}
   _k8s_stop_cpk
   _k8s_cleanup
   _t_finish "$rc"
 }
-trap _k8s_exit EXIT
+trap '_k8s_rc=$?; _k8s_exit' EXIT
