@@ -62,8 +62,9 @@ section "Upgrading kubeadm (release binary instead of zypper)"
 check "kubeadm $NEW on the control plane" install_bin "$CP" kubeadm
 check_output "kubeadm upgrade plan (from the note)" "kubeadm upgrade apply v1\.[0-9]+\.[0-9]+" \
   docker exec "$CP" kubeadm upgrade plan
+# kind nodes cannot read the host's kernel config, so kind skips SystemVerification; so do we.
 check "kubeadm upgrade apply (from the note, with --yes: it asks for confirmation)" docker exec "$CP" \
-  bash -c "$(note_block "$NOTE" 11 | sed "s/^ *sudo //; s/v1\.32\.0/$NEW/") --yes"
+  bash -c "$(note_block "$NOTE" 11 | sed "s/^ *sudo //; s/v1\.32\.0/$NEW/") --yes --ignore-preflight-errors=SystemVerification"
 check_output "the API server runs $NEW" "^Server Version: $NEW\$" kubectl version
 check_output "kubeadm upgraded the whole control plane" "^$NEW $NEW $NEW\$" bash -c \
   "for c in kube-apiserver kube-controller-manager kube-scheduler; do kubectl -n kube-system get pod \$c-$CP -o jsonpath='{.spec.containers[0].image}' | sed 's/.*://'; echo; done | xargs"

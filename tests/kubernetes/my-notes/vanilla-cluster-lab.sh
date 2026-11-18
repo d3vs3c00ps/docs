@@ -54,7 +54,7 @@ block() { note_block "$NOTE" "$@" | sed "s/amd64/$ARCH/g"; }
 
 for n in "${NODES[@]}"; do
   retry 90 bash -c "docker compose exec -T $n systemctl is-system-running 2>/dev/null | grep -Eq 'running|degraded'"
-  on "$n" "zypper -n -q install --no-recommends openssh-server openssh-clients sudo >/dev/null && systemctl enable -q --now sshd"
+  on "$n" "zypper -n -q install --no-recommends openssh-server openssh-clients sudo kmod >/dev/null && systemctl enable -q --now sshd"
 done
 on k8s-01 "ssh-keygen -q -t ed25519 -N '' -f /root/.ssh/id_ed25519 && printf 'StrictHostKeyChecking no\n' >/root/.ssh/config"
 pub=$(on k8s-01 "cat /root/.ssh/id_ed25519.pub")
@@ -176,6 +176,9 @@ check "the packages, on each node (from the note)" each "$(block "Prerequisites"
 # Never swapoff here: the swap belongs to the Docker VM, shared with every container.
 check "swapon --show (from the note)" on k8s-01 "swapon --show"
 check "the directories (from the note)" on k8s-01 "$(block "Prerequisites" 3)"
+check "br_netfilter and the forwarding sysctls (from the note)" on k8s-01 "$(block "Prerequisites" 4)"
+check_output "bridged traffic goes through iptables, on every node" '^1 1 1$' bash -c \
+  "$(declare -f on); for n in ${NODES[*]}; do on \$n 'cat /proc/sys/net/bridge/bridge-nf-call-iptables'; done | paste -sd' ' -"
 # percidr N SCRIPT: the note's example CIDR is for k8s-01; each node gets its own.
 percidr() { local b=$2 new="POD_CIDR=10.42.$1.0/24"; printf '%s\n' "${b//POD_CIDR=10.42.1.0\/24/$new}"; }
 for i in 1 2 3; do

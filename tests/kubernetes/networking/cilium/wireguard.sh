@@ -11,8 +11,12 @@ C=cil-wg
 cilium_cluster "$C" 1
 
 section "Prerequisites"
-check_output "the kernel has WireGuard (the note's check, on a node)" 'CONFIG_WIREGUARD' \
-  docker exec "$C-control-plane" bash -ec "$(note_block "$NOTE" 'Prerequisites' 1)"
+if docker exec "$C-control-plane" sh -c '[ -e /proc/config.gz ] || [ -e /boot/config-$(uname -r) ]'; then
+  check_output "the kernel has WireGuard (the note's check, on a node)" 'CONFIG_WIREGUARD' \
+    docker exec "$C-control-plane" bash -ec "$(note_block "$NOTE" 'Prerequisites' 1)"
+else
+  skip "the kernel has WireGuard (the note's check)" "this kernel publishes no config file; the checks below show WireGuard works"
+fi
 
 section "Enabling it"
 check "the note's helm upgrade turns on WireGuard encryption" \

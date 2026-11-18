@@ -1336,6 +1336,21 @@ ssh ${instance} mkdir -p \
 done
 ```
 
+Pods on a bridge reach Services through iptables only when the kernel sends bridged
+traffic through it, and the node must forward packets:
+
+```bash
+for instance in k8s-0{1,2,3}; do
+ssh ${instance} 'modprobe br_netfilter && echo br_netfilter >/etc/modules-load.d/k8s.conf'
+ssh ${instance} 'printf "net.bridge.bridge-nf-call-iptables = 1\nnet.ipv4.ip_forward = 1\n" >/etc/sysctl.d/99-k8s.conf && sysctl -q --system'
+done
+```
+
+> [!warning] Correction
+> The original did not load `br_netfilter` or set these two sysctls. Without them, a pod
+> cannot reach a Service whose only backend runs on the same node: the reply skips
+> iptables and DNS lookups time out. kubeadm checks both before it installs a node.
+
 #### CNI
 
 We create two simple **cni-plugins** configurations.

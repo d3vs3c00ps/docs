@@ -34,6 +34,16 @@ check_output "podman unshare: container root is alice, then the subuid range (fr
 check_output "podman info shows the same mappings (from the note)" "\\{0 $A 1\\}" as_alice "$(block 'Rootless mechanics' 3 | sed -n 2p)"
 check_output "networking uses pasta" 'pasta' as_alice "podman info --format '{{.Host.RootlessNetworkCmd}}'"
 as_alice 'podman pull -q docker.io/library/nginx:alpine docker.io/library/alpine >/dev/null'
+# shortcut: on GitHub's Ubuntu runners, pasta cannot open the rootless network namespace
+# (Permission denied, cause unknown; fine on Docker Desktop). Fall back to slirp4netns there.
+probe=$(as_alice 'podman run --rm docker.io/library/alpine true' 2>&1) || true
+if grep -q "pasta failed" <<<"$probe"; then
+  echo "# pasta fails here; using slirp4netns for alice: $(grep -m1 Couldn <<<"$probe")"
+  zypper -n -q install --no-recommends slirp4netns >/dev/null
+  mkdir -p /home/alice/.config/containers
+  printf '[network]\ndefault_rootless_network_cmd = "slirp4netns"\n' >/home/alice/.config/containers/containers.conf
+  chown -R alice: /home/alice/.config
+fi
 check_fails "a normal user cannot publish port 443" as_alice 'podman run -d --rm --name low -p 443:80 docker.io/library/nginx:alpine'
 check "the note's sysctl lowers the limit" bash -ec "$(block 'Rootless mechanics' 1 | grep '^sysctl')"
 check "and the sysctl.d file makes it last (from the note)" bash -ec "$(block 'Rootless mechanics' 1 | grep '^echo')"
