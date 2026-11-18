@@ -73,6 +73,8 @@ jobs:
         with:
           name: test-results-${{ matrix.env }}
           path: .test-results/
+          # The folder name starts with a dot: upload-artifact skips it unless told.
+          include-hidden-files: true
 
   nixos-iso:
     name: NixOS installer ISO
@@ -120,3 +122,5 @@ jobs:
         with:
           name: test-results-kubernetes
           path: .test-results/
+          # The folder name starts with a dot: upload-artifact skips it unless told.
+          include-hidden-files: true
