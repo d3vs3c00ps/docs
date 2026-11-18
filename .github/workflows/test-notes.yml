@@ -65,10 +65,6 @@ jobs:
             sudo tee /etc/udev/rules.d/99-kvm4all.rules
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
-      # Ubuntu 24.04 blocks unprivileged user namespaces with AppArmor; rootless podman needs them.
-      - name: Allow user namespaces
-        if: endsWith(matrix.env, '-systemd')
-        run: sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
       - name: Run
         run: scripts/test-notes.sh -j 4 --env ${{ matrix.env }} ${{ steps.mode.outputs.args }}
       - name: Keep the logs
@@ -116,6 +112,12 @@ jobs:
             git fetch --no-tags origin main:refs/remotes/origin/main || true
             echo "args=--changed" >> "$GITHUB_OUTPUT"
           fi
+      # Several kind clusters at once exhaust the default inotify limits: nodes fail to
+      # join and pods never start. These are the values the kind documentation gives.
+      - name: Raise inotify limits
+        run: |
+          sudo sysctl -w fs.inotify.max_user_watches=524288
+          sudo sysctl -w fs.inotify.max_user_instances=512
       - name: kind
         run: scripts/test-notes.sh --env kind --delete-cluster ${{ steps.mode.outputs.args }}
       - name: k3d

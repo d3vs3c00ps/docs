@@ -12,7 +12,7 @@ cd "$(mktemp -d)"
 # Own cluster: the shared one may already serve the Metrics API.
 C=notes-ms
 kind_cluster "$C"
-kind create cluster --name "$C" --image "$KIND_NODE_IMAGE" >/dev/null 2>&1
+out=$(kind create cluster --name "$C" --image "$KIND_NODE_IMAGE" 2>&1) || { echo "$out"; kind_diag; exit 1; }
 kubectl wait --for=condition=Ready nodes --all --timeout=180s >/dev/null
 run() { bash -ec "$1" 2>&1; }
 

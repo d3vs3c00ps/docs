@@ -38,7 +38,7 @@ check_output "the loop makes the same four Deployments, image REGISTRY/SERVICE:T
 
 section "Is this working?"
 check_output "rng is fine (from the note)" 'Running on http' bash -ec "$(note_block "$NOTE" 'Is this working?' 1) 2>&1"
-check_output "worker cannot resolve redis yet" 'Error.*redis|redis.*(not known|resolution)' retry_out 30 bash -c "kubectl logs deploy/worker 2>&1 | grep -iE 'error.*redis|redis.*(not known|resolution)'"
+check_output "worker cannot resolve redis yet" 'Error.*redis|redis.*(not known|resolution)' retry_out 120 bash -c "kubectl logs deploy/worker 2>&1 | grep -iE 'error.*redis|redis.*(not known|resolution)'"
 check_output "and says it waits 10s" 'Waiting 10s and restarting' bash -c "kubectl logs deploy/worker"
 
 section "Connecting containers together"

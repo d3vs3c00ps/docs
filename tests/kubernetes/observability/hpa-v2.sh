@@ -19,7 +19,7 @@ for f in dockercoins.yaml hpa-v2-pa-httplat.yaml; do curl -fsSL "$UPSTREAM/k8s/$
 # Own cluster: the lab installs cluster-wide APIs (custom.metrics.k8s.io).
 C=notes-hpa2
 kind_cluster "$C"
-kind create cluster --name "$C" --image "$KIND_NODE_IMAGE" >/dev/null 2>&1
+out=$(kind create cluster --name "$C" --image "$KIND_NODE_IMAGE" 2>&1) || { echo "$out"; kind_diag; exit 1; }
 kubectl wait --for=condition=Ready nodes --all --timeout=180s >/dev/null
 ARCH=$(kubectl get node "$C-control-plane" -o jsonpath='{.status.nodeInfo.architecture}')
 # kns is not installed; on this private kubeconfig, set-context does the same.
@@ -39,9 +39,10 @@ check_output "(10 workers)" '^10$' kubectl get deploy worker -o jsonpath='{.stat
 section "Current state of affairs"
 check_output "kubectl get service webui: a NodePort (from the note)" '^webui +NodePort' run "$(note_block "$NOTE" 'Current state of affairs' 1)"
 check_output "kubectl get service rng (from the note)" '^rng +ClusterIP' run "$(note_block "$NOTE" 'Current state of affairs' 2)"
+kubectl rollout status deploy/rng --timeout=300s >/dev/null
 sleep 20
 lat=$(kubectl run lat --rm -i --restart=Never --image=curlimages/curl:8.17.0 -- \
-  sh -c 'for i in 1 2 3 4 5; do curl -s -o /dev/null -w "%{time_total}\n" http://rng/; done' 2>/dev/null | sort -n | sed -n 3p)
+  sh -c 'for i in 1 2 3 4 5; do curl -s -o /dev/null -w "%{time_total}\n" http://rng/; done' 2>/dev/null | sort -n | sed -n 3p || true)
 check_output "with 10 workers, rng latency is well above 100 ms (median of 5: ${lat}s)" '^0\.[3-9]|^[1-9]' echo "$lat"
 
 section "Measuring latency"

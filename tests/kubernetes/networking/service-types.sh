@@ -62,8 +62,9 @@ section "Headless services"
 kubectl expose deployment blue --name=blue-headless --port=80 --cluster-ip=None >/dev/null
 assert_eq "clusterIP None means no virtual IP" "None" \
   "$(kubectl get service blue-headless -o jsonpath='{.spec.clusterIP}')"
-check "CoreDNS returns one A record per pod" bash -c \
-  "kubectl run headless-probe --image=alpine --restart=Never --rm -i --quiet -- \
+# kubectl run --rm -i can attach before the container exists: try again.
+check "CoreDNS returns one A record per pod" retry 5 bash -c \
+  "kubectl delete pod headless-probe --ignore-not-found --wait >/dev/null 2>&1; kubectl run headless-probe --image=alpine --restart=Never --rm -i --quiet -- \
      nslookup blue-headless.$TEST_NS.svc.cluster.local \
    | grep -c '^Address: 10\.' | grep -qx 3"
 
@@ -80,8 +81,9 @@ w1=$(kubectl get nodes "$CLUSTER-worker" -o jsonpath='{.status.addresses[?(@.typ
 w2=$(kubectl get nodes "$CLUSTER-worker2" -o jsonpath='{.status.addresses[?(@.type=="InternalIP")].address}')
 check_output "via the node with the backend, Local works" 'pinned' \
   bash -c "curl -fs --retry 10 --retry-all-errors http://$w1:$pnp"
-check_fails "via a node without a backend, the connection fails (hard rule)" \
-  curl -fs -m 5 "http://$w2:$pnp"
+# kube-proxy on the other node applies the Local policy a moment after the patch.
+check "via a node without a backend, the connection fails (hard rule)" \
+  retry 30 bash -c "! curl -fs -m 5 http://$w2:$pnp >/dev/null"
 
 section "spec.trafficDistribution"
 check "PreferClose is accepted (stable since 1.33)" \

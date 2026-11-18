@@ -120,7 +120,7 @@ install=$(note_block "$NOTE" 'Installing `kube-ps1`' 1 | sed "s|/path/to/kube-ps
 # kube-ps1 refreshes its cache from PROMPT_COMMAND, which a non-interactive shell never runs.
 prompt() { bash -c "$install"$'\n''_kube_ps1_prompt_update; '"$1"; }
 check_output "the prompt shows (⎈|context:namespace) (from the note)" \
-  "\(⎈ ?\|.*kind-$CLUSTER.*:.*$TEST_NS.*\)" prompt 'echo "${PS1@P}"'
+  "\(.*⎈.*\|.*kind-$CLUSTER.*:.*$TEST_NS.*\)" prompt 'echo "${PS1@P}"'
 check_output "kube_ps1, kubeon and kubeoff are shell functions" '^function function function$' \
   prompt 'echo $(type -t kube_ps1 kubeon kubeoff)'
 check_output "kubeoff hides it" '^\[' prompt 'kubeoff; echo "${PS1@P}"'

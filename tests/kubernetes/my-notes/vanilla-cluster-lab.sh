@@ -186,6 +186,8 @@ for i in 1 2 3; do
   check "the kubelet configuration on k8s-0$i (from the note)" on "k8s-0$i" "$(percidr "$i" "$(block "#### kubelet" 3)")"
   check "the kubelet unit on k8s-0$i (from the note)" on "k8s-0$i" "$(block "#### kubelet" 4)"
   check "the kube-proxy configuration on k8s-0$i (from the note)" on "k8s-0$i" "$(block "#### kube-proxy" 1)"
+  # Test only, as kind does: /proc/sys/net/netfilter is read-only in a container.
+  on "k8s-0$i" "printf 'conntrack:\n  maxPerCore: 0\n' >>/var/lib/kube-proxy/kube-proxy-config.yaml"
   check "the kube-proxy unit on k8s-0$i (from the note)" on "k8s-0$i" "$(block "#### kube-proxy" 3)"
 done
 check "the routes to the other nodes' pods (from the note)" on k8s-01 "$(block "#### CNI" 2)"

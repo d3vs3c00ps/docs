@@ -19,7 +19,7 @@ W=$C-worker
 W2=$C-worker2
 kind_cluster "$C"
 printf 'kind: Cluster\napiVersion: kind.x-k8s.io/v1alpha4\nnodes: [{role: control-plane}, {role: worker}, {role: worker}]\n' >kind.yaml
-kind create cluster --name "$C" --image "$KIND_NODE_IMAGE_PREV" --config kind.yaml >/dev/null 2>&1
+out=$(kind create cluster --name "$C" --image "$KIND_NODE_IMAGE_PREV" --config kind.yaml 2>&1) || { echo "$out"; kind_diag; exit 1; }
 kubectl wait --for=condition=Ready nodes --all --timeout=180s >/dev/null
 OLD=$(kubectl get node "$CP" -o jsonpath='{.status.nodeInfo.kubeletVersion}')
 NEW=$KUBECTL_VERSION

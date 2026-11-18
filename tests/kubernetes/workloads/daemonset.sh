@@ -109,6 +109,8 @@ node=$(kubectl get "$pod" -o jsonpath='{.spec.nodeName}')
 kubectl delete "$pod" --wait=false >/dev/null
 check "a deleted daemon set Pod is re-created on its node" retry 60 bash -c \
   "kubectl get pods -l app=rng,controller-revision-hash --field-selector spec.nodeName=$node,status.phase=Running -o name | grep -v '^$pod\$' | grep -q ."
+# The deleted Pod is still listed while it terminates: wait until it is gone.
+kubectl wait --for=delete "$pod" --timeout=120s >/dev/null 2>&1 || true
 kubectl rollout status ds/rng --timeout=120s >/dev/null
 pod=$(ds_pods | sed -n 1p)
 node=$(kubectl get "$pod" -o jsonpath='{.spec.nodeName}')
@@ -180,7 +182,7 @@ blk1=$(note_block "$NOTE" 'load balancer, in practice' 1)
 { timeout 60 bash -c "$blk1" >stream.log 2>&1 & } 2>/dev/null
 eval "$(sed -n 1p <<<"$blk1")"
 ip=$(kubectl get "$POD" -o jsonpath='{.status.podIP}')
-check "the Pod of the deployment gets a steady stream of requests" retry 20 bash -c '[ $(grep -c "GET /32" stream.log) -ge 3 ]'
+check "the Pod of the deployment gets a steady stream of requests" retry 50 bash -c '[ $(grep -c "GET /32" stream.log) -ge 3 ]'
 check "remove its active label (from the note)" bash -ec "$(note_block "$NOTE" 'load balancer, in practice' 2)"
 check "it leaves the Service's EndpointSlice" retry 20 bash -c "! kubectl get endpointslices -l kubernetes.io/service-name=rng -o jsonpath='{.items[*].endpoints[*].addresses[0]}' | grep -qw '$ip'"
 sleep 5

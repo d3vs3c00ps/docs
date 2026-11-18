@@ -25,6 +25,13 @@ kind_cluster() {
   export KUBECONFIG=$copy
   _k8s_clusters+=("$1")
 }
+# kind_diag: what usually makes a second kind cluster fail on CI runners.
+kind_diag() {
+  echo "# kind create cluster failed. Disk, inotify limits, clusters:"
+  df -h / /var/lib/docker 2>/dev/null | sed 's/^/#   /'
+  sysctl fs.inotify.max_user_instances fs.inotify.max_user_watches 2>/dev/null | sed 's/^/#   /'
+  kind get clusters 2>/dev/null | sed 's/^/#   /'
+}
 _k8s_cleanup() {
   local c
   for c in "${_k8s_clusters[@]}"; do kind delete cluster --name "$c" >/dev/null 2>&1 || true; done

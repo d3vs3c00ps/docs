@@ -12,7 +12,7 @@ NOTE=kubernetes/extending/aggregation-layer
 cd "$(mktemp -d)"
 C=notes-agg
 kind_cluster "$C"
-kind create cluster --name "$C" --image "$KIND_NODE_IMAGE" >/dev/null 2>&1
+out=$(kind create cluster --name "$C" --image "$KIND_NODE_IMAGE" 2>&1) || { echo "$out"; kind_diag; exit 1; }
 kubectl wait --for=condition=Ready nodes --all --timeout=180s >/dev/null
 NODE=$C-control-plane
 run() { bash -ec "$1" 2>&1; }
@@ -27,6 +27,8 @@ check_output "a namespaced non-core resource, as in the note's diagram" 'verb="G
   bash -c "kubectl -v6 get daemonset kube-proxy --namespace kube-system 2>&1 >/dev/null"
 
 section "Accessing a subresource"
+# On a new cluster, the kube-proxy container may not run yet.
+kubectl -n kube-system rollout status ds/kube-proxy --timeout=180s >/dev/null
 PODNAME=$(bash -c "{ $(note_block "$NOTE" 6); } >/dev/null; echo \$PODNAME")
 check_output "PODNAME: a kube-proxy pod (from the note)" '^kube-proxy-[a-z0-9]{5}$' echo "$PODNAME"
 out=$(PODNAME=$PODNAME bash -c "$(note_block "$NOTE" 7) 2>&1" || true)

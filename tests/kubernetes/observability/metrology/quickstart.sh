@@ -75,7 +75,12 @@ section "Use kubectl top"
 check "wait for the Metrics API (from the note)" bash -ec "$(note_block "$NOTE" 'Use `kubectl top`' 1)"
 check "kubectl top nodes and pods (from the note)" retry 60 bash -ec "$(note_block "$NOTE" 'Use `kubectl top`' 2)"
 check_output "kubectl top nodes has CPU(%) and MEMORY(%) columns" 'CPU\(cores\) +CPU\(%\) +MEMORY\(bytes\) +MEMORY\(%\)' kubectl top nodes
-raw=$(bash -ec "$(note_block "$NOTE" 'Use `kubectl top`' 4)" 2>&1 || true)
+# metrics-server reports the static pods a little later than the nodes.
+for _ in $(seq 30); do
+  raw=$(bash -ec "$(note_block "$NOTE" 'Use `kubectl top`' 4)" 2>&1 || true)
+  grep -q '^etcd-' <<<"$raw" && break
+  sleep 2
+done
 assert_match "the raw Metrics API lists the nodes (from the note)" "\"name\": \"$CLUSTER-control-plane\"" "$raw"
 assert_match "with usage in nanocores and KiB" '"cpu": "[0-9]+n"' "$raw"
 assert_match "and the kube-system pods" '^etcd-' "$raw"

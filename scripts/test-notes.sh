@@ -26,6 +26,9 @@ cd "$ROOT"
 source tests/versions.env
 
 RESULTS=$ROOT/.test-results
+# CI runners set XDG_CONFIG_HOME: tools like helm then share one config across tests,
+# even when a test sets its own HOME. Without it, HOME isolates a test, as on a laptop.
+unset XDG_CONFIG_HOME XDG_CACHE_HOME XDG_DATA_HOME
 # Exported: tests name the cluster nodes (<cluster>-control-plane) through it.
 export CLUSTER=${CLUSTER:-notes-test}
 JOBS=1

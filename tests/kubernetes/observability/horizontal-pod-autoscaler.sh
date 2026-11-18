@@ -13,7 +13,7 @@ cd "$(mktemp -d)"
 # Own cluster with metrics-server, installed as in kubernetes/observability/metrics-server.
 C=notes-hpa
 kind_cluster "$C"
-kind create cluster --name "$C" --image "$KIND_NODE_IMAGE" >/dev/null 2>&1
+out=$(kind create cluster --name "$C" --image "$KIND_NODE_IMAGE" 2>&1) || { echo "$out"; kind_diag; exit 1; }
 kubectl wait --for=condition=Ready nodes --all --timeout=180s >/dev/null
 run() { bash -ec "$1" 2>&1; }
 check "metrics-server, installed as in its note" run "$(note_block kubernetes/observability/metrics-server 2) --wait --timeout 5m"

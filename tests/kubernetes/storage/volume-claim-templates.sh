@@ -19,7 +19,7 @@ for f in consul-3 volumes-for-consul; do curl -fsSL "$UPSTREAM/k8s/$f.yaml" >"co
 C=notes-vct
 kind_cluster "$C"
 printf 'kind: Cluster\napiVersion: kind.x-k8s.io/v1alpha4\nnodes: [{role: control-plane}, {role: worker}, {role: worker}, {role: worker}]\n' >kind.yaml
-kind create cluster --name "$C" --image "$KIND_NODE_IMAGE" --config kind.yaml >/dev/null 2>&1
+out=$(kind create cluster --name "$C" --image "$KIND_NODE_IMAGE" --config kind.yaml 2>&1) || { echo "$out"; kind_diag; exit 1; }
 kubectl wait --for=condition=Ready nodes --all --timeout=180s >/dev/null
 run() { bash -ec "$1" 2>&1; }
 retry_get() {
