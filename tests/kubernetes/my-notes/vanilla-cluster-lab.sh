@@ -26,7 +26,8 @@ hosts=$(for i in 1 2 3; do echo "      - k8s-0$i.internal.example.com:10.240.1.3
     cgroup: private
     tmpfs: [/run, /run/lock]
     environment: [container=docker]
-    volumes: [/var/lib/containerd]   # overlayfs cannot nest on the container's own overlay root
+    # overlayfs cannot nest on the container's own overlay root; kube-proxy loads netfilter modules.
+    volumes: [/var/lib/containerd, /lib/modules:/lib/modules:ro]
     extra_hosts:
 $hosts
     networks:
@@ -192,13 +193,18 @@ check "the kubelet certificates and kubeconfigs (from the note)" on k8s-01 "$(bl
 check "the kube-proxy kubeconfig (from the note)" on k8s-01 "$(block "#### kube-proxy" 2)"
 check "containerd 2.2 accepts the version 3 configuration" each "containerd config dump >/dev/null 2>&1 || { containerd config dump 2>&1 | tail -3; exit 1; }"
 on k8s-01 "$(block "Starting the worker services")" >/dev/null 2>&1 || true
-check_output "kubelet refuses to start with swap on (from the note)" 'running with swap on is not supported' bash -c \
-  "sleep 10; docker compose exec -T k8s-01 journalctl -u kubelet --no-pager | grep -o 'running with swap on is not supported' | tail -1"
+if on k8s-01 "tail -n +2 /proc/swaps | grep -q ."; then
+  check_output "kubelet refuses to start with swap on (from the note)" 'running with swap on is not supported' bash -c \
+    "sleep 10; docker compose exec -T k8s-01 journalctl -u kubelet --no-pager | grep -o 'running with swap on is not supported' | tail -1"
+else
+  skip "kubelet refuses to start with swap on" "this host has no swap"
+fi
 # The Docker VM's swap cannot be turned off: allow it, for the test only.
 each "grep -q failSwapOn /var/lib/kubelet/kubelet-config.yaml || echo 'failSwapOn: false' >>/var/lib/kubelet/kubelet-config.yaml; systemctl restart kubelet"
 check_output "kubectl get nodes: three Ready nodes (from the note)" '^3$' on k8s-01 \
   "for i in \$(seq 90); do [ \"\$(kubectl $ADMIN get nodes --no-headers 2>/dev/null | grep -c ' Ready ')\" = 3 ] && break; sleep 2; done; kubectl $ADMIN get nodes --no-headers | grep -c ' Ready '"
-check_output "kube-proxy wrote its iptables rules" 'KUBE-SERVICES' on k8s-01 "iptables-save -t nat | grep -m1 KUBE-SERVICES"
+check_output "kube-proxy wrote its iptables rules" 'KUBE-SERVICES' on k8s-01 \
+  "for i in \$(seq 30); do iptables-save -t nat | grep -m1 KUBE-SERVICES && exit; sleep 2; done; journalctl -u kube-proxy --no-pager | tail -15; exit 1"
 
 section "DNS"
 check "the CoreDNS manifest (from the note)" on k8s-01 "$(block "#### DNS" 1)"

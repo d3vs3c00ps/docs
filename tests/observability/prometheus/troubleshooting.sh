@@ -36,7 +36,7 @@ wait_http "$P/-/ready" 90 || compose_logs prometheus
 retry 90 bash -c "[ \"\$(curl -fsS $P/api/v1/targets | jq -c '[.data.activeTargets[] | .health] | group_by(.) | map({(.[0]): length}) | add')\" = '{\"down\":4,\"up\":3}' ]" || true
 out=$(run "A target is down" 1)
 table=$(sed -n '/^| `lastError` contains/,/^$/p' "$NOTES_ROOT/content/$NOTE.md")
-for row in "wrong-port connect: connection refused" "wrong-name no such host" \
+for row in "wrong-port connect: connection refused" "wrong-name (no such host|server misbehaving)" \
   "wrong-scheme server gave HTTP response to HTTPS client" "too-slow context deadline exceeded"; do
   job=${row%% *} err=${row#* }
   assert_match "$job is down with '$err' (from the note)" "^$job	.*$err" "$out"
@@ -177,7 +177,7 @@ docker compose exec alertmanager amtool --alertmanager.url=http://localhost:9093
   alert add alertname=DiskFull instance=web-03 severity=warning >/dev/null
 eventually "4. the webhook to a name that does not resolve fails (from the note)" '"webhook"' \
   "$(note_block "$NOTE" "Alerts do not reach Alertmanager" 4)"
-check_output "the log has the error (from the note)" 'no such host' run "Alerts do not reach Alertmanager" 5
+check_output "the log has the error (from the note)" 'no such host|server misbehaving' run "Alerts do not reach Alertmanager" 5
 check_output "alertmanager_notifications_failed_total has a reason label" 'reason="other"' \
   bash -c "docker compose exec alertmanager wget -qO- http://localhost:9093/metrics | grep '^alertmanager_notifications_failed_total{integration=\"webhook\"'"
 sed -i 's/alertmanager:9093"\]/alertmanager:9999"]/' prometheus/prometheus.yml

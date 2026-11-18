@@ -32,7 +32,7 @@ curl -s http://localhost:9090/api/v1/targets \
 | `lastError` contains | Cause | Fix |
 | --- | --- | --- |
 | `connect: connection refused` | the host answers, nothing listens on this port | check the port, and that the exporter runs and listens on this address, not only on `127.0.0.1` |
-| `no such host` | DNS cannot resolve the name | fix the name; in Compose, use the service name; check `/etc/resolv.conf` |
+| `no such host`, or `server misbehaving` | DNS cannot resolve the name. Which message you get depends on the resolver: `server misbehaving` when it answers with an error instead of "no such name" | fix the name; in Compose, use the service name; check `/etc/resolv.conf` |
 | `i/o timeout` | no answer at all: firewall, wrong IP | open the port in the firewall between Prometheus and the target |
 | `server gave HTTP response to HTTPS client` | `scheme: https` on a plain HTTP target | remove `scheme: https`, or turn on TLS on the target |
 | `x509: certificate signed by unknown authority` | TLS with a CA that Prometheus does not know | set `tls_config.ca_file` |

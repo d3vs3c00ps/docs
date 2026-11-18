@@ -65,6 +65,10 @@ jobs:
             sudo tee /etc/udev/rules.d/99-kvm4all.rules
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
+      # Ubuntu 24.04 blocks unprivileged user namespaces with AppArmor; rootless podman needs them.
+      - name: Allow user namespaces
+        if: endsWith(matrix.env, '-systemd')
+        run: sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
       - name: Run
         run: scripts/test-notes.sh -j 4 --env ${{ matrix.env }} ${{ steps.mode.outputs.args }}
       - name: Keep the logs
