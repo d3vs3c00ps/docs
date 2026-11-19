@@ -47,9 +47,9 @@ check "kubectl create service externalname (from the note)" \
   bash -ec "$(note_block "$NOTE" 'ExternalName' 1)"
 assert_eq "it is only a DNS alias: a CNAME to the provided record" "kubernetes.io" \
   "$(kubectl get service k8s -o jsonpath='{.spec.externalName}')"
-check_output "CoreDNS answers with the CNAME" 'kubernetes.io' \
-  kubectl run dns-probe --image=alpine --restart=Never --rm -i --quiet -- \
-  nslookup "k8s.$TEST_NS.svc.cluster.local"
+check_output "CoreDNS answers with the CNAME" 'kubernetes.io' retry_out 5 bash -c \
+  "kubectl delete pod dns-probe --ignore-not-found --wait >/dev/null 2>&1; kubectl run dns-probe --image=alpine --restart=Never --rm -i --quiet -- \
+  nslookup k8s.$TEST_NS.svc.cluster.local | grep kubernetes.io"
 
 section "External IPs"
 kubectl create deployment my-little-deploy --image=jpetazzo/color >/dev/null

@@ -129,5 +129,18 @@ retry() {
   return 1
 }
 
+# retry_out N CMD...: like retry, but prints the output of the first run that exits 0 with
+# some output. retry discards output, so check_output cannot use it.
+retry_out() {
+  local n=$1 i out=
+  shift
+  for ((i = 1; i <= n; i++)); do
+    out=$("$@" 2>&1) && [[ -n $out ]] && { printf '%s\n' "$out"; return 0; }
+    sleep 1
+  done
+  printf '%s\n' "$out"
+  return 1
+}
+
 # shellcheck source=note.sh
 source "$NOTES_ROOT/tests/lib/note.sh"

@@ -5,18 +5,6 @@
 source "$NOTES_ROOT/tests/lib/assert.sh"
 source "$NOTES_ROOT/tests/lib/k8s.sh"
 use_test_namespace
-# retry_out N CMD...: like retry, but prints the output of the first run that exits 0 with
-# some output. retry discards output, so check_output cannot use it.
-retry_out() {
-  local n=$1 i out=
-  shift
-  for ((i = 1; i <= n; i++)); do
-    out=$("$@" 2>&1) && [[ -n $out ]] && { printf '%s\n' "$out"; return 0; }
-    sleep 1
-  done
-  printf '%s\n' "$out"
-  return 1
-}
 
 NOTE=kubernetes/workloads/daemonset
 UPSTREAM=https://raw.githubusercontent.com/jpetazzo/container.training/565636291ec03abf1f2ab8bf6b935478e00e69a2

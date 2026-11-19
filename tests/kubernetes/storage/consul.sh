@@ -77,6 +77,9 @@ check_output "a lost pod comes back empty, rejoins, and gets the data from the o
   retry_get consul-1
 
 section "consul-2 survives a scale-down (thanks to the lifecycle hook)"
+# The recreated consul-1 has a new node ID: wait until autopilot drops the old Raft peer,
+# or the leaves below leave the last server without a quorum.
+retry 180 bash -c "[ \$(kubectl exec consul-0 -- consul operator raft list-peers 2>/dev/null | tail -n +2 | grep -c .) -eq 3 ]" || true
 kubectl scale statefulset consul --replicas=1 >/dev/null
 retry 180 bash -c '[ $(kubectl get pods -l app=consul --no-headers | wc -l) -eq 1 ]'
 sleep 20

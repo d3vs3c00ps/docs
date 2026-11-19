@@ -60,8 +60,9 @@ check "restore the original image" set_apiserver_image "$OLD"
 
 section "Upgrading kubeadm (release binary instead of zypper)"
 check "kubeadm $NEW on the control plane" install_bin "$CP" kubeadm
+# Its health-check Job has a fixed 1-minute limit, too short on a loaded machine: try again.
 check_output "kubeadm upgrade plan (from the note)" "kubeadm upgrade apply v1\.[0-9]+\.[0-9]+" \
-  docker exec "$CP" kubeadm upgrade plan
+  retry_out 3 docker exec "$CP" kubeadm upgrade plan
 # kind nodes cannot read the host's kernel config, so kind skips SystemVerification; so do we.
 check "kubeadm upgrade apply (from the note, with --yes: it asks for confirmation)" docker exec "$CP" \
   bash -c "$(note_block "$NOTE" 11 | sed "s/^ *sudo //; s/v1\.32\.0/$NEW/") --yes --ignore-preflight-errors=SystemVerification"
@@ -75,7 +76,7 @@ assert_match "the note runs kubeadm upgrade node before it upgrades kubelet" \
   'kubeadm upgrade node &&.*install kubelet' "$(tr '\n' ' ' <<<"$loop")"
 for n in "$CP" "$W" "$W2"; do
   [[ $n != "$CP" ]] && install_bin "$n" kubeadm
-  check "kubeadm upgrade node on $n" docker exec "$n" kubeadm upgrade node
+  check "kubeadm upgrade node on $n" docker exec "$n" kubeadm upgrade node --ignore-preflight-errors=SystemVerification
   docker exec "$n" systemctl stop kubelet
   install_bin "$n" kubelet
   docker exec "$n" systemctl start kubelet

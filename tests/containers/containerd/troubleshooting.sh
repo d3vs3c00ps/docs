@@ -43,7 +43,7 @@ check "the sandbox appears on a node (crictl pods): CNI and pause are fine" retr
    docker exec $CLUSTER-worker2 crictl pods --name stuck -q | grep -q ."
 check_output "but kubectl describe names the real problem in events" \
   'configmap "does-not-exist" not found' \
-  bash -c "kubectl describe pod stuck | tail -10"
+  retry_out 30 bash -c "kubectl describe pod stuck | tail -10 | grep -m1 'configmap \"does-not-exist\" not found'"
 check_output "the CNI config directory is not empty" 'conflist' on ls /etc/cni/net.d/
 check_output "the CNI binaries are in /opt/cni/bin" 'portmap' on ls /opt/cni/bin/
 
