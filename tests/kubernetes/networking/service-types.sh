@@ -63,11 +63,15 @@ kubectl expose deployment blue --name=blue-headless --port=80 --cluster-ip=None 
 kubectl rollout status deployment/blue --timeout=180s >/dev/null
 assert_eq "clusterIP None means no virtual IP" "None" \
   "$(kubectl get service blue-headless -o jsonpath='{.spec.clusterIP}')"
+# The claim is one A record per ready pod: compare with the pod count, and show the answer.
 # kubectl run --rm -i can attach before the container exists: try again.
-check "CoreDNS returns one A record per pod" retry 20 bash -c \
-  "kubectl delete pod headless-probe --ignore-not-found --wait >/dev/null 2>&1; kubectl run headless-probe --image=alpine --restart=Never --rm -i --quiet -- \
-     nslookup blue-headless.$TEST_NS.svc.cluster.local \
-   | grep -c '^Address: 10\.' | grep -qx 3"
+ready=$(kubectl get deployment blue -o jsonpath='{.status.readyReplicas}')
+check_output "CoreDNS returns one A record per pod ($ready pods)" "^records=$ready\$" retry_out 20 bash -c \
+  "kubectl delete pod headless-probe --ignore-not-found --wait >/dev/null 2>&1
+   out=\$(kubectl run headless-probe --image=alpine --restart=Never --rm -i --quiet -- \
+     nslookup blue-headless.$TEST_NS.svc.cluster.local 2>&1)
+   n=\$(grep -c '^Address: 10\.' <<<\"\$out\")
+   [ \"\$n\" = $ready ] && echo records=\$n || { echo \"records=\$n\"; echo \"\$out\"; exit 1; }"
 
 section "Traffic engineering: Local is a hard rule"
 # one backend, pinned to worker; Local via worker2 must fail, via worker must work
