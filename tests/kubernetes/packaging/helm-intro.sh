@@ -61,4 +61,4 @@ check_output "the Service is now a NodePort (from the note)" 'my-juice-shop +Nod
   run "$(note_block "$NOTE" 12)"
 PORT=$(kubectl get service my-juice-shop -o jsonpath='{..nodePort}')
 check_output "curl on a node reaches the app (from the note, run in a kind node)" '<title>OWASP Juice Shop' \
-  docker exec -e PORT="$PORT" "$CP" bash -ec "$(note_block "$NOTE" 13)"
+  retry_out 60 docker exec -e PORT="$PORT" "$CP" bash -ec "$(note_block "$NOTE" 13)"

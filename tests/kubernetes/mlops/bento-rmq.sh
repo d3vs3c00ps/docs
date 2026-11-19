@@ -38,7 +38,7 @@ check "the operators are ready" bash -c \
 section "Deploying a simple RabbitMQ cluster"
 check_output "kubectl apply on the whole directory fails without the Prometheus CRDs (the note's remark)" 'no matches for kind "ServiceMonitor"' \
   bash -c "kubectl apply -f $BLB/servicemonitor.yml 2>&1; true"
-check "cluster.yml and queue.yml (from the note)" bash -c "kubectl apply -f $BLB/cluster.yml && retry 120 kubectl apply -f $BLB/queue.yml"
+check "cluster.yml and queue.yml (from the note)" bash -c "retry 120 kubectl apply -f $BLB/cluster.yml && retry 120 kubectl apply -f $BLB/queue.yml"
 check "a RabbitmqCluster called mq (from the note)" retry 600 bash -c \
   "kubectl get rabbitmqcluster mq -o jsonpath='{.status.conditions[?(@.type==\"AllReplicasReady\")].status}' | grep -qx True"
 check_output "a Secret mq-default-user with connection_string (from the note)" '^amqp://' bash -c \

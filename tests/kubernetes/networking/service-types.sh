@@ -60,10 +60,11 @@ assert_eq "the address lands in spec.externalIPs" "1.2.3.4" \
 
 section "Headless services"
 kubectl expose deployment blue --name=blue-headless --port=80 --cluster-ip=None >/dev/null
+kubectl rollout status deployment/blue --timeout=180s >/dev/null
 assert_eq "clusterIP None means no virtual IP" "None" \
   "$(kubectl get service blue-headless -o jsonpath='{.spec.clusterIP}')"
 # kubectl run --rm -i can attach before the container exists: try again.
-check "CoreDNS returns one A record per pod" retry 5 bash -c \
+check "CoreDNS returns one A record per pod" retry 20 bash -c \
   "kubectl delete pod headless-probe --ignore-not-found --wait >/dev/null 2>&1; kubectl run headless-probe --image=alpine --restart=Never --rm -i --quiet -- \
      nslookup blue-headless.$TEST_NS.svc.cluster.local \
    | grep -c '^Address: 10\.' | grep -qx 3"

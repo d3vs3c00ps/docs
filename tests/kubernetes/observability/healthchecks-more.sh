@@ -51,6 +51,7 @@ section "Testing the liveness probe"
 check_output "kubectl get svc rng (from the note)" '^rng +ClusterIP' run "$(note_block "$NOTE" 11) -n yellow"
 CLUSTERIP=$(ky get svc rng -o jsonpath='{.spec.clusterIP}')
 assert_match "the CLUSTERIP line (from the note)" '^ *CLUSTERIP=\$\(kubectl get svc rng' "$(note_block "$NOTE" 12)"
+ky rollout status deploy/rng --timeout=180s >/dev/null
 check_output "a request to /1 takes about 0.1 s" '^0\.1' bash -c \
   "ky run t --rm -i --restart=Never --image=curlimages/curl:8.17.0 -- curl -s -o /dev/null -w '%{time_total}' http://$CLUSTERIP/1 2>/dev/null"
 sleep 30   # past initialDelaySeconds
