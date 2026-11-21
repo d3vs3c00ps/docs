@@ -16,6 +16,7 @@
 #
 # Usage: scripts/test-notes.sh [-j N] [--env E] [--changed] [--delete-cluster] [PATH...]
 #   PATH is a test, a note (content/x.md, x.md or x) or a folder. Default: all tests.
+#   --changed: tests for files changed since main. CHANGED_SINCE=<commit> moves the base.
 #   The kind/k3d cluster is kept between runs unless --delete-cluster is given.
 #   CLUSTER=name picks another cluster, so two runs can test Kubernetes notes at once.
 set -euo pipefail
@@ -37,7 +38,7 @@ CHANGED=0
 KEEP_CLUSTER=1
 PATHS=()
 
-usage() { sed -n '2,20p' "$0" | sed 's/^# \{0,1\}//'; exit "${1:-0}"; }
+usage() { sed -n '2,21p' "$0" | sed 's/^# \{0,1\}//'; exit "${1:-0}"; }
 
 while (($#)); do
   case $1 in
@@ -78,10 +79,16 @@ resolve() {
   fi
 }
 
-# Changed files since the branch left main, plus uncommitted and untracked ones.
+# Changed files since the branch left main (or since CHANGED_SINCE, a commit), plus
+# uncommitted and untracked ones.
 changed_tests() {
   local base files f
-  base=$(git merge-base HEAD origin/main 2>/dev/null || git merge-base HEAD main 2>/dev/null || echo HEAD)
+  if [[ -n ${CHANGED_SINCE:-} ]] && git cat-file -e "$CHANGED_SINCE^{commit}" 2>/dev/null; then
+    base=$CHANGED_SINCE
+  else
+    base=$(git merge-base HEAD origin/main 2>/dev/null || git merge-base HEAD main 2>/dev/null || echo HEAD)
+  fi
+  echo "changed since $base" >&2
   files=$( (git diff --name-only "$base"; git diff --name-only; git ls-files --others --exclude-standard) | sort -u)
   for f in $files; do
     case $f in

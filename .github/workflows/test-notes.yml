@@ -3,8 +3,9 @@ name: Note tests
 # Runs the commands from the notes in throwaway containers and a kind cluster, and
 # checks what the notes claim. See tests/ and scripts/test-notes.sh.
 #
-# Pull requests run only the tests for changed notes. The weekly run covers every
-# note, because distribution packages change even when the notes do not.
+# Pull requests run only the tests for notes changed on the branch; a push, only those
+# changed by that push. The weekly run covers every note, because distribution
+# packages change even when the notes do not.
 
 on:
   pull_request:
@@ -56,6 +57,11 @@ jobs:
           if [ "${{ github.event_name }}" = pull_request ] || [ "${{ github.event_name }}" = push ]; then
             git fetch --no-tags origin main:refs/remotes/origin/main || true
             echo "args=--changed" >> "$GITHUB_OUTPUT"
+          fi
+          # A push tests only what changed since the previous push, for quick feedback.
+          # The pull_request run still tests the whole branch, so it stays the merge gate.
+          if [ "${{ github.event_name }}" = push ]; then
+            echo "CHANGED_SINCE=${{ github.event.before }}" >> "$GITHUB_ENV"
           fi
       # The runners have /dev/kvm but only root may open it. NixOS VM tests need it.
       - name: Enable KVM
@@ -111,6 +117,11 @@ jobs:
           if [ "${{ github.event_name }}" = pull_request ] || [ "${{ github.event_name }}" = push ]; then
             git fetch --no-tags origin main:refs/remotes/origin/main || true
             echo "args=--changed" >> "$GITHUB_OUTPUT"
+          fi
+          # A push tests only what changed since the previous push, for quick feedback.
+          # The pull_request run still tests the whole branch, so it stays the merge gate.
+          if [ "${{ github.event_name }}" = push ]; then
+            echo "CHANGED_SINCE=${{ github.event.before }}" >> "$GITHUB_ENV"
           fi
       # Several kind clusters at once exhaust the default inotify limits: nodes fail to
       # join and pods never start. These are the values the kind documentation gives.
