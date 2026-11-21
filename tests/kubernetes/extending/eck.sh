@@ -21,8 +21,9 @@ kubectl wait --for=condition=Ready nodes --all --timeout=180s >/dev/null
 run() { bash -ec "$(dedent <<<"$1")" 2>&1; }
 dedent() { awk 'NF{m=match($0,/[^ ]/)-1; if(min==""||m<min)min=m} {l[NR]=$0} END{for(i=1;i<=NR;i++)print substr(l[i],min+1)}'; }
 # incluster CMD: run CMD in a curl pod, with CLUSTERIP and PASSWORD set.
+# timeout: on a slow CI runner, kubectl run -i once never attached and hung the test.
 incluster() {
-  kubectl -n eck-demo run "curl-$RANDOM" --rm -i --restart=Never --quiet --image=curlimages/curl:8.17.0 \
+  timeout 180 kubectl -n eck-demo run "curl-$RANDOM" --rm -i --restart=Never --quiet --image=curlimages/curl:8.17.0 \
     --env="CLUSTERIP=$CLUSTERIP" --env="PASSWORD=${PASSWORD:-}" --command -- sh -c "$1" 2>&1
 }
 
@@ -60,8 +61,9 @@ check_output "the operator pod matches stern's 'operator' query (from the note)"
   kubectl -n elastic-system get pods -o jsonpath='{.items[*].metadata.name}'
 
 section "Connecting to our cluster"
-CLUSTERIP=$(bash -c "$(note_block "$NOTE" 13) >/dev/null; echo \$CLUSTERIP")
-check_output "CLUSTERIP of demo-es-http (from the note)" '^10\.' echo "$CLUSTERIP"
+CLUSTERIP=$(bash -c "{ $(note_block "$NOTE" 13)
+} >/dev/null; echo \$CLUSTERIP")
+check_output "CLUSTERIP of demo-es-http (from the note)" '^10\.[0-9.]+$' echo "$CLUSTERIP"
 check_output "curl without credentials: an authentication error (from the note)" '"type":"security_exception".*"status":401' \
   incluster "$(note_block "$NOTE" 14)"
 PASSWORD=$(bash -c "$(note_block "$NOTE" 15); echo \$PASSWORD")
@@ -81,4 +83,4 @@ section "Scaling up the cluster"
 kubectl patch es demo --type=json -p '[{"op":"replace","path":"/spec/nodeSets/0/count","value":3}]' >/dev/null
 check "count: 3 gives three Elasticsearch nodes (as kubectl edit in the note)" retry 900 bash -c \
   "[ \"\$(kubectl get es demo -o jsonpath='{.status.availableNodes}/{.status.health}')\" = 3/green ]"
-check_output "_cat/health: 3 nodes, green" ' green +3 +3 ' incluster "curl -s -u elastic:\$PASSWORD http://\$CLUSTERIP:9200/_cat/health"
+check_output "_cat/health: 3 nodes, green" ' green +3 +3 ' retry_out 5 incluster "curl -s -u elastic:\$PASSWORD http://\$CLUSTERIP:9200/_cat/health"
