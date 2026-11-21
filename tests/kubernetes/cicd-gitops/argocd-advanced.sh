@@ -16,7 +16,8 @@ kind_cluster "$C"
 out=$(kind create cluster --name "$C" --image "$KIND_NODE_IMAGE" 2>&1) || { echo "$out"; kind_diag; exit 1; }
 kubectl wait --for=condition=Ready nodes --all --timeout=180s >/dev/null
 check "Argo CD, installed as in its note" bash -ec "$(note_block kubernetes/cicd-gitops/argocd 1)"
-kubectl -n argocd wait deploy --all --for=condition=Available --timeout=600s >/dev/null
+kubectl -n argocd wait deploy --all --for=condition=Available --timeout=900s >/dev/null ||
+  { kubectl -n argocd get pods -o wide; kubectl -n argocd get events --sort-by=.lastTimestamp | tail -15; exit 1; }
 
 section "Application Sets"
 appset=$(note_block "$NOTE" 1)

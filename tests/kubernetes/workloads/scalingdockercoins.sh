@@ -67,7 +67,8 @@ section "Checking hasher and rng response times"
 # httping runs in a Pod: ClusterIPs are not reachable from outside the cluster. Alpine has
 # no httping package; Debian does. The ECR copy of the Docker official image avoids Hub limits.
 kubectl run bench --image=public.ecr.aws/docker/library/debian:trixie-slim --command -- sleep 3600 >/dev/null
-kubectl wait --for=condition=Ready pod/bench --timeout=180s >/dev/null
+kubectl wait --for=condition=Ready pod/bench --timeout=600s >/dev/null ||
+  { kubectl describe pod bench | tail -15; exit 1; }
 check "httping installs in a Debian Pod" kubectl exec bench -- sh -c 'apt-get update -qq >/dev/null && apt-get install -y -qq httping >/dev/null 2>&1' 
 check_fails "a ClusterIP does not answer from outside the cluster" curl -fsS -m 3 "http://$RNG/"
 run_httping() { local c=${1#"${1%%[! ]*}"}; bash -ec "${c/#httping /kubectl exec bench -- httping }"; }

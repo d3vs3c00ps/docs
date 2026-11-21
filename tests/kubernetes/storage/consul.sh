@@ -71,6 +71,8 @@ check_output "the pods are on 3 different nodes" '^3$' \
 section "Still no persistence, though"
 kubectl exec consul-0 -- consul kv put answer 42 >/dev/null
 kubectl delete pod consul-1 >/dev/null
+# The StatefulSet creates the new consul-1 a moment later: wait for it to exist first.
+retry 120 kubectl get pod consul-1 >/dev/null
 kubectl wait --for=condition=Ready pod/consul-1 --timeout=300s >/dev/null
 wait_members 3 || true
 check_output "a lost pod comes back empty, rejoins, and gets the data from the others" '^42$' \

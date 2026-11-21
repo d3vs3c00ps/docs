@@ -32,6 +32,8 @@ note_block "$NOTE" 2 >db.yaml
 check "the minimal manifest (from the note)" retry 60 kubectl apply -f db.yaml
 check "the cluster becomes healthy" retry 600 bash -c \
   "kubectl get cluster db -o jsonpath='{.status.phase}' | grep -qx 'Cluster in healthy state'"
+# "healthy" can come a moment before db-rw accepts connections.
+retry 120 kubectl exec db-1 -c postgres -- pg_isready -q -h db-rw.default -p 5432
 check_output "a Secret db-app with a uri field (from the note)" '^postgresql://app:[^@]+@db-rw\.default:5432/app$' bash -c \
   "kubectl get secret db-app -o jsonpath='{.data.uri}' | base64 -d"
 

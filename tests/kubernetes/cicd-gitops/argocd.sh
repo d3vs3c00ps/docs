@@ -37,7 +37,8 @@ assert_match "the note pins the tested version" "argo-cd/$ARGOCD_VERSION/manifes
 check "kubectl create namespace, and the upstream manifests (from the note)" run "$install"
 check_output "(kubectl apply would fail: a CRD is too big for its annotation)" 'Too long|too long' bash -c \
   "kubectl apply --dry-run=server -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/$ARGOCD_VERSION/manifests/install.yaml 2>&1; true"
-kubectl -n argocd wait deploy --all --for=condition=Available --timeout=600s >/dev/null
+kubectl -n argocd wait deploy --all --for=condition=Available --timeout=900s >/dev/null ||
+  { kubectl -n argocd get pods -o wide; kubectl -n argocd get events --sort-by=.lastTimestamp | tail -15; exit 1; }
 kubectl -n argocd rollout status sts/argocd-application-controller --timeout=300s >/dev/null
 
 section "Logging in with the ArgoCD CLI"
