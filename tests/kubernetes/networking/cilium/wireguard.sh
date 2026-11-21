@@ -24,9 +24,10 @@ check "the note's helm upgrade turns on WireGuard encryption" \
 check_output "restart the agents, then the status line reports Wireguard (from the note)" \
   'Wireguard.*Port: 51871' \
   bash -ec "$(note_block "$NOTE" 'Enabling it' 2 | grep -v '^#')"
-# Two nodes: each agent peers with the one other node.
+# Two nodes: each agent peers with the one other node. Right after the restart the
+# peer may not be known yet, so wait for it.
 check_output "the peer count is nodes - 1" 'Peers: 1' \
-  kubectl -n kube-system exec ds/cilium -c cilium-agent -- cilium-dbg status
+  retry_out 60 bash -c 'kubectl -n kube-system exec ds/cilium -c cilium-agent -- cilium-dbg status | grep "Peers: 1"'
 check_output "each node publishes its public key on its CiliumNode (from the note)" \
   '[A-Za-z0-9+/]{30,}=*' \
   bash -ec "$(note_block "$NOTE" 'Enabling it' 3)"
