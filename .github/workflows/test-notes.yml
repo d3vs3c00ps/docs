@@ -73,6 +73,8 @@ jobs:
         with:
           name: test-results-${{ matrix.env }}
           path: .test-results/
+          # The folder name starts with a dot: upload-artifact skips it unless told.
+          include-hidden-files: true
 
   nixos-iso:
     name: NixOS installer ISO
@@ -110,6 +112,12 @@ jobs:
             git fetch --no-tags origin main:refs/remotes/origin/main || true
             echo "args=--changed" >> "$GITHUB_OUTPUT"
           fi
+      # Several kind clusters at once exhaust the default inotify limits: nodes fail to
+      # join and pods never start. These are the values the kind documentation gives.
+      - name: Raise inotify limits
+        run: |
+          sudo sysctl -w fs.inotify.max_user_watches=524288
+          sudo sysctl -w fs.inotify.max_user_instances=512
       - name: kind
         run: scripts/test-notes.sh --env kind --delete-cluster ${{ steps.mode.outputs.args }}
       - name: k3d
@@ -120,3 +128,5 @@ jobs:
         with:
           name: test-results-kubernetes
           path: .test-results/
+          # The folder name starts with a dot: upload-artifact skips it unless told.
+          include-hidden-files: true

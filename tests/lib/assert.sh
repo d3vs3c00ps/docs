@@ -10,6 +10,9 @@ set -euo pipefail
 NOTES_ROOT=${NOTES_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)}
 _t_n=0
 _t_failed=0
+# note_block appends here when a block is missing (see note.sh).
+_T_NB_MISSING=$(mktemp)
+export _T_NB_MISSING
 
 # _t_finish [STATUS]: STATUS defaults to the status the script exited with.
 _t_finish() {
@@ -18,6 +21,11 @@ _t_finish() {
   if ((rc != 0)); then
     echo "# aborted: a setup command failed with exit code $rc" >&2
     exit "$rc"
+  fi
+  if [[ -s $_T_NB_MISSING ]]; then
+    echo "# note blocks not found (a check may have run an empty command):"
+    sed 's/^/#   /' "$_T_NB_MISSING"
+    exit 1
   fi
   if ((_t_failed > 0)); then
     echo "# $_t_failed of $_t_n checks failed"
@@ -118,6 +126,19 @@ retry() {
     "$@" >/dev/null 2>&1 && return 0
     sleep 1
   done
+  return 1
+}
+
+# retry_out N CMD...: like retry, but prints the output of the first run that exits 0 with
+# some output. retry discards output, so check_output cannot use it.
+retry_out() {
+  local n=$1 i out=
+  shift
+  for ((i = 1; i <= n; i++)); do
+    out=$("$@" 2>&1) && [[ -n $out ]] && { printf '%s\n' "$out"; return 0; }
+    sleep 1
+  done
+  printf '%s\n' "$out"
   return 1
 }
 

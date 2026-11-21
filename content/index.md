@@ -18,8 +18,8 @@ it can run, tested it.
 
 | Section | What is in it |
 | --- | --- |
-| Linux | NixOS: the language, flakes, servers, hardening, automated installs |
-| Labs | a NixOS home lab on macOS: Gitea, Woodpecker CI and Kubernetes on VMs |
+| [[linux/index\|Linux]] | NixOS: the language, flakes, servers, hardening, automated installs |
+| [[labs/index\|Labs]] | a NixOS home lab on macOS: Gitea, Woodpecker CI and Kubernetes on VMs |
 
 ## A caveat
 

@@ -281,7 +281,7 @@ pkgs.dockerTools.buildLayeredImage {
 ```
 
 This is a third option alongside hand-written
-Dockerfiles and buildpacks, with the strongest
+Dockerfiles and [[containers/buildpacks|buildpacks]], with the strongest
 reproducibility guarantee of the three.
 
 It also runs system containers natively:

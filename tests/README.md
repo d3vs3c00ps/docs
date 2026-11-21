@@ -88,6 +88,7 @@ Helpers, from `lib/assert.sh`:
 | `assert_file` / `assert_no_file` / `assert_link DESC PATH [TARGET]` | the path exists / does not / is a link to TARGET |
 | `skip DESC REASON` | always; prints the reason. Never skip silently |
 | `retry N CMD...` | (not a check) runs CMD up to N times, one second apart |
+| `retry_out N CMD...` | (not a check) like `retry`, but prints the output of the first run that succeeds with some output, for `check_output` |
 | `note_block NOTE HEADING [N]` | (not a check) prints the Nth code block under HEADING |
 
 Commands outside a helper are setup. They run under `set -e`: if one fails, the test
