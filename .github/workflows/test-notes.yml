@@ -3,8 +3,9 @@ name: Note tests
 # Runs the commands from the notes in throwaway containers and a kind cluster, and
 # checks what the notes claim. See tests/ and scripts/test-notes.sh.
 #
-# Pull requests run only the tests for changed notes. The weekly run covers every
-# note, because distribution packages change even when the notes do not.
+# Pull requests run only the tests for notes changed on the branch; a push, only those
+# changed by that push. The weekly run covers every note, because distribution
+# packages change even when the notes do not.
 
 on:
   pull_request:
@@ -57,6 +58,11 @@ jobs:
             git fetch --no-tags origin main:refs/remotes/origin/main || true
             echo "args=--changed" >> "$GITHUB_OUTPUT"
           fi
+          # A push tests only what changed since the previous push, for quick feedback.
+          # The pull_request run still tests the whole branch, so it stays the merge gate.
+          if [ "${{ github.event_name }}" = push ]; then
+            echo "CHANGED_SINCE=${{ github.event.before }}" >> "$GITHUB_ENV"
+          fi
       # The runners have /dev/kvm but only root may open it. NixOS VM tests need it.
       - name: Enable KVM
         if: matrix.env == 'nix'
@@ -73,6 +79,8 @@ jobs:
         with:
           name: test-results-${{ matrix.env }}
           path: .test-results/
+          # The folder name starts with a dot: upload-artifact skips it unless told.
+          include-hidden-files: true
 
   nixos-iso:
     name: NixOS installer ISO
@@ -110,6 +118,17 @@ jobs:
             git fetch --no-tags origin main:refs/remotes/origin/main || true
             echo "args=--changed" >> "$GITHUB_OUTPUT"
           fi
+          # A push tests only what changed since the previous push, for quick feedback.
+          # The pull_request run still tests the whole branch, so it stays the merge gate.
+          if [ "${{ github.event_name }}" = push ]; then
+            echo "CHANGED_SINCE=${{ github.event.before }}" >> "$GITHUB_ENV"
+          fi
+      # Several kind clusters at once exhaust the default inotify limits: nodes fail to
+      # join and pods never start. These are the values the kind documentation gives.
+      - name: Raise inotify limits
+        run: |
+          sudo sysctl -w fs.inotify.max_user_watches=524288
+          sudo sysctl -w fs.inotify.max_user_instances=512
       - name: kind
         run: scripts/test-notes.sh --env kind --delete-cluster ${{ steps.mode.outputs.args }}
       - name: k3d
@@ -120,3 +139,5 @@ jobs:
         with:
           name: test-results-kubernetes
           path: .test-results/
+          # The folder name starts with a dot: upload-artifact skips it unless told.
+          include-hidden-files: true

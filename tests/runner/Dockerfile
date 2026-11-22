@@ -10,7 +10,7 @@ FROM docker:29-cli AS docker
 FROM node:22-trixie-slim
 RUN apt-get update && apt-get install -y --no-install-recommends \
       bash ca-certificates curl git jq python3 xz-utils procps iproute2 \
-      gawk sed grep findutils diffutils coreutils file less openssl \
+      gawk sed grep findutils diffutils coreutils file less openssl tree bsdextrautils make \
     && rm -rf /var/lib/apt/lists/*
 
 # Static binaries: the client only, the daemon is the host's.

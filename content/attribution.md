@@ -105,14 +105,14 @@ than tidying away:
 | ai-assisted-scanning | [Vigolium](https://github.com/vigolium/vigolium) (AGPL-3.0) and [Help Net Security's Lyrie coverage](https://www.helpnetsecurity.com/2026/05/18/lyrie-ai-autonomous-pentesting-agent/) | tools described and cited; no code reproduced |
 | resources | [Hackropole](https://hackropole.fr/fr/), by ANSSI | linked as a training resource. No challenge content reproduced |
 | strands-agents | [Strands Agents documentation](https://strandsagents.com/) | vendor documentation; the code examples follow its quickstart, adapted |
-| cgroups-v2 | [Rawkode Academy — cgroups: from chaos to control](https://rawkode.academy/read/cgroups-from-chaos-to-control) | **no licence stated**; the v1/v2 comparison and Kubernetes slice layout follow this article, rewritten. Happy to remove on request |
+| [[containers/cgroups-v2]] | [Rawkode Academy — cgroups: from chaos to control](https://rawkode.academy/read/cgroups-from-chaos-to-control) | **no licence stated**; the v1/v2 comparison and Kubernetes slice layout follow this article, rewritten. Happy to remove on request |
 | disk-io-performance | [Tecmint — Monitor Linux disk I/O performance](https://www.tecmint.com/monitor-linux-disk-io-performance/) | **no licence stated**; used as a starting point, rewritten and extended with PSI and the `%util` correction |
 | kill | [witr](https://github.com/pranshuparmar/witr), via [Stéphane Robert's blog](https://blog.stephane-robert.info/docs/admin-serveurs/linux/exploiter/processus/witr/) | tool described and cited |
 | local-aws-emulation | [Floci](https://blog.stephane-robert.info/docs/cloud/aws/floci/) (MIT) | described and cited; configuration examples adapted from the article |
 | git · parallel-agents | [The workflow: worktrees and parallel agents](https://www.jpaul.me/2026/07/the-workflow-worktrees-parallel-agents/) by J. Paul | **no licence stated**; the worktrees-for-agents framing follows this article, rewritten |
 | zsh | [7 best free and open source Zsh configuration frameworks](https://www.linuxtoday.com/blog/7-best-free-and-open-source-zsh-configuration-frameworks/) | **no licence stated**; used as the survey behind the comparison table |
 | lnav | [multitail — what it is and how it can make you a better sysadmin](https://idolinux.com/multitail-what-it-is-and-how-it-can-make-you-a-better-sysadmin/) | **no licence stated**; used as the basis for the multitail section |
-| k8gb | [K8GB documentation](https://www.k8gb.io/latest/) (CNCF, Apache-2.0) | the `Gslb` example is reproduced from the project's documentation |
+| [[kubernetes/networking/k8gb]] | [K8GB documentation](https://www.k8gb.io/latest/) (CNCF, Apache-2.0) | the `Gslb` example is reproduced from the project's documentation |
 | advanced | [CNCF — Benchmarking KubeVirt performance with virtbench](https://www.cncf.io/blog/2026/06/08/benchmarking-kubevirt-performance-with-virtbench/) | tool and metrics described and cited |
 | zero-trust-access | [Pangolin](https://pangolin.net) | described and cited |
 | sztp | [Linux.com — From DHCP to SZTP](https://www.linux.com/contributed/from-dhcp-to-sztp-the-trust-revolution/), and [RFC 8572](https://www.rfc-editor.org/rfc/rfc8572.html) | the article for framing; the RFC is the normative source |

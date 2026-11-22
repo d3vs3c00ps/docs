@@ -1,0 +1,231 @@
+---
+title: "Running a local development cluster"
+description: "Let's review some options to run Kubernetes locally"
+tags: [kubernetes, installation]
+type: concept
+status: complete
+source: https://github.com/jpetazzo/container.training/blob/565636291ec03abf1f2ab8bf6b935478e00e69a2/slides/k8s/setup-devel.md
+license: CC-BY-4.0
+upstream_commit: 56563629
+upstream_sync: manual
+---
+
+# Running a local development cluster
+
+- Let's review some options to run Kubernetes locally
+
+- There is no "best option", it depends what you value:
+
+  - ability to run on all platforms (Linux, Mac, Windows, other?)
+
+  - ability to run clusters with multiple nodes
+
+  - ability to run multiple clusters side by side
+
+  - ability to run recent (or even, unreleased) versions of Kubernetes
+
+  - availability of plugins
+
+  - etc.
+
+## CoLiMa
+
+- Container runtimes for LiMa
+
+  (LiMa = Linux on macOS)
+
+- For macOS only (Intel and ARM architectures)
+
+- CLI-driven (no GUI like Docker/Rancher Desktop)
+
+- Supports containerd, Docker, Kubernetes
+
+- Installable with brew, nix, or ports
+
+- More info: https://github.com/abiosoft/colima
+
+## Docker Desktop
+
+- Available on Linux, Mac, and Windows
+
+- Free for personal use and small businesses
+
+  (less than 250 employees and less than $10 millions in annual revenue)
+
+- Gives you one cluster with one node
+
+- Streamlined installation and user experience
+
+- Great integration with various network stacks and e.g. corporate VPNs
+
+- Ideal for Docker users who need good integration between both platforms
+
+## [k3d](https://k3d.io/)
+
+- Based on [K3s](https://k3s.io/) by Rancher Labs
+
+- Requires Docker
+
+- Runs Kubernetes nodes in Docker containers
+
+- Can deploy multiple clusters, with multiple nodes
+
+- Runs the control plane on Kubernetes nodes
+
+- Control plane can also run on multiple nodes
+
+## k3d in action
+
+- Install `k3d` (e.g. get the binary from https://github.com/k3d-io/k3d/releases)
+
+- Create a simple cluster:
+  ```bash
+  k3d cluster create petitcluster
+  ```
+
+- Create a more complex cluster with a custom version:
+  ```bash
+  k3d cluster create groscluster \
+        --image rancher/k3s:v1.37.0-k3s1 --servers 3 --agents 5
+  ```
+
+  (3 nodes for the control plane + 5 worker nodes)
+
+> [!note] Updated
+> The upstream course used `rancher/k3s:v1.18.9-k3s1`, from 2020. The image is now a
+> current release. k3s itself, and more k3d options, are covered in
+> [[kubernetes/cluster-setup/k3s]].
+
+- Clusters are automatically added to `.kube/config` file
+
+## [KinD](https://kind.sigs.k8s.io/)
+
+- Kubernetes-in-Docker
+
+- Requires Docker (obviously!)
+
+- Should also work with Podman and Rootless Docker
+
+- Deploying a single node cluster using the latest version is simple:
+  ```bash
+  kind create cluster
+  ```
+
+- More advanced scenarios require writing a short [config file](https://kind.sigs.k8s.io/docs/user/quick-start#configuring-your-kind-cluster)
+
+  (to define multiple nodes, multiple control plane nodes, set Kubernetes versions ...)
+
+- Can deploy multiple clusters
+
+## [MicroK8s](https://microk8s.io/)
+
+- Available on Linux, and since recently, on Mac and Windows as well
+
+- The Linux version is installed through Snap
+
+  (on openSUSE Leap, snapd is not in the distribution repositories — add the
+  `system:snappy` OBS project first, then `zypper install snapd` and
+  `systemctl enable --now snapd`)
+
+- Also supports clustering (as in, multiple machines running MicroK8s)
+
+- DNS is not enabled by default; enable it with `microk8s enable dns`
+
+## [Minikube](https://minikube.sigs.k8s.io/docs/)
+
+- The "legacy" option!
+
+  (note: this is not a bad thing, it means that it's very stable, has lots of plugins, etc.)
+
+- Supports many [drivers](https://minikube.sigs.k8s.io/docs/drivers/)
+
+  (HyperKit, Hyper-V, KVM, VirtualBox, but also Docker and many others)
+
+- Can deploy a single cluster; recent versions can deploy multiple nodes
+
+- Great option if you want a "Kubernetes first" experience
+
+  (i.e. if you don't already have Docker and/or don't want/need it)
+
+## [Orbstack](https://orbstack.dev/)
+
+- Mac only
+
+- Runs Docker containers, Kubernetes, and Linux virtual machines
+
+- Emphasis on speed and energy usage (battery life)
+
+- Great support for `ClusterIP` and `LoadBalancer` services
+
+- Free for personal use; paid product otherwise
+
+## [Podman Desktop](https://podman-desktop.io/)
+
+- Available on Linux, Mac, and Windows
+
+- Free and open-source
+
+- Doesn't support Kubernetes directly, but [supports KinD](https://podman-desktop.io/docs/kind)
+
+## [Rancher Desktop](https://rancherdesktop.io/)
+
+- Available on Linux, Mac, and Windows
+
+- Free and open-source
+
+- Runs a single cluster with a single node
+
+- Lets you pick the Kubernetes version that you want to use
+
+  (and change it any time you like)
+
+- Emphasis on ease of use (like Docker Desktop)
+
+- Based on k3s and other proven components
+
+## VM with custom install
+
+- Choose your own adventure!
+
+- Pick any Linux distribution!
+
+- Build your cluster from scratch or use a Kubernetes installer!
+
+- Discover exotic CNI plugins and container runtimes!
+
+- The only limit is yourself, and the time you are willing to sink in!
+
+## GPU support
+
+Some solutions can expose your GPU to your containers.
+
+This can be useful for machine learning inference and training.
+
+It only works for some combinations of hardware and operating system.
+
+For example:
+
+- WSL2 + NVIDIA is supported by Docker Desktop and Podman Desktop
+
+- Linux + NVIDIA is supported by Podman Desktop
+
+- MacOS + Apple silicon is supported by Podman Desktop
+
+See the [Docker Desktop][gpu-docker-desktop] and [Podman Desktop][gpu-podman-desktop]
+documentation for more details.
+
+[gpu-docker-desktop]: https://docs.docker.com/desktop/features/gpu/
+[gpu-podman-desktop]: https://podman-desktop.io/docs/podman/gpu
+
+---
+
+> [!info] Adapted from container.training
+> This page is derived from [`slides/k8s/setup-devel.md`](https://github.com/jpetazzo/container.training/blob/565636291ec03abf1f2ab8bf6b935478e00e69a2/slides/k8s/setup-devel.md)
+> in **[container.training](https://github.com/jpetazzo/container.training)** by Jérôme Petazzoni and contributors,
+> used under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
+> **Changes were made**: restructured from slides into a single page, remark
+> markup converted to Obsidian callouts, referenced files inlined or linked,
+> k3s image updated, typos fixed, the k3d commands tested with k3d 5.9.
+
+<!-- uplink -->
+Part of [[kubernetes/cluster-setup/index|Cluster setup]].
