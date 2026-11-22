@@ -216,7 +216,7 @@ else
   check_output "k3s crictl ps" 'coredns' in_node "$(sed -n 2p <<<"$tools")"
   check_output "k3s crictl images" 'mirrored-coredns' in_node "$(sed -n 3p <<<"$tools")"
   check_output "k3s ctr -n k8s.io images ls" 'rancher/mirrored-coredns' in_node "$(sed -n 4p <<<"$tools")"
-  check_output "k3s check-config runs" 'System:|Generally Necessary' in_node "$(sed -n 5p <<<"$tools") 2>&1; true"
+  check_output "k3s check-config runs" 'System:|Generally Necessary' in_node "$(sed -n 5p <<<"$tools") 2>&1 || true"
   section "Install a server with the script (continued)"
   check_output "k3s.yaml is readable by root only" '^600$' in_node 'stat -c %a /etc/rancher/k3s/k3s.yaml'
   check "the kubeconfig copy block works" in_node "$(note_block "$NOTE" 'Install a server' 2 | sed 's/^sudo //')"
