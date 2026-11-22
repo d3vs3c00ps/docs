@@ -77,7 +77,7 @@ check "Kibana becomes green" retry 900 bash -c "[ \"\$(kubectl get kibana demo -
 check_output "on a NodePort (from the note)" '^demo-kb-http +NodePort ' kubectl get services demo-kb-http
 # Kibana reports green a little before /api/status answers 200.
 check_output "it connects to Elasticsearch, and asks for the same user/password (from the note)" '^200$' \
-  incluster "for i in \$(seq 30); do c=\$(curl -s -o /dev/null -w '%{http_code}' -u elastic:\$PASSWORD http://demo-kb-http:5601/api/status); [ \"\$c\" = 200 ] && break; sleep 5; done; echo \$c"
+  retry_out 40 incluster "curl -s -m 10 -o /dev/null -w '%{http_code}\n' -u elastic:\$PASSWORD http://demo-kb-http:5601/api/status | grep -x 200"
 
 section "Scaling up the cluster"
 kubectl patch es demo --type=json -p '[{"op":"replace","path":"/spec/nodeSets/0/count","value":3}]' >/dev/null

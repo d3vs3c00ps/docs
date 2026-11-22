@@ -64,13 +64,14 @@ kubectl rollout status deployment/blue --timeout=180s >/dev/null
 assert_eq "clusterIP None means no virtual IP" "None" \
   "$(kubectl get service blue-headless -o jsonpath='{.spec.clusterIP}')"
 # The claim is one A record per ready pod: compare with the pod count, and show the answer.
-# kubectl run --rm -i can attach before the container exists: try again.
+# kubectl run --rm -i can attach before the container exists: try again. When it cannot
+# attach, it prints the logs too, so the same answer can appear twice: count unique ones.
 ready=$(kubectl get deployment blue -o jsonpath='{.status.readyReplicas}')
 check_output "CoreDNS returns one A record per pod ($ready pods)" "^records=$ready\$" retry_out 20 bash -c \
   "kubectl delete pod headless-probe --ignore-not-found --wait >/dev/null 2>&1
    out=\$(kubectl run headless-probe --image=alpine --restart=Never --rm -i --quiet -- \
      nslookup blue-headless.$TEST_NS.svc.cluster.local 2>&1)
-   n=\$(grep -c '^Address: 10\.' <<<\"\$out\")
+   n=\$(grep '^Address: 10\.' <<<\"\$out\" | sort -u | wc -l | tr -d ' ')
    [ \"\$n\" = $ready ] && echo records=\$n || { echo \"records=\$n\"; echo \"\$out\"; exit 1; }"
 
 section "Traffic engineering: Local is a hard rule"
