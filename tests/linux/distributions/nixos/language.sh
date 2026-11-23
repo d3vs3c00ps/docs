@@ -51,6 +51,45 @@ check_output "the default greeting applies" '^"Hello, Alice!"$' ev "($f) { name 
 check_output "without ..., an extra attribute is an error" 'unexpected argument' \
   bash -c "nix-instantiate --eval --expr '($f) { name = \"A\"; extra = 1; }' 2>&1; true"
 check_output "with ..., it is ignored" '^"ok"$' ev '({ name, ... }: "ok") { name = "A"; extra = 1; }'
+# try EXPR: the value or the error, for the checks that expect an error.
+try() { nix-instantiate --eval --strict --expr "$1" 2>&1 || true; }
+
+section "Partial application"
+check_output "inc = add 1; inc 41 gives 42 (from the note)" '^42$' ev "$(blk "Partial application" 1)"
+check_output "add 1 is a function" '^"lambda"$' ev 'let add = x: y: x + y; in builtins.typeOf (add 1)'
+check_output "add 1 2 3: one argument too many (the note's message)" \
+  'attempt to call something which is not a function but an integer' try 'let add = x: y: x + y; in add 1 2 3'
+
+section "Argument sets"
+check_output "greet gives the note's string: args has 2 attributes, not the default" \
+  '^"Hello, Alice! \(2 attributes\)"$' ev "$(blk "Argument sets" 1)"
+check_output "args@{ ... } binds the whole set" '^\{"extra":2,"name":1\}$' ev '(args@{ name, ... }: args) { name = 1; extra = 2; }'
+check_output "{ ... }@args works too" '^2$' ev '({ name, ... }@args: args.extra) { name = 1; extra = 2; }'
+check_output "a default is not in args" '^\{"name":1\}$' ev '(args@{ name, greeting ? "Hi", ... }: args) { name = 1; }'
+check_output "a default can use another argument (from the note)" '^10$' ev '({ a, b ? a * 2 }: b) { a = 5; }'
+check_output "a missing argument fails even when the body does not use it" \
+  "function 'greet' called without required argument 'name'" \
+  try 'let greet = { name, greeting ? "Hello" }: greeting; in greet { }'
+check_output "an extra attribute without ..." "called with unexpected argument 'lang'" \
+  try '({ name }: name) { name = "Alice"; lang = "en"; }'
+check_output "not a set at all" 'expected a set but found a string' try '({ name }: name) "Alice"'
+check_output "a function with no let name is an anonymous lambda" "function 'anonymous lambda' called" try '({ name }: name) { }'
+check_output "x: x.name accepts any value" '^"lambda"$' ev 'builtins.typeOf (x: x.name)'
+check_output "  and fails only when it reads .name" "expected a set but found a string" try '(x: x.name) "Alice"'
+check_output "  while { name }: name checks the set at the call" "called with unexpected argument 'lang'" \
+  try '({ name }: 1) { name = 1; lang = 2; }'
+check_output "  where x: x.name does not" '^1$' ev '(x: 1) { name = 1; lang = 2; }'
+check_output "builtins.functionArgs (from the note)" '^\{"greeting":true,"name":false\}$' ev "$(blk "Argument sets" 2)"
+P="import $NIXPKGS { }"
+check_output "callPackage takes each argument from pkgs by name" '^"hello"$' ev "($P).callPackage ({ hello }: hello.pname) { }"
+check_output "  and the set you give replaces any of them" '^"mine"$' ev "($P).callPackage ({ hello }: hello) { hello = \"mine\"; }"
+check_output "  a package function gets stdenv and fetchurl" '^"ok"$' ev "($P).callPackage ({ stdenv, fetchurl }: \"ok\") { }"
+# evm MODULE: the config of a module evaluated alone by the module system.
+evm() { echo "(($P).lib.evalModules { modules = [ ($1) ]; }).config"; }
+check_output "the module system passes options to every module" '"options"' \
+  ev "$(evm 'args: { options.out = args.lib.mkOption { default = builtins.attrNames args; }; }').out"
+check_output "  so a module without ... fails" 'called with unexpected argument' \
+  try "$(evm '{ config, lib }: { }')"
 
 section "let and with"
 check_output "let ... in (from the note)" '^3$' ev "$(blk "and \`with\`" 1)"
