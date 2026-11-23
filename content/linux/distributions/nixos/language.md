@@ -131,6 +131,78 @@ NixOS module starts the way it does:
 That line is a **function** taking an attribute set, and returning the configuration.
 Understanding that one line demystifies a lot.
 
+### Partial application
+
+Because each function takes one argument, giving only the first one returns a new
+function that waits for the rest:
+
+```nix
+let
+  add = x: y: x + y;
+  inc = add 1;           # a function, still waiting for y
+in
+  inc 41                 # 42
+```
+
+One argument too many is an error: `add 1 2 3` gives `attempt to call something
+which is not a function but an integer`.
+
+### Argument sets
+
+A function whose argument is written `{ … }` takes **one** attribute set and unpacks
+it. The pattern decides what the set may contain:
+
+| Pattern | Meaning |
+| --- | --- |
+| `{ a, b }:` | the set must have `a` and `b`, and nothing else |
+| `{ a, b ? 2 }:` | `b` is optional, with the default `2` |
+| `{ a, ... }:` | `a` is required; other attributes are accepted and ignored |
+| `args@{ a, ... }:` | the same, and `args` is the whole set; `{ a, ... }@args:` also works |
+
+```nix
+let
+  greet = { name, greeting ? "Hello", ... }@args:
+    "${greeting}, ${name}! (${toString (builtins.length (builtins.attrNames args))} attributes)";
+  name = "Alice";
+in
+  greet { inherit name; lang = "en"; }    # "Hello, Alice! (2 attributes)"
+```
+
+`inherit name;` in the call is short for `name = name;`. The count is 2, not 3:
+`args` holds what the caller passed (`name` and `lang`), never the defaults.
+
+Points that are easy to miss:
+
+- **A default can use another argument.** `({ a, b ? a * 2 }: b) { a = 5; }` is `10`.
+- **The set is checked when the function is called**, even for arguments the body
+  never uses. Each mistake has its own message:
+
+  | Call | Error |
+  | --- | --- |
+  | a required attribute is missing | `called without required argument 'name'` |
+  | an extra attribute, and no `...` | `called with unexpected argument 'lang'` |
+  | not a set at all | `expected a set but found a string` |
+
+  The message names the function after its `let` binding (`function 'greet'`), or
+  `anonymous lambda` when it has no name.
+- **`x: x.name` is not the same as `{ name }: name`.** The first takes any value and
+  fails only when it reads `.name`; the second checks the set at the call.
+- **`builtins.functionArgs` lists the names a function expects**, with `true` for
+  those that have a default:
+
+  ```nix
+  builtins.functionArgs ({ name, greeting ? "Hello", ... }: name)
+  # { greeting = true; name = false; }
+  ```
+
+  This is how `callPackage` works. It reads the argument names of a package
+  function, takes each one from `pkgs`, and lets you replace any of them:
+  `pkgs.callPackage ./myapp.nix { }` passes `stdenv`, `fetchurl`, and the rest by
+  name.
+- **The `...` in a NixOS module is needed.** The module system passes more arguments
+  than a module names, such as `options`. Without `...`, the module fails with
+  `called with unexpected argument`.
+
 ## `let` and `with`
 
 ```nix
