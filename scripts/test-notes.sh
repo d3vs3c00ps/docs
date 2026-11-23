@@ -223,6 +223,13 @@ boot_and_run() {
   return "$status"
 }
 
+# rm_tmp DIR: remove a test's TMPDIR. On Linux, containers that mounted it leave files
+# owned by root, which the runner user cannot delete; a container removes those.
+rm_tmp() {
+  rm -rf "$1" 2>/dev/null ||
+    docker run --rm -v "$1:/t" mirror.gcr.io/library/busybox:1.37 sh -c 'rm -rf /t/* /t/.[!.]* /t/..?*' && rm -rf "$1"
+}
+
 # run_one TEST: run a test in its environment, write its TAP log, return its status.
 run_one() {
   local t=$1 env timeout log ns tmp module note image status=0
@@ -245,7 +252,7 @@ run_one() {
       # the host when the test runs in the runner container.
       tmp=$(mktemp -d "$RESULTS/tmp.XXXXXX")
       TMPDIR=$tmp TEST_NS=$ns NOTES_ROOT=$ROOT timeout "$timeout" bash "$t" >"$log" 2>&1 || status=$?
-      rm -rf "$tmp"
+      rm_tmp "$tmp"
       kubectl delete namespace "$ns" --wait=false >/dev/null 2>&1 || true
       ;;
     compose)
@@ -254,7 +261,7 @@ run_one() {
       tmp=$(mktemp -d "$RESULTS/tmp.XXXXXX")
       (cd "$tmp" && TMPDIR=$tmp COMPOSE_PROJECT_NAME=$ns NOTES_ROOT=$ROOT timeout "$timeout" bash "$ROOT/$t") >"$log" 2>&1 || status=$?
       docker compose -p "$ns" down -v --remove-orphans >/dev/null 2>&1 || true
-      rm -rf "$tmp"
+      rm_tmp "$tmp"
       ;;
     *-systemd)
       boot_and_run "$(image_for "$env")" "$t" "$timeout" "$log" || status=$?

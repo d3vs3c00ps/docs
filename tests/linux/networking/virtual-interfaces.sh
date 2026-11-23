@@ -79,8 +79,7 @@ team=$(cmds '### Team' 2)
 check "the team packages install (from the note)" run "$(grep '^zypper' <<<"$team" | sed 's/zypper install -y/zypper -n -q install/')"
 check "the team0 profile (from the note)" run "$(cmd '### Team' 2 2)"
 check "the two port profiles (from the note)" run "$(cmds '### Team' 2 | sed -e ':a' -e '/\\$/N; s/\\\n//; ta' | grep team-slave)"
-check_fails "the kernel of the test VM has no team driver either" ip link add team9 type team
-skip "teamdctl state, ping over team0" "no team support in Leap 16's NetworkManager or in the test kernel"
+skip "teamdctl state, ping over team0" "no team support in Leap 16's NetworkManager"
 
 section "VLAN"
 nmcli connection add type ethernet con-name eth0 ifname ens1 ipv4.method manual ipv4.addresses 10.240.2.20/24 >/dev/null

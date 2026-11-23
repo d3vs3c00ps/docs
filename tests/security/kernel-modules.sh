@@ -22,9 +22,14 @@ mp() { local c=$1; shift; modprobe -n -v -d "$R" -S "$K" -C "$c" "$@"; }
 
 section "Kernel module attack surface"
 n=$(find "$R/usr/lib/modules/$K" -name '*.ko*' | wc -l)
-assert_match "the Leap 16 kernel ships about 6,600 modules ($n)" '^6[0-9]{3}$' "$n"
 base=$(rpm2cpio "$(find cache -name 'kernel-default-6*.rpm')" | cpio -t --quiet 2>/dev/null | grep -c '\.ko')
-assert_match "about 2,600 in kernel-default alone ($base)" '^2[0-9]{3}$' "$base"
+if [[ $(uname -m) == x86_64 ]]; then
+  assert_match "the Leap 16 kernel ships about 4,900 modules on x86_64 ($n)" '^4[5-9][0-9]{2}$|^5[0-2][0-9]{2}$' "$n"
+  assert_match "about 2,300 in kernel-default alone ($base)" '^2[0-5][0-9]{2}$' "$base"
+else
+  assert_match "the Leap 16 kernel ships about 6,600 modules on arm64 ($n)" '^6[0-9]{3}$' "$n"
+  assert_match "about 2,600 in kernel-default alone ($base)" '^2[0-9]{3}$' "$base"
+fi
 
 section "Blacklisting by hand"
 mkdir hard; note_block "$NOTE" 'Blacklisting by hand' 1 >hard/hardening.conf

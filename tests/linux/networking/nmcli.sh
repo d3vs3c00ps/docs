@@ -123,7 +123,8 @@ assert_match "lacp_rate fast" 'LACP rate: fast' "$b"
 assert_match "miimon 100" 'MII Polling Interval \(ms\): 100' "$b"
 assert_match "eth0 (ens1) is in the bond" 'Slave Interface: ens1' "$b"
 assert_match "eth1 (ens2) is in the bond" 'Slave Interface: ens2' "$b"
-check_output "bond0 has the address" '192\.168\.1\.10/24' ip -4 addr show bond0
+# NetworkManager sets the address a moment after the ports join.
+check "bond0 has the address" retry 20 bash -c "ip -4 addr show bond0 | grep -q '192\.168\.1\.10/24'"
 nmcli connection delete bond0-p1 bond0-p2 bond0 >/dev/null
 
 section "VLANs"

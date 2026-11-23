@@ -33,18 +33,21 @@ services:
     image: $COSIGN_IMAGE
     network_mode: service:registry
     working_dir: /w
+    user: "$(id -u):$(id -g)"
     volumes: [".:/w"]
-    environment: [COSIGN_PASSWORD, COSIGN_DOCKER_MEDIA_TYPES, DOCKER_CONFIG=/w/.docker]
+    environment: [COSIGN_PASSWORD, HOME=/w/.home, COSIGN_DOCKER_MEDIA_TYPES, DOCKER_CONFIG=/w/.docker]
   crane:
     image: $CRANE_IMAGE
     network_mode: service:registry
     working_dir: /w
+    user: "$(id -u):$(id -g)"
     volumes: [".:/w"]
     environment: [DOCKER_CONFIG=/w/.docker]
   oras:
     image: $ORAS_IMAGE
     network_mode: service:registry
     working_dir: /w
+    user: "$(id -u):$(id -g)"
     volumes: [".:/w"]
 EOF
 docker compose up -d --quiet-pull registry authreg 2>/dev/null

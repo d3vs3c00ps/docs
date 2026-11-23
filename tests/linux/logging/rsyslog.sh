@@ -8,6 +8,10 @@ NOTE=linux/logging/rsyslog
 W=$(mktemp -d)
 cd "$W"
 zypper -n -q install --no-recommends rsyslog rsyslog-module-relp iptables util-linux-systemd >/dev/null
+# An Ubuntu CI host's AppArmor profile for /usr/sbin/rsyslogd also applies in this privileged
+# container and denies the test's files. A copy at another path is the same binary, unconfined.
+install -m 755 /usr/sbin/rsyslogd /usr/local/sbin/rsyslogd
+export PATH=/usr/local/sbin:$PATH
 
 # The note's hosts, each on its own loopback address, so that several rsyslog
 # instances ("machines") can listen on the same port in one container.

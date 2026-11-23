@@ -18,8 +18,9 @@ lsmod | wc -l                                           # actually loaded
 ```
 
 The gap between those two numbers is the point. The openSUSE Leap 16 kernel (6.12)
-ships about 6,600 modules across its `kernel-default`, `-extra` and `-optional`
-packages, 2,600 of them in `kernel-default` alone. A typical server has a few dozen
+ships about 4,900 modules on x86_64 and 6,600 on arm64 (aarch64), across its
+`kernel-default`, `-extra` and `-optional` packages. About 2,300 (x86_64) and 2,600
+(arm64) of them are in `kernel-default` alone. A typical server has a few dozen
 loaded.
 
 ## Why this matters

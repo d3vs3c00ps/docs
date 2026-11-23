@@ -100,7 +100,7 @@ check "lego, dns-01, a wildcard certificate (Pebble, exec provider)" c "$LEGO_EN
   --domains example.org --domains '*.example.org' --path /w/.lego 2>&1"
 check_output "keyAuthorization = token . base64url(JWK thumbprint) (the correction)" 'keyauth-ok' cat formula.log
 check_output "the TXT value base64url(SHA256(keyAuthorization)) was accepted: the wildcard is issued" \
-  'DNS:\*\.example\.org' openssl x509 -in .lego/certificates/example.org.crt -noout -ext subjectAltName
+  'DNS:\*\.example\.org' c 'openssl x509 -in .lego/certificates/example.org.crt -noout -ext subjectAltName'
 
 section "The three challenges"
 check "http-01 with lego (port 80)" c "$LEGO_ENV lego run --server $PEBBLE --email security@example.com --accept-tos \
@@ -151,7 +151,8 @@ check_output "certbot itself installs no timer: Leap ships it in a separate pack
   c 'zypper -n -q install --no-recommends certbot-systemd-timer >/dev/null; rpm -ql certbot-systemd-timer'
 # --dry-run talks to the Let's Encrypt staging server unless --server says otherwise:
 # point it at Pebble, so the test never contacts a public CA.
-check "certbot renew --dry-run (from the note), against Pebble" c "$export_certbot; $(block 'certbot, http-01' 2) --server $PEBBLE 2>&1"
+# Off a terminal, certbot renew first sleeps up to 8 minutes, at random.
+check "certbot renew --dry-run (from the note), against Pebble" c "$export_certbot; $(block 'certbot, http-01' 2) --server $PEBBLE --no-random-sleep-on-renew 2>&1"
 check_output "--dry-run uses the Let's Encrypt staging server by default" 'staging' c 'certbot --help all | grep -A2 -- "--dry-run"'
 
 section "lego, dns-01, wildcard"

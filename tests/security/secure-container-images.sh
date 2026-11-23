@@ -100,7 +100,8 @@ spec:
         failureAction: Enforce
         podSecurity: {level: restricted, version: latest}
 EOF
-kyv() { docker run -q --rm -v "$PWD:/w" -w /w "$KYVERNO_IMAGE" apply psa.yaml --resource "$1" 2>&1; }
+# As the test user: the image's own user cannot read this 0700 folder on Linux.
+kyv() { docker run -q --rm --user "$(id -u):$(id -g)" -e HOME=/w/.home -v "$PWD:/w" -w /w "$KYVERNO_IMAGE" apply psa.yaml --resource "$1" 2>&1; }
 export -f kyv
 export KYVERNO_IMAGE
 check_output "the note's settings pass the Pod Security Standard 'restricted'" 'pass: 1, fail: 0' kyv pod.yaml

@@ -20,17 +20,20 @@ services:
     image: $COSIGN_IMAGE
     network_mode: service:registry
     working_dir: /w
+    user: "$(id -u):$(id -g)"
     volumes: [".:/w"]
-    environment: [COSIGN_PASSWORD]
+    environment: [COSIGN_PASSWORD, HOME=/w/.home]
   crane:
     image: $CRANE_IMAGE
     network_mode: service:registry
     working_dir: /w
+    user: "$(id -u):$(id -g)"
     volumes: [".:/w"]
   kyverno:
     image: $KYVERNO_IMAGE
     network_mode: service:registry
     working_dir: /w
+    user: "$(id -u):$(id -g)"
     volumes: [".:/w"]
   rekor-cli:
     image: $REKOR_CLI_IMAGE

@@ -353,8 +353,8 @@ and `lacp`.
 > [!warning] `teamd` is deprecated
 > Red Hat deprecated the teaming driver in RHEL 9 and recommends moving back to
 > `bond`, which is now the better-maintained of the two. For new deployments prefer
-> `nmcli con add type bond`. The kernel of the test machines for this site has no
-> `team` driver at all, so only the profile creation above is tested.
+> `nmcli con add type bond`. Leap 16's NetworkManager cannot bring a team up, so only
+> the profile creation above is tested.
 
 ### VLAN
 

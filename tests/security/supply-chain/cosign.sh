@@ -11,6 +11,7 @@ CRANE_IMAGE=gcr.io/go-containerregistry/crane:v0.22.1
 ORAS_IMAGE=ghcr.io/oras-project/oras:v1.3.6
 KYVERNO_IMAGE=ghcr.io/kyverno/kyverno-cli:v1.19.2
 
+# The tools run as the test user: on Linux, their images' own user cannot use its 0700 folder.
 # Every tool shares the registry's network namespace: localhost:5000 is the registry,
 # and go-containerregistry speaks plain HTTP to localhost. No port is published.
 cat >compose.yaml <<EOF
@@ -21,22 +22,26 @@ services:
     image: $COSIGN_IMAGE
     network_mode: service:registry
     working_dir: /w
+    user: "$(id -u):$(id -g)"
     volumes: [".:/w"]
-    environment: [COSIGN_PASSWORD]
+    environment: [COSIGN_PASSWORD, HOME=/w/.home]
   crane:
     image: $CRANE_IMAGE
     network_mode: service:registry
     working_dir: /w
+    user: "$(id -u):$(id -g)"
     volumes: [".:/w"]
   oras:
     image: $ORAS_IMAGE
     network_mode: service:registry
     working_dir: /w
+    user: "$(id -u):$(id -g)"
     volumes: [".:/w"]
   kyverno:
     image: $KYVERNO_IMAGE
     network_mode: service:registry
     working_dir: /w
+    user: "$(id -u):$(id -g)"
     volumes: [".:/w"]
 EOF
 docker compose up -d --quiet-pull registry 2>/dev/null
