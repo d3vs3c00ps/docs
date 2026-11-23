@@ -26,6 +26,7 @@ services:
     volumes: [".:/w"]
     command: ["-server", "http://oast.example.com", "-token", "$TOKEN", "-ps", "-json", "-o", "interactions.json", "-pi", "1"]
 EOF2
+pull "mirror.gcr.io/projectdiscovery/interactsh-server:$V" "mirror.gcr.io/projectdiscovery/interactsh-client:$V"
 docker compose up -d --quiet-pull oast 2>/dev/null
 retry 30 docker compose exec -T oast sh -c 'wget -qO- http://127.0.0.1/ >/dev/null'
 client() { docker compose --progress quiet run --rm -T --entrypoint interactsh-client client "$@"; }

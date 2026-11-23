@@ -28,6 +28,7 @@ services:
     image: $HTTPX_IMAGE
     profiles: [tools]
 EOF2
+pull "$NAABU_IMAGE" "$HTTPX_IMAGE"
 docker compose up -d --quiet-pull web node 2>/dev/null
 # -duc: no update check. naabu resolves names with public resolvers, not Docker's, so
 # the targets are given as IP addresses, as in the note.
