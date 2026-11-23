@@ -21,12 +21,6 @@ cleanup() {
 trap 'cleanup; _t_finish' EXIT
 trap 'exit 1' TERM INT
 
-section "Identifying swap usage"
-out=$(bash -ec "$(note_block "$NOTE" 'Identifying swap usage')")
-assert_match "free -m has a Swap line" '^Swap:' "$out"
-assert_match "swapon -s lists devices with size, usage and priority" '^Filename[[:space:]]+Type[[:space:]]+Size[[:space:]]+Used[[:space:]]+Priority' "$out"
-check_output "swapon --show is the current form of swapon -s" 'NAME +TYPE +SIZE +USED +PRIO' swapon --show
-
 section "Swappiness"
 check_output "the value is read from /proc (from the note)" '^[0-9]+$' bash -ec "$(note_block "$NOTE" 'Swappiness' 1 | sed -n 's/^\$ //p')"
 check "sysctl -w (from the note)" bash -ec "$(note_block "$NOTE" 'Swappiness' 2)"
@@ -49,3 +43,10 @@ assert_match "pri=1 on swap1" 'rhel-swap1 +1$' "$show"
 assert_match "pri=2 on swap2" 'rhel-swap2 +2$' "$show"
 skip "the kernel fills the highest priority first" \
   "the Docker VM already uses its own swap file, and the swap allocator keeps using it; this needs a machine of its own"
+
+# After the swap areas above are on: a CI host may have no swap, and swapon -s then prints nothing.
+section "Identifying swap usage"
+out=$(bash -ec "$(note_block "$NOTE" 'Identifying swap usage')")
+assert_match "free -m has a Swap line" '^Swap:' "$out"
+assert_match "swapon -s lists devices with size, usage and priority" '^Filename[[:space:]]+Type[[:space:]]+Size[[:space:]]+Used[[:space:]]+Priority' "$out"
+check_output "swapon --show is the current form of swapon -s" 'NAME +TYPE +SIZE +USED +PRIO' swapon --show
