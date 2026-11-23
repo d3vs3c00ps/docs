@@ -58,6 +58,51 @@ check_output "make install put the binary in \$out" '^myapp ok$' "$out/bin/myapp
 check_output "a name missing from the arguments does not evaluate" "undefined variable 'cmake'" \
   bash -c "sed 's/fetchurl, cmake, /fetchurl, /' myapp-eval.nix >bad.nix; nix-instantiate -E 'with import <nixpkgs> { }; callPackage ./bad.nix { }' 2>&1; true"
 
+section "Building in the REPL"
+H='Building in the REPL'
+mkdir repl && cd repl
+note_block "$NOTE" "$H" 1 >greet.nix
+# repl LINE...: one nix repl session fed on stdin, without colours, hashes cut as in the note.
+repl() { printf '%s\n' "$@" | nix repl 2>&1 | sed -e 's/\x1b\[[0-9;]*m//g' -e 's|/nix/store/[a-z0-9]\{32\}-|/nix/store/…-|g'; }
+export -f repl
+session=$(note_block "$NOTE" "$H" 2)
+mapfile -t inputs < <(sed -n 's/^nix-repl> //p' <<<"$session")
+out=$(repl "${inputs[@]}")
+while IFS= read -r want; do
+  assert_match "the session prints: $want" "$(printf '%s' "$want" | sed 's/[][\.*^$()+?{}|]/\\&/g')" "$out"
+done < <(grep -v '^nix-repl> ' <<<"$session")
+check_output ":bl made ./repl-result-out a GC root" 'repl-result-out' nix-store --query --roots "$(readlink -f repl-result-out)"
+rm repl-result-out
+g=$(nix-instantiate --eval --raw -E '(import ./greet.nix).outPath')
+nix-store --delete "$g" >/dev/null 2>&1 || true
+check_fails "after a delete, the output is gone" test -e "$g"
+check_output "g.outPath is printed while the output is not built" '^"/nix/store/…-greet"$' bash -c "repl 'g = import ./greet.nix' 'g.outPath'"
+check_fails "  and printing it did not build it" test -e "$g"
+check_output "builtins.readFile g builds g first (the warning)" '"hello from the build' bash -c "repl 'builtins.readFile (import ./greet.nix)'"
+check "  so the output now exists" test -e "$g"
+nix-store --delete "$g" >/dev/null 2>&1
+check_output "builtins.pathExists g.outPath builds it too" '^true$' bash -c "repl 'builtins.pathExists (import ./greet.nix).outPath' | grep -x true"
+nix-store --delete "$g" >/dev/null 2>&1
+check_output "with import from derivation off, reading the output is refused" 'import-from-derivation|allow-import-from-derivation' \
+  bash -c "nix-instantiate --option allow-import-from-derivation false --eval -E 'builtins.readFile (import ./greet.nix)' 2>&1; true"
+# The file changes in the middle of one session: :r must pick it up.
+echo '{ g = import ./greet.nix; }' >scope.nix
+reload=$({ printf '%s\n' ':l ./scope.nix' 'builtins.readFile g'; sleep 5
+  sed -i 's/hello from the build/hello again/' greet.nix; sleep 1
+  printf '%s\n' ':r' 'builtins.readFile g'; } | nix repl 2>&1 | sed 's/\x1b\[[0-9;]*m//g')
+assert_match "before :r, the old text" '"hello from the build' "$reload"
+assert_match ":r reloads the changed file: a new derivation, built on read" '"hello again' "$reload"
+check_output ":l <nixpkgs> then :b hello (from the note)" 'out -> /nix/store/…-hello-2\.12\.3' bash -c "repl ':l <nixpkgs>' ':b hello'"
+check_output ":lf loads a flake" 'Added [0-9]+ variables' bash -c "repl ':lf path:/repo/tests/nixos'"
+# :u and :sh start nix-shell, which reads a terminal, not the repl's stdin: give it one.
+tty_repl() { { printf '%s\n' "$@"; sleep 40; } | timeout 90 script -qec 'nix repl' /dev/null 2>&1 | sed 's/\x1b\[[0-9;?]*[a-zA-Z]//g; s/\r//g'; true; }
+export -f tty_repl
+check_output ":u hello: a shell with hello on PATH" 'U-OK Hello, world!' \
+  bash -c "tty_repl ':l <nixpkgs>' ':u hello' 'echo U-OK \$(hello)' 'exit' ':q' | tr '\n' ' '"
+check_output ":sh hello: the build shell, without the package" 'SH-OK no-hello' \
+  bash -c "tty_repl ':l <nixpkgs>' ':sh hello' 'echo SH-OK \$(command -v hello || echo no-hello)' 'exit' ':q' | tr '\n' ' '"
+cd ..
+
 section "The build sandbox"
 check_output "sandbox is on (the default on Linux)" '^true$' nix config show sandbox
 check_output "the note's setting evaluates" '^true$' nixos_eval --host --block "The build sandbox" 1 nix.settings.sandbox
