@@ -78,7 +78,9 @@ check "the note's command creates it" bash -ec "$(note_block "$NOTE" 'Creating t
 section "What's happening?"
 check "the solver resources appear" retry 60 bash -c \
   "kubectl get ingress --selector=acme.cert-manager.io/http01-solver=true -o name | grep -q ."
-solver=$(bash -c "$(note_block "$NOTE" "What's happening?" 1)" 2>&1)
+# The solver is recreated when a challenge retries, so wait until all three show together.
+solvers() { local out; out=$(bash -c "$(note_block "$NOTE" "What's happening?" 1)" 2>&1); grep -q ingress.networking <<<"$out" && echo "$out"; }
+solver=$(retry_out 60 solvers)
 assert_match "the note's command lists a solver Pod" 'pod/cm-acme-http-solver' "$solver"
 assert_match "a solver Service" 'service/cm-acme-http-solver' "$solver"
 assert_match "and a solver Ingress" 'ingress.networking.k8s.io/cm-acme-http-solver' "$solver"
