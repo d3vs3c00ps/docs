@@ -43,6 +43,48 @@ check_output "\${} interpolates (from the note)" '^"hello world"$' ev "$(blk "St
 check_output "\$name is a literal dollar sign" '^"\$name"$' ev 'let name = "world"; in "$name"'
 check_output "''\${ escapes \${ in an indented string" '^"\$\{name\}"$' ev "let name = \"x\"; in ''''\${name}''"
 
+section "Operators"
+# Each line of the note's block: the expression, then the value Nix prints after "# ".
+# Errors are output too: some checks expect one.
+raw() { nix-instantiate --eval --strict --expr "$1" 2>&1 || true; }
+while IFS= read -r line; do
+  expr=${line%%  #*} want=${line##*# }
+  expr=${expr%"${expr##*[![:space:]]}"}
+  assert_eq "$expr gives $want (from the note)" "$want" "$(raw "$expr")"
+done < <(note_block "$NOTE" Operators 1)
+for a in true false; do for b in true false; do
+  assert_eq "$a -> $b is !$a || $b" "$(raw "!$a || $b")" "$(raw "$a -> $b")"
+done; done
+check_output "1 < 2 < 3 does not chain" 'syntax error' bash -c 'nix-instantiate --parse --expr "1 < 2 < 3" 2>&1; true'
+check_output "a == b == c does not chain" 'syntax error' bash -c 'nix-instantiate --parse --expr "1 == 1 == true" 2>&1; true'
+check_output "// evaluates both sides" 'right operand of the update' raw '{ a = 1; } // throw "x"'
+check_output "// is shallow: the nested set is replaced" '^\{ a = \{ y = 2; \}; \}$' raw '{ a = { x = 1; }; } // { a = { y = 2; }; }'
+check_output "lib.recursiveUpdate merges it" '^\{ a = \{ x = 1; y = 2; \}; \}$' \
+  raw "(import $NIXPKGS { }).lib.recursiveUpdate { a = { x = 1; }; } { a = { y = 2; }; }"
+check_output "6/3 is a path" '^"path"$' raw 'builtins.typeOf 6/3'
+check_output "6 / 3 is 2" '^2$' raw '6 / 3'
+check_output "(0 - 7) / 2 truncates toward zero" '^-3$' raw '(0 - 7) / 2'
+check_output "a-b is one name" '^99$' raw 'let a = 5; b = 2; a-b = 99; in a-b'
+check_output "pkgs.xdg-utils is an attribute with a dash" '^true$' raw "(import $NIXPKGS { }) ? xdg-utils"
+check_output "map f xs ++ ys is (map f xs) ++ ys" '^\[ 2 4 9 \]$' raw 'map (x: x * 2) [ 1 2 ] ++ [ 9 ]'
+check_output "[ f 1 ] is two elements" '^2$' raw 'let f = x: x; in builtins.length [ f 1 ]'
+check_output "[ (f 1) ] is one" '^1$' raw 'let f = x: x; in builtins.length [ (f 1) ]'
+check_output "[ 1 -2 ] is a syntax error" 'syntax error' bash -c 'nix-instantiate --parse --expr "[ 1 -2 ]" 2>&1; true'
+check_output "[ 1 (-2) ] is a list" '^\[ 1 -2 \]$' raw '[ 1 (-2) ]'
+check_output "f -1 is a subtraction" "'sub' builtin" raw 'let f = x: x; in f -1'
+check_output "f (-1) is a call" '^-1$' raw 'let f = x: x; in f (-1)'
+touch file
+check_output "./. + \"/file\" is a path" '^"path"$' raw 'builtins.typeOf (./. + "/file")'
+check_output "./. + \"file\" adds no slash" "^${PWD}file\$" raw './. + "file"'
+check_output "\"a\" + ./file copies it to the store" '^"a/nix/store/[a-z0-9]{32}-file"$' raw '"a" + ./file'
+check_output "  as \"\${./file}\" does" '^"/nix/store/[a-z0-9]{32}-file"$' raw '"${./file}"'
+check_output "a number plus a string is an error" 'cannot add a string to an integer' raw '1 + "a"'
+check_output "  toString fixes it" '^"1a"$' raw 'toString 1 + "a"'
+check_output "f == f is false" '^false$' raw 'let f = x: x; in f == f'
+check_output "|> needs the pipe-operators feature" "experimental Nix feature 'pipe-operators' is disabled" raw '1 |> (x: x + 1)'
+check_output "  with it, the note's pipe gives 20" '^20$' \
+  nix-instantiate --extra-experimental-features pipe-operators --eval --expr '1 |> (x: x + 1) |> (x: x * 10)'
+
 section "Functions"
 check_output "(x: x + 1) 5 gives 6" '^6$' ev "$(blk Functions 1 | sed -n 2p)"
 check_output "curried x: y: x + y" '^5$' ev "($(blk Functions 1 | sed -n 4p)) 2 3"

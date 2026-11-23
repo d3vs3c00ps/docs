@@ -104,6 +104,82 @@ in "hello ${name}"
 Only `${}` interpolates — `$name` is a literal dollar sign. In an indented string,
 escape a literal `${` as `''${`.
 
+## Operators
+
+Each line gives the value `nix-instantiate --eval --strict` prints:
+
+```nix
+[ 1 2 ] ++ [ 3 ]                     # [ 1 2 3 ]
+{ a = 1; b = 2; } // { b = 3; }      # { a = 1; b = 3; }
+{ a.b = 1; } ? a.b                   # true
+{ a = 1; }.b or 0                    # 0
+"foo" + "bar"                        # "foobar"
+2 + 3 * 4                            # 14
+7 / 2                                # 3
+7.0 / 2                              # 3.5
+1 == 1.0                             # true
+{ a = 1; } == { a = 1; }             # true
+[ 1 2 ] < [ 1 3 ]                    # true
+!true || true                        # true
+false -> throw "never evaluated"     # true
+```
+
+`//` merges two sets, and the right side wins. `?` asks whether an attribute exists
+and gives a boolean; `or` gives a fallback value. `->` is logical implication:
+`a -> b` is `!a || b`.
+
+From the tightest to the loosest. Operators on the same row have the same
+precedence, and the [Nix manual](https://nix.dev/manual/nix/latest/language/operators)
+numbers them 1 to 15:
+
+| Operators | What they do | Associativity |
+| --- | --- | --- |
+| `s.a.b`, `s.a or x` | select an attribute, with a fallback | — |
+| `f x` | call a function | left |
+| `-x` | negate a number | — |
+| `s ? a.b` | has attribute | — |
+| `++` | join lists | right |
+| `*` `/` | multiply, divide | left |
+| `+` `-` | add, subtract; `+` also joins strings and paths | left |
+| `!` | logical NOT | — |
+| `//` | update a set | right |
+| `<` `<=` `>` `>=` | compare | — |
+| `==` `!=` | equal, not equal | — |
+| `&&` | logical AND | left |
+| `\|\|` | logical OR | left |
+| `->` | logical implication | right |
+| `\|>` `<\|` | pipe (experimental) | left, right |
+
+`—` means the operator does not chain: `1 < 2 < 3` and `a == b == c` are syntax
+errors. The right side of `&&`, `||` and `->` is evaluated only when it is needed,
+which is why the `throw` above never runs. `//` evaluates both sides.
+
+### Operator traps
+
+- **`//` is shallow.** A nested set on the right replaces the one on the left; it is
+  not merged. `{ a = { x = 1; }; } // { a = { y = 2; }; }` gives
+  `{ a = { y = 2; }; }`. For a deep merge, use `lib.recursiveUpdate`. In NixOS
+  modules, the module system merges for you, so this only bites in plain Nix code.
+- **`/` needs spaces.** `6/3` is a relative path (`./6/3`), not 2. Write `6 / 3`.
+  Division of two integers truncates toward zero: `7 / 2` is `3`, and `(0 - 7) / 2`
+  is `-3`.
+- **`-` needs spaces too.** A name may contain `-`, so `a-b` is one name, not
+  `a - b`. This is why attributes such as `pkgs.xdg-utils` work.
+- **A function call binds tighter than any operator, and a list element is not a
+  call.** `map f xs ++ ys` is `(map f xs) ++ ys`. But in a list, `[ f 1 ]` is two
+  elements, `f` and `1`: write `[ (f 1) ]`. A negative number in a list needs
+  parentheses too: `[ 1 -2 ]` is a syntax error, `[ 1 (-2) ]` is not. And `f -1` is
+  `f - 1`, a subtraction: write `f (-1)`.
+- **`+` with paths copies files.** `./dir + "/file"` is still a path. Note the
+  slash: `./. + "file"` glues the name to the folder, with no `/`. `"a" + ./file`
+  is a string: the file is copied to the store and its store path is used, as in
+  `"${./file}"`. Adding a number and a string is an error: use `toString`.
+- **Functions are never equal.** `let f = x: x; in f == f` is `false`. Sets and lists
+  are compared by value, element by element.
+- **`|>` and `<|` are experimental.** They need
+  `--extra-experimental-features pipe-operators`; without it, Nix stops with an
+  error. `1 |> (x: x + 1) |> (x: x * 10)` is `20`.
+
 ## Functions
 
 Single-argument, always. Multiple arguments are done by currying:
