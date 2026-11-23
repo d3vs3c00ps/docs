@@ -83,4 +83,6 @@ section "Scaling up the cluster"
 kubectl patch es demo --type=json -p '[{"op":"replace","path":"/spec/nodeSets/0/count","value":3}]' >/dev/null
 check "count: 3 gives three Elasticsearch nodes (as kubectl edit in the note)" retry 900 bash -c \
   "[ \"\$(kubectl get es demo -o jsonpath='{.status.availableNodes}/{.status.health}')\" = 3/green ]"
+# Green comes a while after the nodes join, once the replica shards are placed.
+incluster "curl -s -u elastic:\$PASSWORD 'http://\$CLUSTERIP:9200/_cluster/health?wait_for_status=green&timeout=150s'" >/dev/null || true
 check_output "_cat/health: 3 nodes, green" ' green +3 +3 ' retry_out 5 incluster "curl -s -u elastic:\$PASSWORD http://\$CLUSTERIP:9200/_cat/health"
