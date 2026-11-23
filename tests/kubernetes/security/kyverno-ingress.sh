@@ -15,7 +15,8 @@ cleanup() { kubectl delete ingress --all --wait=false >/dev/null 2>&1 || true; k
 trap '_k8s_rc=$?; cleanup' EXIT
 denied() { ! "$@" >"$WORK/out" 2>&1 && grep -q 'denied the request\|blocked due to' "$WORK/out"; }
 ing() { kubectl create ingress "$1" --rule="$2=web:80"; }
-load() { kubectl apply -f "$1" >/dev/null 2>&1; kubectl wait --for=condition=Ready clusterpolicy/unique-ingress-host-and-path --timeout=120s >/dev/null; }
+# Retried: right after install, Kyverno's webhook can refuse a policy for a while.
+load() { retry 60 kubectl apply -f "$1"; kubectl wait --for=condition=Ready clusterpolicy/unique-ingress-host-and-path --timeout=120s >/dev/null; }
 
 check "Kyverno is installed (as in kubernetes/security/kyverno)" kyverno_install
 kyverno_wait
