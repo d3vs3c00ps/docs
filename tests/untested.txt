@@ -1,6 +1,18 @@
 # Notes that cannot be tested in a local container or kind cluster.
 # One per line: <note path relative to content/>  <reason>
 # Each note listed here must also carry a `> [!note] Not tested locally` callout.
+storage/raid-and-alua  concept note on SAN arrays and ALUA on VMware; needs storage hardware and vSphere
+linux/storage/hide-disk  needs SCSI disks and an HPE Smart Array controller; the test VM has only virtio disks
+security/mitre-attack-and-d3fend  concept note, nothing to run (tactics and IDs checked against ATT&CK v20 and D3FEND 1.6)
+security/resources  link list, nothing to run (links checked)
+security/security-roadmap  concept note, nothing to run (tool links checked)
+attribution  licence and credit notice; no commands to run
+ai/hardware-requirements  sizing advice for GPU and Apple Silicon memory; needs that hardware. The llama-server flags are tested in ai/llama-cpp
+ai/mlx  MLX runs on Apple Silicon only; the harness runs Linux containers
+ai/msty-claw  desktop app; its llama-server line is tested in ai/llama-cpp, its MLX line needs Apple Silicon
+ai/quantization-glossary  concept note; its one command uses llama-server flags tested in ai/llama-cpp
+ai/quickstart-macos  macOS stack: Homebrew, MLX, launchd and desktop apps; each tool's Linux side is tested in its own note
+ai/zed-local-llm  Zed is a desktop editor; its backends are tested in ai/llama-swap, ai/ollama and ai/llama-cpp
 containers/buildpacks  needs the pack CLI and a Paketo builder: over 1 GB of amd64-only images, emulated on Apple Silicon
 kubernetes/networking/k8gb  needs two clusters and a delegated DNS zone; the k8gb local demo creates two dedicated kind clusters, beyond the harness's two-cluster budget
 kubernetes/networking/externaldns  needs a real domain name and a public DNS provider API token (the lab uses Linode DNS)
@@ -12,7 +24,6 @@ labs/nixos-homelab/installer-iso  needs macOS with vfkit, vmnet-helper and a Doc
 labs/nixos-homelab/kubernetes  needs macOS with vfkit, vmnet-helper and a Docker runtime; the harness runs Linux containers only
 labs/nixos-homelab/overview  needs macOS with vfkit, vmnet-helper and a Docker runtime; the harness runs Linux containers only
 labs/nixos-homelab/woodpecker  needs macOS with vfkit, vmnet-helper and a Docker runtime; the harness runs Linux containers only
-attribution  licence and credit notice; no commands to run
 kubernetes/storage/portworx  commercial software that installs itself on the nodes and needs loop block devices; the manifest targets Kubernetes 1.18 and kind nodes are containers
 kubernetes/cluster-setup/apilb  concept note comparing designs, no commands
 kubernetes/cluster-setup/cloud-controller-manager  a Cloud Controller Manager needs a cloud API; concept note with no commands
