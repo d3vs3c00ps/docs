@@ -238,6 +238,94 @@ nix-store --query --roots /nix/store/xxx           # why GC will not remove it
 That last one answers the other common question: why garbage collection is not
 reclaiming something.
 
+### References, requisites and referrers
+
+The three queries walk the same graph. A store path **refers to** another when its
+files contain that path's hash; Nix records this when the path is built or
+downloaded. They differ in two things: the direction of the walk, and how far it goes.
+
+| Query | Short form | Direction | Depth | Includes the path itself |
+| --- | --- | --- | --- | --- |
+| `--references` | — | down: what X uses | one step | only if X refers to itself |
+| `--requisites` | `-qR` | down: what X uses | all the way: the closure | yes |
+| `--referrers` | — | up: what uses X | one step | only if X refers to itself |
+| `--referrers-closure` | — | up: what uses X | all the way | yes |
+
+A small chain shows it. Four paths, each one a text file that names the next:
+
+```nix
+# chain.nix
+let
+  mk = name: text: derivation {
+    inherit name;
+    system = builtins.currentSystem;
+    builder = "/bin/sh";
+    args = [ "-c" "echo '${text}' > $out" ];
+  };
+  lib = mk "lib" "a library";
+  tool = mk "tool" "uses ${lib}";
+  app = mk "app" "uses ${tool}";
+  other = mk "other" "uses ${tool}";
+in { inherit lib tool app other; }
+```
+
+```mermaid
+flowchart TB
+    app --> tool
+    other --> tool
+    tool --> lib
+    classDef focus stroke-width:3px
+    class tool focus
+```
+
+An arrow means "refers to". Seen from `tool`: `lib` is its only reference, and `app`
+and `other` are its referrers.
+
+```bash
+for p in lib tool app other; do nix-build chain.nix -A $p --no-out-link; done
+tool=$(nix-build chain.nix -A tool --no-out-link)
+nix-store --query --references "$tool"
+nix-store --query --requisites "$tool"
+nix-store --query --referrers "$tool"
+nix-store --query --referrers-closure "$(nix-build chain.nix -A lib --no-out-link)"
+```
+
+With the hashes cut, one block per query:
+
+```text
+--references tool            --requisites tool
+/nix/store/…-lib             /nix/store/…-lib
+                             /nix/store/…-tool
+
+--referrers tool             --referrers-closure lib
+/nix/store/…-app             /nix/store/…-lib
+/nix/store/…-other           /nix/store/…-tool
+                             /nix/store/…-app
+                             /nix/store/…-other
+```
+
+`--requisites` lists the dependencies first and the path last. `--tree` prints the same
+closure as a tree:
+
+```text
+$ nix-store --query --tree "$(nix-build chain.nix -A app --no-out-link)"
+/nix/store/…-app
+└───/nix/store/…-tool
+    └───/nix/store/…-lib
+```
+
+Points that are easy to miss:
+
+- **References are fixed; referrers are not.** A path's references are set when it is
+  built and never change. Its referrers are only the paths that are in *this* store
+  now. Delete `other` (`nix-store --delete`) and it is gone from `--referrers tool`.
+  On another machine, the same `tool` can have different referrers.
+- **`-qR` is `--requisites`**, not "reverse". `nix path-info -r` is the same closure
+  with the new command line.
+- **On a `.drv`, the queries walk the build graph.** `nix-store -qR` on `tool.drv`
+  gives `lib.drv` and `tool.drv`: what is needed to *build* it. Add
+  `--include-outputs` to also get the outputs of those derivations.
+
 ## Binary caches
 
 Because a store path is fully determined by its inputs, a build can be **substituted**
