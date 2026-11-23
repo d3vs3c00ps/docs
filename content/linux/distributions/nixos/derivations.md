@@ -147,6 +147,58 @@ definitions in `nixpkgs` are a `src`, a list of inputs, and `meta`.
 > platform. On a native build they behave identically, so the distinction is easy to
 > get wrong and only breaks when someone cross-compiles.
 
+## Building in the REPL
+
+`nix repl` shows the two phases one step at a time. It is not needed for daily work,
+where `nix build` does both. It is the shortest loop when you write or debug a
+derivation: change the file, `:r` to reload, `:b` to build.
+
+A derivation that writes one line, in `greet.nix`:
+
+```nix
+derivation {
+  name = "greet";
+  system = builtins.currentSystem;
+  builder = "/bin/sh";
+  args = [ "-c" "echo hello from the build > $out; echo building greet" ];
+}
+```
+
+A session, with the hashes cut:
+
+```text
+nix-repl> g = import ./greet.nix
+nix-repl> g
+«derivation /nix/store/…-greet.drv»
+nix-repl> :t g
+a set
+nix-repl> g.outPath
+"/nix/store/…-greet"
+nix-repl> :b g
+This derivation produced the following outputs:
+  out -> /nix/store/…-greet
+nix-repl> :log g
+building greet
+nix-repl> :bl g
+This derivation produced the following outputs:
+  ./repl-result-out -> /nix/store/…-greet
+```
+
+- Evaluating `g` gives the derivation, an attribute set. Its `outPath` is known at
+  once, before anything is built: it comes from the hash of the inputs.
+- `:b` realises it. `:log` shows what the builder printed. `:bl` also makes a GC
+  root, `./repl-result-out`, so the next garbage collection keeps it.
+- `:l <nixpkgs>` loads every package into scope; then `:b hello` builds, or
+  downloads, nixpkgs' `hello`. `:lf .` loads the flake in the current folder.
+- `:u hello` opens a shell with the built package on `PATH`. `:sh hello` opens the
+  shell its build uses, with the build inputs but not the package.
+
+> [!warning] Reading the output builds it
+> `builtins.readFile g` or `builtins.pathExists g.outPath` does not just look: the
+> string carries a dependency on `g`, so Nix builds `g` first, in the middle of
+> evaluation. This is *import from derivation*. It is convenient in the REPL, and the
+> reason nixpkgs forbids it in its own code: it stops evaluation to wait for a build.
+
 ## The build sandbox
 
 Builds run isolated: no network, a minimal filesystem, a fixed user and a fixed
