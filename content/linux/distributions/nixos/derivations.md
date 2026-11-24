@@ -303,7 +303,7 @@ downloaded. They differ in two things: the direction of the walk, and how far it
 | `--referrers` | — | up: what uses X | one step | only if X refers to itself |
 | `--referrers-closure` | — | up: what uses X | all the way | yes |
 
-A small chain shows it. Four paths, each one a text file that names the next:
+A small graph shows it. Five paths, each one a text file that names the paths it uses:
 
 ```nix
 # chain.nix
@@ -318,11 +318,14 @@ let
   tool = mk "tool" "uses ${lib}";
   app = mk "app" "uses ${tool}";
   other = mk "other" "uses ${tool}";
-in { inherit lib tool app other; }
+  bundle = mk "bundle" "uses ${app} and ${other}";
+in { inherit lib tool app other bundle; }
 ```
 
 ```mermaid
 flowchart TB
+    bundle --> app
+    bundle --> other
     app --> tool
     other --> tool
     tool --> lib
@@ -334,7 +337,7 @@ An arrow means "refers to". Seen from `tool`: `lib` is its only reference, and `
 and `other` are its referrers.
 
 ```bash
-for p in lib tool app other; do nix-build chain.nix -A $p --no-out-link; done
+for p in lib tool app other bundle; do nix-build chain.nix -A $p --no-out-link; done
 tool=$(nix-build chain.nix -A tool --no-out-link)
 nix-store --query --references "$tool"
 nix-store --query --requisites "$tool"
@@ -354,23 +357,32 @@ With the hashes cut, one block per query:
 /nix/store/…-other           /nix/store/…-tool
                              /nix/store/…-app
                              /nix/store/…-other
+                             /nix/store/…-bundle
 ```
 
 `--requisites` lists the dependencies first and the path last. `--tree` prints the same
-closure as a tree:
+closure as a tree, which is the quickest way to *see* the graph:
 
 ```text
-$ nix-store --query --tree "$(nix-build chain.nix -A app --no-out-link)"
-/nix/store/…-app
-└───/nix/store/…-tool
-    └───/nix/store/…-lib
+$ nix-store --query --tree "$(nix-build chain.nix -A bundle --no-out-link)"
+/nix/store/…-bundle
+├───/nix/store/…-app
+│   └───/nix/store/…-tool
+│       └───/nix/store/…-lib
+└───/nix/store/…-other
+    └───/nix/store/…-tool [...]
 ```
+
+Each path is expanded only once. When the walk reaches it again, here `tool` through
+`other`, the tree prints it with `[...]` and stops. On a real system the tree is long:
+`nix-store -q --tree /run/current-system | less`.
 
 Points that are easy to miss:
 
 - **References are fixed; referrers are not.** A path's references are set when it is
   built and never change. Its referrers are only the paths that are in *this* store
-  now. Delete `other` (`nix-store --delete`) and it is gone from `--referrers tool`.
+  now. Delete `bundle`, then `other` (`nix-store --delete`), and `other` is gone from
+  `--referrers tool`. `other` must go second: while `bundle` refers to it, Nix keeps it.
   On another machine, the same `tool` can have different referrers.
 - **`-qR` is `--requisites`**, not "reverse". `nix path-info -r` is the same closure
   with the new command line.
