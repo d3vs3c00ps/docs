@@ -1,9 +1,10 @@
 # Notes that cannot be tested in a local container or kind cluster.
 # One per line: <note path relative to content/>  <reason>
 # Each note listed here must also carry a `> [!note] Not tested locally` callout.
+dev/vfkit  runs only on macOS (Apple Virtualization); the harness runs Linux containers
+attribution  licence and credit notice; no commands to run
 networking/sztp  concept note, no commands or configuration to run
 networking/zero-trust-access  concept note, no commands or configuration to run
-attribution  licence and credit notice; no commands to run
 storage/raid-and-alua  concept note on SAN arrays and ALUA on VMware; needs storage hardware and vSphere
 linux/storage/hide-disk  needs SCSI disks and an HPE Smart Array controller; the test VM has only virtio disks
 security/mitre-attack-and-d3fend  concept note, nothing to run (tactics and IDs checked against ATT&CK v20 and D3FEND 1.6)
