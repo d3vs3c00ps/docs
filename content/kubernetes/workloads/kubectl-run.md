@@ -74,10 +74,9 @@ Like `docker logs`, `kubectl logs` has handy options:
 - `--since` only shows the logs newer than a duration (for example `--since=5m`);
   `--since-time` does the same from a timestamp.
 
-> [!warning] Correction
-> The original said that `--since` takes a timestamp. It takes a duration (`10s`,
-> `5m`, `1h`). The option for a timestamp is `--since-time` (RFC 3339, for example
-> `2026-01-01T10:00:00Z`).
+> [!note] `--since` takes a duration
+> `--since` takes a duration (`10s`, `5m`, `1h`). The option for a timestamp is
+> `--since-time` (RFC 3339, for example `2026-01-01T10:00:00Z`).
 
 > [!example] Hands-on
 > - View the latest logs of our `ping` command:

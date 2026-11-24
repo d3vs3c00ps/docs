@@ -187,11 +187,11 @@ When a node stops checking in for 50 seconds (the controller manager's
 `--node-monitor-grace-period`), the control plane marks it `Unknown` and adds the
 `node.kubernetes.io/unreachable` taint to it.
 
-> [!warning] Correction
-> The original said that nodes check in "every 20 seconds". The kubelet renews its
-> Lease every 10 seconds (a quarter of `nodeLeaseDurationSeconds`, 40 seconds), and
-> the node is marked unreachable after `--node-monitor-grace-period`: 50 seconds in
-> current versions (40 seconds in older ones).
+> [!note] Timings
+> The kubelet renews its Lease every 10 seconds (a quarter of
+> `nodeLeaseDurationSeconds`, 40 seconds), and the node is marked unreachable after
+> `--node-monitor-grace-period`: 50 seconds in current versions (40 seconds in older
+> ones).
 
 The taint is tolerated for 300 seconds: for 5 minutes, nothing happens. After that
 delay, the taint applies fully: *the Pods are evicted*, and *replacement Pods should be
@@ -221,9 +221,8 @@ taints:
   or schedulable again. The control plane then adds or removes the taint
   `node.kubernetes.io/unschedulable:NoSchedule`.
 
-> [!warning] Correction
-> The original listed a `kubectl untaint` command. It does not exist: remove a taint
-> with `kubectl taint` and a trailing `-`, as above.
+> [!note] There is no `kubectl untaint`
+> Remove a taint with `kubectl taint` and a trailing `-`, as above.
 
 The command `kubectl drain` does a `cordon`, then evicts the Pods on the node (see
 [[kubernetes/workloads/disruptions|Disruptions]]).

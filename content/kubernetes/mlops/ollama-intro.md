@@ -104,7 +104,7 @@ Note: the `ollama/ollama` image is quite big (~2 GB transfer, ~4 GB on disk).
 kubectl run ollama --image ollama/ollama:0.40.6
 ```
 
-(The original used the `latest` tag; this page was tested with 0.40.6.)
+(Pinned, not `latest`; this page was tested with 0.40.6.)
 
 Wait for the pod to be up and running:
 ```bash
@@ -133,10 +133,6 @@ Create the Service:
 ```bash
 kubectl create service clusterip ollama --tcp 11434
 ```
-
-> [!warning] Correction
-> The original had `--tcp 11343`. Ollama listens on 11434 (see below), so with 11343
-> the Service sends traffic to a port where nothing listens.
 
 Wait for the Service Endpoints to be available:
 ```bash
@@ -241,10 +237,10 @@ helm upgrade --install --repo https://otwld.github.io/ollama-helm/ \
   ollama ollama --version 1.90.0 --set 'ollama.models.pull={qwen2:1.5b}'
 ```
 
-> [!warning] Correction
-> The original used `--set ollama.models={qwen2:1.5b}`. In current versions of the chart,
-> `ollama.models` holds `pull`, `run` and `create` lists: the models to pre-pull go in
-> `ollama.models.pull`. The quotes stop the shell from expanding the braces.
+> [!note] `ollama.models.pull`
+> In current versions of the chart, `ollama.models` holds `pull`, `run` and `create`
+> lists: the models to pre-pull go in `ollama.models.pull`. The quotes stop the shell
+> from expanding the braces.
 
 *¹Idempotent: which can be executed multiple times without adverse effect.*
 

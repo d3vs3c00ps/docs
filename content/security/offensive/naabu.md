@@ -69,10 +69,9 @@ naabu -host 10.0.0.0/24 -o open-ports.txt
 naabu -host 10.0.0.0/24 -s c      # unprivileged
 ```
 
-> [!warning] Correction
-> An earlier version said SYN is the default when naabu has privileges. In naabu 2.7
-> the default is CONNECT, even as root (`-scan-type ... (default "c")`); pass `-s s`
-> for a SYN scan.
+> [!note] CONNECT is the default
+> In naabu 2.7 the default scan type is CONNECT, even as root
+> (`-scan-type ... (default "c")`); pass `-s s` for a SYN scan.
 
 > [!note] SYN scanning is not stealthy in any meaningful sense
 > The "half-open scan avoids logging" claim dates from an era of application-only

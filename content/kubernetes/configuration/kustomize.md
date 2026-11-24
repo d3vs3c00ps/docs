@@ -195,11 +195,10 @@ General workflow:
 >   kustomize build | kubectl apply -f-
 >   ```
 
-> [!warning] Correction
-> The original used `https://github.com/jpetazzo/kubercoins`, without `?ref=`. The
-> default branch of that repository has no `kustomization.yaml`, so `kustomize build`
-> fails with `unable to find one of 'kustomization.yaml' ... in directory`. The
-> `kustomize` branch has one.
+> [!note] Why `?ref=kustomize`
+> The default branch of that repository has no `kustomization.yaml`, so without
+> `?ref=` `kustomize build` fails with `unable to find one of 'kustomization.yaml' ...
+> in directory`. The `kustomize` branch has one.
 
 ## `kubectl` integration
 

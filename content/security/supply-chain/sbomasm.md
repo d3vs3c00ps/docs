@@ -26,11 +26,10 @@ go install github.com/interlynk-io/sbomasm/v2@latest
 brew tap interlynk-io/interlynk && brew install sbomasm
 ```
 
-> [!warning] Correction
-> This note was written for sbomasm 1.x. Version 2 (current: 2.1) has a `/v2` module
-> path (without it, `go install` fetches 1.0.9), new names for the assembly flags, and
-> no `-i` flag: `edit` takes the input file as its last argument. The commands below
-> are for 2.x.
+> [!note] sbomasm 2.x
+> Version 2 (current: 2.1) has a `/v2` module path (without it, `go install` fetches
+> 1.0.9), new names for the assembly flags, and no `-i` flag: `edit` takes the input
+> file as its last argument. The commands below are for 2.x.
 
 ## Assembling
 

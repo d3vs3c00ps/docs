@@ -321,10 +321,9 @@ objcopy -O binary --only-section=.sbat      /boot/efi/EFI/*/grubx64.efi /tmp/gru
 objcopy -O binary --only-section=.sbatlevel /boot/efi/EFI/*/shimx64.efi /tmp/shim.sbatlevel && strings /tmp/shim.sbatlevel
 ```
 
-> [!warning] Correction
-> The commands wrote to `/dev/stdout` and piped into `strings`. objcopy cannot write its
-> output to a pipe (`objcopy: /dev/stdout[.sbat]: Illegal seek`, binutils 2.41), so
-> they now write to a file first.
+> [!note] A file, not a pipe
+> objcopy cannot write its output to a pipe (`objcopy: /dev/stdout[.sbat]: Illegal
+> seek`, binutils 2.41), so the commands write to a file first.
 
 A shim binary carries **two** built-in levels — the conservative one it applies by default,
 and a newer one. `mokutil --set-sbat-policy latest` applies the newer floor on the next
@@ -337,8 +336,8 @@ boot, which is a faithful way to rehearse a shim security update without waiting
 > value. **Check your installed `shim`/`grub` generations against the target floor
 > before applying**, or the machine will not boot.
 >
-> Correction: an earlier version said reverting means clearing the firmware's EFI NVRAM.
-> shim's `sbat.c` (shim 16.1) resets the level by itself when Secure Boot is off.
+> You do not need to clear the firmware's EFI NVRAM: shim's `sbat.c` (shim 16.1)
+> resets the level by itself when Secure Boot is off.
 >
 > And because shim measures `SbatLevel` into PCR 7, raising it **breaks TPM auto-unlock**
 > — measured: PCR 7 moved while PCR 8 and 9 stayed put. See

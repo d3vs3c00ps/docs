@@ -29,10 +29,6 @@ If `XYZ` is that YAML file (or directory with YAML files), we should be able to:
    `kubectl get service web --namespace foo123`.
 4. Connect to it and see the wordsmith app.
 
-> [!warning] Correction
-> The original step 3 was `kubectl get service web --namespace`, without the
-> namespace name. `--namespace` needs a value.
-
 ## Strategies
 
 There are at least three ways to write our YAML:

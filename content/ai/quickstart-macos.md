@@ -214,12 +214,10 @@ Connections → Add OpenAI**, with URL `http://localhost:8080/v1` and API key `n
 Every model appears in the picker, and you can switch mid-conversation — llama-swap
 swaps transparently.
 
-> [!warning] Correction
-> This step said `brew services start open-webui` runs it on port 8080, and to change
-> the port with `WEBUI_PORT=3000`. Neither works: Homebrew has only the desktop-app
-> cask, which `brew services` cannot start, and Open WebUI does not read `WEBUI_PORT`.
-> The app manages its own port. If you run `open-webui serve` from pip instead, pass
-> `--port 3000` to keep 8080 free for llama-swap.
+> [!note] The port
+> The desktop app manages its own port. If you run `open-webui serve` from pip
+> instead, pass `--port 3000` to keep 8080 free for llama-swap. Open WebUI does not
+> read `WEBUI_PORT`.
 
 ## Step 6 — Configure Pi
 

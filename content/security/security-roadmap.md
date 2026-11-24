@@ -96,10 +96,6 @@ workload cycle, and only then move to `Enforce`.
 | Artifact signing and provenance | [cosign](https://docs.sigstore.dev/cosign/signing/overview/) ([[security/supply-chain/cosign]]), [SLSA](https://slsa.dev/), [in-toto](https://in-toto.io/) |
 | "Not affected" statements, machine-readable | [OpenVEX](https://github.com/openvex), `vexctl`, see [[security/supply-chain/vex]] |
 
-> [!note] Tern removed
-> An earlier version also listed [Tern](https://github.com/tern-tools/tern) for SBOMs.
-> Its repository has had no commit since March 2024. Use Syft.
-
 > [!warning] SBOM generation is the easy half
 > Producing an SBOM per build is a week of work. Making it *useful* — stored,
 > queryable, re-scanned as new CVEs land, and connected to what is actually running

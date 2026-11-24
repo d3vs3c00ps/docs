@@ -202,11 +202,10 @@ There are issues to fix!
 
 - Our values files set `image.tag`, so the right tags are used
 
-> [!warning] Correction
-> The original lab expected the pods to fail to pull `rng:1.16.0`: its chart used
-> `{{ .Chart.AppVersion }}` alone as the tag, and the next step changed the
-> template to `{{ .Values.image.tag }}`. The chart that `helm create` generates
-> today already has the `default` fallback, so there is nothing to fix here.
+> [!note] Nothing to fix here
+> The chart that `helm create` generates already falls back to the app version
+> (`default .Chart.AppVersion`) when `image.tag` is empty, so the pods pull the image
+> you set.
 
 ## Troubleshooting readiness
 
@@ -244,10 +243,10 @@ There are issues to fix!
 
 It's failing both its liveness and readiness probes!
 
-> [!warning] Correction
-> The original selected `app.kubernetes.io/name=redis`, which finds nothing: in
-> this chart, `app.kubernetes.io/name` is the chart name (`helmcoins`) for every
-> component. The release name is in `app.kubernetes.io/instance`.
+> [!note] Which label to select on
+> In this chart, `app.kubernetes.io/name` is the chart name (`helmcoins`) for every
+> component, so `app.kubernetes.io/name=redis` finds nothing. The release name is in
+> `app.kubernetes.io/instance`.
 
 ## Healthchecks
 
@@ -299,10 +298,9 @@ It's failing both its liveness and readiness probes!
 
 `redis` and `worker` should now be `1/1 READY`.
 
-> [!warning] Correction
-> The original lab edited the Deployment template and wrapped the probes in
-> `{{ if false }} ... {{ end }}`. In today's generated chart, the probes are values,
-> already wrapped in `{{- with }}`, so a `null` in the values file is enough.
+> [!note] Probes are values
+> In the chart that `helm create` generates, the probes are values, already wrapped in
+> `{{- with }}`, so a `null` in the values file is enough to remove them.
 
 ## What's next?
 
@@ -408,9 +406,8 @@ We can look at the definition, but it's fairly complex ...
 
 - So one value, `service.port`, sets both
 
-> [!warning] Correction
-> The original chart hard-coded `containerPort: 80`, and the lab changed it to
-> `{{ .Values.service.port }}`. Today's generated chart already does that.
+> [!note] The port is already a value
+> The generated chart already uses `{{ .Values.service.port }}` for `containerPort`.
 
 ## Setting the redis port
 

@@ -139,10 +139,6 @@ It will use the default timeout (1 second).
 It will use the default failure threshold (3 failed attempts = dead).
 It will use the default success threshold (1 successful attempt = alive).
 
-> [!warning] Correction
-> In the original snippet, `image:` and `livenessProbe:` were not indented under the
-> `- name:` line, so they were not part of the container.
-
 ## Adding the liveness probe
 
 - Let's add the liveness probe, then deploy DockerCoins

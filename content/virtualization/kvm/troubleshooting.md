@@ -8,9 +8,7 @@ status: complete
 
 # KVM troubleshooting
 
-> [!warning] Corrections
-> Several claims changed from the original notes:
->
+> [!note] Things that are easy to get wrong
 > - Current distributions run `virtqemud`, not `libvirtd`: the commands below ask
 >   for both.
 > - systemd-resolved does not block libvirt's dnsmasq: it listens on `127.0.0.53`
@@ -183,11 +181,11 @@ sudo systemctl restart virtnetworkd     # libvirtd on older systems
 
 That regenerates the rules of every active network.
 
-> [!warning] Correction
-> The original fix was `virsh net-destroy default && virsh net-start default`. With
-> the nftables backend, after a flush that is not enough: libvirt still believes
-> its table exists, and `net-start` fails with `Failed to apply firewall command`.
-> Restarting the network daemon rebuilds the table.
+> [!note] Restart the daemon
+> With the nftables backend, after a flush, `virsh net-destroy default && virsh
+> net-start default` is not enough: libvirt still believes its table exists, and
+> `net-start` fails with `Failed to apply firewall command`. Restarting the network
+> daemon rebuilds the table.
 
 See [[networking/nftables]] and [[networking/iptables]].
 

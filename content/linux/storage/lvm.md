@@ -239,10 +239,9 @@ resize2fs /dev/mapper/system-root
 > over-provisioned XFS volume can only be reclaimed by backing up, recreating and
 > restoring. ext4 can shrink, but only while unmounted.
 
-> [!warning] Correction
-> The original note said XFS has no shrink operation at all. Since Linux 5.12,
-> `xfs_growfs -D <blocks>` can remove a little free space at the end of the last
-> allocation group. It is marked experimental, and it cannot shrink across
+> [!note] XFS can shrink a little
+> Since Linux 5.12, `xfs_growfs -D <blocks>` can remove a little free space at the end
+> of the last allocation group. It is marked experimental, and it cannot shrink across
 > allocation groups, so it does not help to reclaim a large volume.
 
 <!-- uplink -->

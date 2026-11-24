@@ -50,8 +50,6 @@ upstream_sync: manual
 
 - Prometheus itself exposes its own internal metrics, too (port 9090, `/metrics`)
 
-  (the public demo at `demo.robustperception.io` that the original linked to is gone)
-
 - If you want to expose custom metrics to Prometheus:
 
   - serve a text page like these, and you're good to go
@@ -156,10 +154,9 @@ scrape_configs:
 >   kubectl get services --selector=app.kubernetes.io/name=prometheus --all-namespaces
 >   ```
 
-> [!warning] Correction
-> The original looked for the label `app=prometheus`. Current versions of the chart
-> use the standard `app.kubernetes.io/name=prometheus` label, so the old selector finds
-> nothing even when Prometheus is installed.
+> [!note] The label
+> Current versions of the chart use the standard `app.kubernetes.io/name=prometheus`
+> label. `app=prometheus` finds nothing, even when Prometheus is installed.
 
 If we see a `NodePort` service called `prometheus-server`, we're good!
 
@@ -353,10 +350,8 @@ This query will show us CPU usage % instead of total seconds used:
 
 - The `[5m]` tells how far to look back if there is a gap in the data
 
-> [!warning] Correction
-> The original said that `rate` "allows decreasing counters and negative values" and
-> that only `irate` avoids negative spikes. Both functions detect counter resets; the
-> difference is how many samples they use.
+> [!note] `rate` and `irate`
+> Both functions detect counter resets. The difference is how many samples they use.
 
 - And we multiply with `100*` to get CPU % usage
 
@@ -464,7 +459,7 @@ sum by (instance) (
 
   (each pod appears as a time series with constant value of `1`)
 
-> [!warning] Correction
+> [!warning] `kube_pod_labels` needs an allowlist
 > kube-state-metrics v2 exposes `kube_pod_labels` only for labels that you allow, and
 > it allows none by default: with the chart's defaults, the metric does not exist. Allow
 > the pod labels, then they appear as `label_<name>` tags:
@@ -475,7 +470,7 @@ sum by (instance) (
 >   --set 'kube-state-metrics.metricLabelsAllowlist[0]=pods=[*]'
 > ```
 >
-> The original also said that each *container* appears as a series; it is each pod.
+> Each pod, not each container, appears as a series.
 
 - Prometheus *kind of* supports "joins" between time series
 

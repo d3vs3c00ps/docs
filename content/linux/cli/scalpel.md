@@ -52,11 +52,10 @@ The fields are:
 With a footer, `scalpel` stops each file at the first footer after the header. With
 no footer, every file is cut at the maximum size.
 
-> [!warning] Correction — `min:max` sizes need scalpel 1.90 or later
-> The original line used `1000000:30000000` as a size range. Only scalpel 1.90 and
-> later (2.0, built from source) read a minimum size. Debian and Ubuntu ship 1.60.
-> It reads `1000000:30000000` as a maximum of 1 MB, with no error, and cuts every
-> file at 1 MB.
+> [!warning] `min:max` sizes need scalpel 1.90 or later
+> Only scalpel 1.90 and later (2.0, built from source) read a minimum size. Debian and
+> Ubuntu ship 1.60. It reads `1000000:30000000` as a maximum of 1 MB, with no error,
+> and cuts every file at 1 MB.
 
 > [!note] `REVERSE` for files with several footers
 > A PDF that was edited in place can contain several `%%EOF` markers. Add `REVERSE`

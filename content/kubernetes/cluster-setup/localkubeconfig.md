@@ -51,10 +51,9 @@ upstream_sync: manual
 >
 >   (And remember to run it with `./kubectl` or move it to your `$PATH`)
 
-> [!warning] Correction
-> The original linked `kubectl` v1.19.2 on `storage.googleapis.com/kubernetes-release`.
-> That version is long out of support, and `dl.k8s.io` is the official download host.
-> `kubectl` is supported within one minor version of the API server.
+> [!note] Where to get `kubectl`
+> `dl.k8s.io` is the official download host. `kubectl` is supported within one minor
+> version of the API server.
 
 Note: if you are following along with a phone or tablet, installing `kubectl` might be impossible, so feel free to skip this section.
 

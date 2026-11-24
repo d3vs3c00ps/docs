@@ -79,10 +79,6 @@ upstream_sync: manual
 
 - A ClusterRoleBinding that gives `cluster-admin` to the dashboard's ServiceAccount
 
-> [!warning] Correction
-> Older versions of this lab put a `socat` HTTP/HTTPS unwrapper in front of the
-> dashboard. The pinned manifest has none: the dashboard itself serves HTTP.
-
 > [!example] Hands-on
 > - Create all the dashboard resources, with the following command:
 >   ```bash
@@ -98,11 +94,6 @@ upstream_sync: manual
 >   ```
 
 You'll want the `3xxxx` port.
-
-> [!warning] Correction
-> The original command was `kubectl get svc dashboard`. The manifest names the
-> Service `kubernetes-dashboard`, in the `kubernetes-dashboard` namespace, so
-> that command finds nothing.
 
 > [!example] Hands-on
 > - Connect to http://oneofournodes:3xxxx/
@@ -179,7 +170,7 @@ The dashboard will then ask you which authentication you want to use.
 
 - Kubernetes fills that Secret with a token for the ServiceAccount
 
-> [!warning] Correction
+> [!note] The Secret name
 > Since Kubernetes 1.24, a ServiceAccount no longer gets a token Secret
 > automatically. The manifest declares the Secret itself, so its name is exactly
 > `cluster-admin-token`, with no random `-xxxxx` suffix.

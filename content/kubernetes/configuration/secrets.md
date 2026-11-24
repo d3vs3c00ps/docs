@@ -25,12 +25,6 @@ Both can be exposed to containers as environment variables or as files in a volu
 Both can be created from YAML, or with a CLI command: `kubectl create configmap` and
 `kubectl create secret`.
 
-> [!warning] Correction
-> The original page said that both "can be exposed with the downward API". The
-> downward API exposes information about the Pod itself (its name, Namespace, IP
-> address, resource limits). ConfigMaps and Secrets are exposed with
-> `valueFrom.configMapKeyRef` / `valueFrom.secretKeyRef`, `envFrom`, or volumes.
-
 ## ConfigMap and Secrets are different resources
 
 They can have different RBAC (role-based access control) permissions. For example, the
@@ -66,12 +60,9 @@ For a `kubernetes.io/service-account-token` Secret, Kubernetes fills in the keys
 longer created automatically for each ServiceAccount. To get a short-lived token,
 prefer `kubectl create token <serviceaccount>`.
 
-> [!warning] Correction
-> The original page said that the type "is merely for our (human) convenience". It is
-> more than that: the API server rejects a typed Secret that lacks the required keys.
-> It also listed `token`, `namespace`, and `ca.crt` as required for
-> `kubernetes.io/service-account-token`, and both `username` and `password` for
-> `kubernetes.io/basic-auth`. See the table above.
+> [!note] The type is checked
+> The API server rejects a typed Secret that lacks the required keys. See the table
+> above.
 
 ## Accessing private registries
 
@@ -93,10 +84,6 @@ own:
 - image: `registry.example.com/team/private:latest`
 - user: `reader`
 - password: in the `REGISTRY_PASSWORD` environment variable
-
-> [!note]
-> The original course used a demo registry run by the course author's company, with
-> a public read-only account. That registry and account are not reproduced here.
 
 > [!example] Hands-on
 > - Create a Deployment using that image:
@@ -217,9 +204,9 @@ kubectl get secret pin-codes -o jsonpath='{.data.onetwothreefour}' | base64 -d
 >
 > No `type` was given, so it defaults to `Opaque`.
 >
-> > [!warning] Correction
-> > The original example did not quote `1234` and `0000`. YAML reads them as numbers,
-> > and `kubectl apply` rejects the Secret: `stringData` values must be strings.
+> > [!warning] Quote the numbers
+> > Without quotes, YAML reads `1234` and `0000` as numbers, and `kubectl apply`
+> > rejects the Secret: `stringData` values must be strings.
 
 > [!note]- Extra details
 > ## Encryption at rest
@@ -236,12 +223,9 @@ kubectl get secret pin-codes -o jsonpath='{.data.onetwothreefour}' | base64 -d
 > (key management service) provider. Protect that file, or the key service, as well
 > as the etcd data.
 >
-> > [!warning] Correction
-> > The original page said that the API server then needs a human to provide the
-> > keys at each start, and that this is only for "extremely regulated environments".
-> > Neither is true today: the keys come from a file or a KMS, with no human step,
-> > and many managed Kubernetes services encrypt Secrets at rest by default or as an
-> > option.
+> > [!note]
+> > No human step is needed at start: the keys come from a file or a KMS. Many
+> > managed Kubernetes services encrypt Secrets at rest by default, or as an option.
 
 > [!note]- Extra details
 > ## Immutable ConfigMaps and Secrets

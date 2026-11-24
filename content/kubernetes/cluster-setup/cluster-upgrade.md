@@ -145,11 +145,10 @@ upstream_sync: manual
 *¹Except kubelet (and kube-proxy), which can be up to three MINOR behind API server,
 and kubectl, which can be one MINOR ahead or behind API server.*
 
-> [!warning] Correction
-> The original said kubelet can be two MINOR versions behind. The
-> [version skew policy](https://kubernetes.io/releases/version-skew-policy/) now
-> allows three for kubelet 1.25 and newer (two before). kubelet must never be
-> *newer* than the API server.
+> [!note] Version skew
+> The [version skew policy](https://kubernetes.io/releases/version-skew-policy/)
+> allows kubelet 1.25 and newer to be three MINOR versions behind the API server (two
+> before 1.25). kubelet must never be *newer* than the API server.
 
 ## Release cycle
 
@@ -165,9 +164,8 @@ and kubectl, which can be one MINOR ahead or behind API server.*
 
 - We should expect to upgrade at least once a year, and more often is easier
 
-> [!warning] Correction
-> The original said a MINOR release is maintained about 9 months. That was true
-> up to Kubernetes 1.18; since 1.19, releases get about 1 year of patch support
+> [!note] Support period
+> Since Kubernetes 1.19, each MINOR release gets about 14 months of patch support
 > ([Kubernetes releases](https://kubernetes.io/releases/)).
 
 ## General guidelines
@@ -316,12 +314,10 @@ It doesn't know how to upgrade to higher versions.
 
 - `zypper install kubeadm` should now upgrade `kubeadm` correctly! 🎉
 
-> [!warning] Correction
-> An earlier version of this page said each minor version has its own signing key,
-> and that bumping `baseurl` alone fails the signature check. It does not: in our
-> test (openSUSE Leap, November 2026) the 1.31, 1.32 and 1.37 repositories share one
-> key, and a 1.32 `baseurl` with the 1.31 `gpgkey` refreshes fine. Bump both anyway,
-> so the file stays consistent if the key ever changes.
+> [!note] One signing key for several versions
+> In our test (openSUSE Leap, November 2026) the 1.31, 1.32 and 1.37 repositories
+> share one key, and a 1.32 `baseurl` with the 1.31 `gpgkey` refreshes fine. Bump both
+> anyway, so the file stays consistent if the key ever changes.
 
 ## Reverting our manual API server upgrade
 

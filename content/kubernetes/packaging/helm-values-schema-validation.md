@@ -165,10 +165,10 @@ upstream_sync: manual
 >   helm install should-break . --set ImAgeTAg=toto
 >   ```
 
-> [!warning] Correction
-> The original commands had no chart argument (`helm install broken --set ...`).
-> Helm then fails with `must either provide a name or specify --generate-name`,
-> before it even reads the schema. The `.` is the chart in the current directory.
+> [!warning] Name the chart
+> Without a chart argument (`helm install broken --set ...`), Helm fails with
+> `must either provide a name or specify --generate-name`, before it even reads the
+> schema. The `.` is the chart in the current directory.
 
 - The first one fails, but the second one still passes ...
 

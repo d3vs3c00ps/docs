@@ -192,9 +192,9 @@ sudo reboot
 On RHEL and Fedora, `sudo grubby --update-kernel=ALL --args="intel_iommu=on iommu=pt"`
 does the same without editing files.
 
-> [!warning] Correction
-> The original said `amd_iommu=on`. The kernel's `amd_iommu=` option takes values
-> such as `off` or `force_isolation`; `on` is not one of them.
+> [!note] No `amd_iommu=on`
+> The kernel's `amd_iommu=` option takes values such as `off` or `force_isolation`;
+> `on` is not one of them.
 
 See [[linux/boot/grub]].
 

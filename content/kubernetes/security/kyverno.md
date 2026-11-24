@@ -27,7 +27,7 @@ upstream_sync: manual
 
   - modifying, generating, cleaning up resources automatically
 
-> [!warning] Correction: Kyverno 1.20 no longer runs `ClusterPolicy`
+> [!warning] Kyverno 1.20 no longer runs `ClusterPolicy`
 > Everything in this note and in [[kubernetes/security/kyverno-colors]] and
 > [[kubernetes/security/kyverno-ingress]] uses the `kyverno.io/v1` types
 > (`ClusterPolicy`, `Policy`). Kyverno 1.20 (chart 3.10.0) removed their
@@ -230,11 +230,10 @@ validate:
   (visible in `kubectl` output: `Warning: policy <policy>.<rule>: validation error...`;
   Kyverno also records `Warning` events on the object, visible with `kubectl describe`)
 
-> [!warning] Correction
-> The original said Audit violations always produce an API warning, and that
-> `emitWarning` only adds an `Event`. Tested on Kyverno 1.19: without
-> `emitWarning: true`, an Audit violation is admitted silently and only the
-> PolicyReport records it; `emitWarning: true` adds the API warning.
+> [!note] `emitWarning`
+> Tested on Kyverno 1.19: without `emitWarning: true`, an Audit violation is admitted
+> silently and only the PolicyReport records it. `emitWarning: true` adds the API
+> warning.
 
 ## Background checks
 
@@ -341,12 +340,11 @@ Note: again, there should also be an entry for `initContainers` and `ephemeralCo
 
   - *or* a `clone` reference, to copy an existing resource
 
-> [!warning] Correction: `apiVersion` is required
-> The original said the `apiVersion` field "appears to be optional". Current
-> Kyverno refuses a generate rule without it (`apiVersion can not be empty`),
-> including the upstream `kyverno-namespace-setup.yaml` below: add
-> `apiVersion: v1` (LimitRange, ResourceQuota) or
-> `apiVersion: networking.k8s.io/v1` (NetworkPolicy) under each `generate:`.
+> [!warning] `apiVersion` is required
+> Current Kyverno refuses a generate rule without it (`apiVersion can not be empty`),
+> including the upstream `kyverno-namespace-setup.yaml` below: add `apiVersion: v1`
+> (LimitRange, ResourceQuota) or `apiVersion: networking.k8s.io/v1` (NetworkPolicy)
+> under each `generate:`.
 
 ## In practice
 
@@ -510,13 +508,11 @@ Note: again, there should also be an entry for `initContainers` and `ephemeralCo
 
 - Internal resources (UpdateRequest) "parked" in a Namespace
 
-> [!warning] Correction: updated counts
-> The original listed 14 CRDs and 10 webhooks. Measured on Kyverno 1.19 and 1.20
-> (charts 3.9.2 and 3.10.0): 22 CRDs, because the new CEL-based policy types
-> (`ValidatingPolicy`, `MutatingPolicy`, `GeneratingPolicy`...) live in
-> `policies.kyverno.io`; and 10 webhook configurations with 9 webhooks before any
-> policy. The Services, Deployments and ConfigMaps match. GenerateRequest is now
-> called UpdateRequest.
+> [!note] Counts
+> Measured on Kyverno 1.19 and 1.20 (charts 3.9.2 and 3.10.0): 22 CRDs, because the
+> CEL-based policy types (`ValidatingPolicy`, `MutatingPolicy`, `GeneratingPolicy`...)
+> live in `policies.kyverno.io`; and 10 webhook configurations with 9 webhooks before
+> any policy. GenerateRequest is now called UpdateRequest.
 
 ## Footprint (older versions)
 

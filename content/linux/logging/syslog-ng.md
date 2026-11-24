@@ -45,11 +45,6 @@ dnf remove -y rsyslog
 > EPEL tends to lag. Peter Czanik maintains current builds in a COPR repository,
 > which is where you go if you need a recent feature:
 > `dnf copr enable czanik/syslog-ng-stable`
->
-> The original version of these notes pinned RHEL/CentOS 7 and 8 with hardcoded
-> `epel-release-latest-7`/`-8` URLs and a COPR repo whose filename
-> (`syslog-ng337`) disagreed with its path (`syslog-ng336`). All of those
-> releases are now end-of-life; the commands above are version-agnostic.
 
 ## Enabling the service
 
@@ -160,12 +155,10 @@ destination d_net {
 log { source(s_src); destination(d_net); };
 ```
 
-> [!warning] Correction from the original notes
-> The source version passed the CA certificate as `cert_file(...)`. Those are
-> different things: `ca_dir()`/`ca_file()` hold the CA used to **verify the
-> server**, while `cert_file()` and `key_file()` are the client's *own* certificate
-> and private key, needed only for mutual TLS. Passing the CA as `cert_file` does
-> not establish trust.
+> [!warning] The CA is not `cert_file`
+> `ca_dir()`/`ca_file()` hold the CA used to **verify the server**, while
+> `cert_file()` and `key_file()` are the client's *own* certificate and private key,
+> needed only for mutual TLS. Passing the CA as `cert_file` does not establish trust.
 
 If the collector requires client certificates, add them:
 

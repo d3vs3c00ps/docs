@@ -64,11 +64,6 @@ With a single port number, it is used on both sides.
 >   kill %1
 >   ```
 
-> [!note] Correction
-> The original connected with `telnet localhost 10000` and typed `INFO server`
-> by hand. Modern Redis answers `telnet` probes poorly and few machines still
-> ship telnet; `redis-cli -p` (or `nc`) does the same job scriptably.
-
 > [!tip] Port-forwards bypass network policies
 > Both commands tunnel through the API server, so they work even where
 > [[kubernetes/networking/netpol|network policies]] block direct traffic —

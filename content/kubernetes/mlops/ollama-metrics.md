@@ -124,10 +124,9 @@ kubectl get secret promstack-grafana --namespace prom-system \
   -o jsonpath='{.data.admin-password}' | base64 -d
 ```
 
-> [!warning] Correction
-> The original said that the password is `prom-operator`. Current versions of the chart
-> (tested with 92.18.0) generate a random password, stored in the `promstack-grafana`
-> Secret.
+> [!note] The Grafana password
+> Current versions of the chart (tested with 92.18.0) generate a random password,
+> stored in the `promstack-grafana` Secret. It is not `prom-operator`.
 
 Check the dashboard "Kubernetes / Compute Resources / Namespace (Pods)".
 

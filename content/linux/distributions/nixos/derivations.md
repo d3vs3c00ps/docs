@@ -44,11 +44,10 @@ nix derivation show /nix/store/xxxx-hello-2.12.3.drv | jq
 nix derivation show nixpkgs#hello | jq '.derivations[] | {name, outputs, inputDrvs: (.inputs.drvs|keys), env: (.env|keys)}'
 ```
 
-> [!warning] Correction
-> The JSON format changed: Nix 2.34, in NixOS 26.05, prints format `version` 4. The
-> derivations are now under `.derivations`, and `inputDrvs` and `inputSrcs` became
-> `inputs.drvs` and `inputs.srcs`. The earlier `jq '.[] | ...'` filter fails on
-> current Nix.
+> [!note] The JSON format
+> Nix 2.34, in NixOS 26.05, prints format `version` 4. The derivations are under
+> `.derivations`, and the inputs are `inputs.drvs` and `inputs.srcs` (`inputDrvs` and
+> `inputSrcs` before). A `jq '.[] | ...'` filter from older guides fails.
 
 Essentially:
 
@@ -135,11 +134,8 @@ The default phases — `unpack`, `patch`, `configure`, `build`, `check`, `instal
 such as `buildPhase = '' ... '';`, only when the default does not fit. Most package
 definitions in `nixpkgs` are a `src`, a list of inputs, and `meta`.
 
-> [!warning] Correction
-> An earlier version used `cmake`, `pkg-config`, `openssl`, `zlib` and `lib` without
-> listing them in the arguments, so it did not evaluate. It also rewrote the
-> configure, build and install phases that the defaults already do. `finalAttrs`
-> replaces `rec`: an override of `version` then also changes the URL.
+> [!note] `finalAttrs`
+> `finalAttrs` replaces `rec`: an override of `version` then also changes the URL.
 
 > [!note] `nativeBuildInputs` versus `buildInputs` matters when cross-compiling
 > `nativeBuildInputs` runs **on the build machine** — compilers, `pkg-config`,

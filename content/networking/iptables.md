@@ -57,11 +57,6 @@ Private and reserved IPv4 ranges worth knowing when writing rules:
 | `224.0.0.0/4` | multicast (historically class D) |
 | `240.0.0.0/4` | reserved (historically class E) |
 
-> [!warning] Corrections from the original notes
-> These were labelled address "classes" A/B/C, with class E as `240.0.0.0/5`, and
-> the first entry carried a stray `-j`. Classful addressing was replaced by CIDR in
-> 1993 — these are RFC 1918 private ranges, and class E is `240.0.0.0/4`.
-
 Enable routing if you need it:
 
 ```bash
@@ -75,11 +70,6 @@ net.ipv6.conf.all.forwarding = 1
 EOF
 sysctl --system
 ```
-
-> [!warning] Correction from the original notes
-> The original wrote both settings with `>` to the same file, so the second
-> truncated the first and IPv4 forwarding was never enabled. Use a single heredoc,
-> or `>>`.
 
 ## Useful arguments
 
@@ -176,7 +166,7 @@ ip6tables -A FORWARD -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
 ```
 
 > [!note] `-m state` is the deprecated spelling
-> The original used `-m state --state`. It is an alias kept for compatibility;
+> `-m state --state` is an alias kept for compatibility;
 > `-m conntrack --ctstate` is the current module and supports more states.
 
 Allow loopback — many services talk to themselves and will break without it:
@@ -213,22 +203,11 @@ iptables -A INPUT -p icmp --icmp-type destination-unreachable -j ACCEPT
 iptables -A INPUT -p icmp --icmp-type time-exceeded -j ACCEPT
 ```
 
-> [!warning] Corrections from the original notes
-> The original had several problems here:
->
-> - It appended the rate-limit rule with `-A`, after the baseline's
->   `ESTABLISHED,RELATED` rule. Conntrack tracks a ping session: after the first
->   reply, the next echo requests of the same `ping` are `ESTABLISHED`. They were
->   accepted before the limit was checked, so a flood from one `ping -f` passed
->   in full. The limit must come first, with a `DROP` for what goes over it.
-> - `-j ACCEP T` — `ACCEPT` split by a space, so the rule fails to parse. This
->   appears throughout the source file.
-> - `-mconntrack` with no space, which iptables reads as an unknown option.
-> - It said hosts "must respond to Type 0". Type 0 *is* the reply; the request is
->   Type 8.
-> - It matched `--icmp-type 0` with `--ctstate NEW`. An echo reply is never a NEW
->   connection — conntrack pairs it with the request as ESTABLISHED — so that rule
->   matches nothing.
+> [!warning] Order, and what not to block
+> The limit comes before the `ESTABLISHED,RELATED` rule. Conntrack tracks a ping
+> session: after the first reply, the next echo requests of the same `ping` are
+> `ESTABLISHED`, so a limit placed after that rule never sees a flood. An echo reply
+> (type 0) is never a NEW connection.
 >
 > Do not block Type 3 or Type 11: dropping destination-unreachable breaks Path MTU
 > Discovery, which produces connections that hang on large transfers and is
@@ -348,15 +327,11 @@ iptables -A DROP_FORWARD -j DROP
 iptables -A FORWARD -j DROP_FORWARD
 ```
 
-> [!warning] Corrections from the original notes
-> - The original referenced `$NET_ANYWHERE` without ever defining it in this
->   section, so those rules expanded to `-s` with no argument and failed.
-> - It had both `-j REJECT` and `-j DROP` in each chain. `REJECT` is terminal, so
->   the `DROP` was unreachable. Pick one: `REJECT` is friendlier for hosts on your
->   own network, `DROP` gives an attacker less information.
-> - The `-j <chain>` hook was appended *before* the chain's rules existed. It works
->   either way, but building the chain first avoids a window where traffic reaches
->   an empty chain and falls through.
+> [!note] `REJECT` or `DROP`
+> `REJECT` is terminal, so a `DROP` after it never runs. Pick one: `REJECT` is
+> friendlier for hosts on your own network, `DROP` gives an attacker less
+> information. Build the chain before you hook it with `-j <chain>`, so no traffic
+> reaches an empty chain and falls through.
 
 > [!warning] The jump to the logging chain must be the last rule
 > `iptables -A INPUT -j DROP_INPUT` drops everything that reaches it. Any rule you
@@ -371,10 +346,10 @@ iptables -R DROP_INPUT 1 -m limit --limit 5/m --limit-burst 10 \
   -j LOG --log-prefix "[DROP_INPUT - firewall] "
 ```
 
-> [!warning] Correction
-> The original appended this rule with `-A DROP_INPUT`. It then came after the
-> `DROP` rule, so it never ran, and the unlimited `LOG` rule stayed in place. `-R`
-> replaces the rule at that position.
+> [!note] Why `-R`
+> `-R` replaces the rule at that position. Appended with `-A DROP_INPUT`, the limited
+> rule would come after the `DROP` rule, never run, and leave the unlimited `LOG` rule
+> in place.
 
 See [[linux/logging/rsyslog]] for routing these into their own file.
 
@@ -406,11 +381,6 @@ of `INPUT` must check the list:
 iptables -I INPUT 1 -m recent --name blacklist_60 --rcheck --seconds 60 \
   -m comment --comment "[DROP_INPUT - blacklisted]" -j DROP
 ```
-
-> [!warning] Correction
-> The original said these rules blacklist the source for 60 seconds, but no rule
-> ever read the `blacklist_60` list. The `--rcheck` rule above does that. The scan
-> rules below fill the same list.
 
 ### XMAS scan
 
@@ -488,12 +458,11 @@ iptables -A INPUT -p udp --dport 53 \
 `IN` (1). `--from` is an offset from the start of the IP header. The question
 starts at byte 40 (20 bytes of IP header, 8 of UDP, 12 of DNS header).
 
-> [!warning] Correction
-> - The original used `--from 50`. A short name such as `isc.org` ends before
->   byte 50, so its `ANY` query did not match. `--from 40` catches every name.
-> - It used `--hitcount 1`. The first rule has already counted the current query,
->   so every `ANY` query was dropped, not only repeats. `--hitcount 2` drops the
->   second query within 10 seconds and the ones after it.
+> [!note] Why `--from 40` and `--hitcount 2`
+> A short name such as `isc.org` ends before byte 50, so a match `--from 50` misses
+> its `ANY` query; `--from 40` catches every name. The first rule has already counted
+> the current query, so `--hitcount 1` would drop every `ANY` query. `--hitcount 2`
+> drops the second query within 10 seconds and the ones after it.
 
 The better fix is on the resolver: disable recursion for the internet and enable
 response rate limiting.
@@ -542,13 +511,11 @@ iptables -A SSHBRUTE -j ACCEPT
 iptables -A INPUT -p tcp --dport 22 -m conntrack --ctstate NEW -j SSHBRUTE
 ```
 
-> [!warning] Corrections from the original notes
-> The original said this allows five connections. `--set` counts the current
-> connection before `--hitcount 5` is checked, so the fifth one is already
-> dropped. Each dropped retry is counted too, so a client that keeps retrying
-> stays blocked. `-mlimit` and `-mcomment` were written without spaces, and the log prefix read
-> `attaquebrute`. The original also never attached `SSHBRUTE` to `INPUT`, so the
-> chain was created and never used — the final line above does that.
+> [!note] Four connections, not five
+> `--set` counts the current connection before `--hitcount 5` is checked, so the fifth
+> one is already dropped. Each dropped retry is counted too, so a client that keeps
+> retrying stays blocked. The last line attaches `SSHBRUTE` to `INPUT`; without it,
+> the chain is never used.
 
 Or use the `connlimit` module:
 
@@ -562,9 +529,6 @@ iptables -A INPUT -p tcp --syn --dport 80 -m connlimit --connlimit-above 20 \
 | --- | --- |
 | `--connlimit-above 5` | matches when there are more than 5 connections |
 | `--connlimit-mask 24` | group source IPs by prefix length (0–32 for IPv4) |
-
-The original's second `connlimit` line was missing `-A INPUT`, so it would have
-been interpreted as a command with no chain.
 
 > [!tip] Key-based authentication removes the problem
 > Rate limiting slows a brute force down; disabling password authentication ends
@@ -598,11 +562,11 @@ iptables  -I INPUT 1 -p icmp      --icmp-type 8   -j ICMPFLOOD
 ip6tables -I INPUT 1 -p ipv6-icmp --icmpv6-type 128 -j ICMPFLOODIPV6
 ```
 
-> [!warning] Correction
-> The original matched echo requests with `--ctstate NEW` and appended the jumps
-> with `-A`. Only the first echo request of a `ping` session is `NEW`; the next
-> ones are `ESTABLISHED`. So a flood from one `ping` never reached the chain. The
-> jumps now come first in `INPUT` and match every echo request.
+> [!note] Why the jumps come first
+> Only the first echo request of a `ping` session is `NEW`; the next ones are
+> `ESTABLISHED`. Matched with `--ctstate NEW` or appended after the `ESTABLISHED` rule,
+> a flood from one `ping` never reaches the chain. The jumps come first in `INPUT` and
+> match every echo request.
 
 ## Matching several ports at once
 
@@ -665,22 +629,11 @@ To restore by hand:
 iptables-restore < /etc/iptables/rules.v4
 ```
 
-> [!note] The original's SysV init script has not been carried over
-> The source document ended with a ~470-line `/etc/init.d/iptables` script. It has
-> been dropped deliberately, for four reasons:
->
-> - It hardcoded a **home IP address** and a long list of specific attacker IPs.
-> - It embedded roughly 200 hardcoded provider IP addresses — OVH, Cloudflare,
->   GoDaddy, Google, Debian mirrors, DNS root servers — captured around 2015 and
->   long since changed. An allowlist of stale IPs fails closed and is very hard to
->   debug.
-> - It loaded `nf_conntrack_ipv4`, a module removed from the kernel in 4.19.
-> - Its module checks were written `MODEXIST1=/sbin/lsmod | grep "$MODULE1"`, which
->   assigns nothing and pipes into `grep` — so the check always saw an empty value.
->
-> It applied the same chains documented above (`DDOS`, `DROP_*`, `ICMPFLOOD`,
-> `SSHBRUTE`), so nothing conceptual is lost. `iptables-save` plus a restore unit
-> (or `iptables-persistent` on Debian) is the modern equivalent and needs no script.
+> [!note] No SysV init script
+> `iptables-save` plus a restore unit (or `iptables-persistent` on Debian) is all you
+> need. Avoid old `/etc/init.d/iptables` scripts: they often hardcode allowlists of
+> provider IP addresses, which go stale, fail closed and are very hard to debug, and
+> they load `nf_conntrack_ipv4`, a module removed from the kernel in 4.19.
 
 ## Commands that save time
 

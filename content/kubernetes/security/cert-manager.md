@@ -81,8 +81,8 @@ upstream_sync: manual
 >         --set crds.enabled=true
 >   ```
 
-> [!note] Changed from the original
-> The original used `--set installCRDs=true`. The chart now marks it deprecated,
+> [!note] `crds.enabled`, not `installCRDs`
+> The chart marks `--set installCRDs=true` as deprecated,
 > in favour of `crds.enabled` (and `crds.keep`, which defaults to keeping the CRDs
 > on uninstall). The version is pinned so the lab is reproducible.
 
@@ -122,11 +122,10 @@ spec:
 >     | kubectl apply -f -
 >   ```
 
-> [!warning] Correction: Let's Encrypt refuses `example.com` contacts
-> The upstream file sets `email: hello@example.com`. Let's Encrypt rejects it,
-> and the ClusterIssuer stays `Ready=False` with
-> `contact email has forbidden domain "example.com"`. The email is optional, so
-> the manifest above drops it. If you want one, set an address you own.
+> [!warning] Let's Encrypt refuses `example.com` contacts
+> With `email: hello@example.com`, as in the upstream file, the ClusterIssuer stays
+> `Ready=False` with `contact email has forbidden domain "example.com"`. The email is
+> optional, so the manifest above has none. If you want one, set an address you own.
 
 ## Certificate manifest
 

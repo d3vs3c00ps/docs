@@ -122,11 +122,11 @@ upstream_sync: manual
   kubectl apply -f https://github.com/rabbitmq/messaging-topology-operator/releases/download/v1.20.5/messaging-topology-operator-with-certmanager.yaml
   ```
 
-> [!warning] Correction
-> The original installed the Bitnami `rabbitmq-cluster-operator` Helm chart. Since
-> Bitnami stopped publishing free images (2025), the images in that chart no longer exist
-> (`docker.io/bitnami/rabbitmq-cluster-operator:2.16.1-debian-12-r0` is gone), so its pods
-> cannot start. The official manifests above work.
+> [!warning] Not the Bitnami chart
+> Since Bitnami stopped publishing free images (2025), the images in the Bitnami
+> `rabbitmq-cluster-operator` Helm chart no longer exist
+> (`docker.io/bitnami/rabbitmq-cluster-operator:2.16.1-debian-12-r0` is gone), so its
+> pods cannot start. The official manifests above work.
 
 ## Deploying a simple RabbitMQ cluster
 

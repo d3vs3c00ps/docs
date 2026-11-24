@@ -81,10 +81,9 @@ so the lines should not be indented (otherwise the indentation will insert space
 
   - `--cascade=orphan` orphans dependent objects
 
-> [!warning] Correction
-> The original listed `--cascade=true` and `--cascade=false`. These boolean values are
-> deprecated since Kubernetes 1.20. `--cascade=false` still works, but kubectl prints
-> a warning and asks for `--cascade=orphan`.
+> [!note] `--cascade=true` and `--cascade=false`
+> These boolean values are deprecated since Kubernetes 1.20. `--cascade=false` still
+> works, but kubectl prints a warning and asks for `--cascade=orphan`.
 
 ## What happens when an object is deleted
 

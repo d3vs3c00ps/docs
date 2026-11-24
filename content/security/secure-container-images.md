@@ -231,11 +231,11 @@ cosign sign --key <provider>://<key-reference> --signing-config no-tlog.json \
   "myregistry/myapp@${DIGEST}"
 ```
 
-> [!warning] Correction
-> The note signed `myregistry/myapp:1.2.3`, a tag. Sign the digest: a tag can move
-> after signing (see [[security/supply-chain/cosign]]). And since cosign v3, a key
-> signature also goes to the **public** Rekor log by default. For a private PKI with
-> no external service, sign with a signing config that has no log
+> [!warning] Sign the digest, and mind Rekor
+> Sign the digest, not a tag: a tag can move after signing (see
+> [[security/supply-chain/cosign]]). Since cosign v3, a key signature also goes to the
+> **public** Rekor log by default. For a private PKI with no external service, sign
+> with a signing config that has no log
 > (`cosign signing-config create --out no-tlog.json`), and verify with
 > `--insecure-ignore-tlog=true`.
 

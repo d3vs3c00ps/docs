@@ -199,10 +199,10 @@ firmware, SLH-DSA is worth planning for now — see
   arrives before the general deadlines do.
 - Sector regulators (finance, health) are converging on the same 2030–2035 window.
 
-> [!warning] Correction
-> An earlier version described the November 2024 draft of IR 8547, where only the
-> 112-bit algorithms (RSA-2048, P-224) were deprecated after 2030. The final report
-> deprecates all of them after 2030, whatever the key size.
+> [!note] The final IR 8547
+> The November 2024 draft deprecated only the 112-bit algorithms (RSA-2048, P-224)
+> after 2030. The final report deprecates all of them after 2030, whatever the key
+> size.
 
 2035 sounds distant. It is not, for anything with a ten-year replacement cycle:
 industrial controllers, medical devices, vehicles, smart meters, HSMs. Those need

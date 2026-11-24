@@ -183,9 +183,9 @@ This will:
 
 - and apply the manifest to the cluster
 
-> [!warning] Correction
-> The original said `make install` also builds the Go code. In the current scaffold it
-> depends only on the `manifests` and `kustomize` targets. Build with `make build`.
+> [!note] `make install` does not build
+> In the current scaffold, `make install` depends only on the `manifests` and
+> `kustomize` targets. Build the Go code with `make build`.
 
 ## Creating a machine
 
@@ -235,9 +235,6 @@ spec:
 ## Loading an object
 
 Open `internal/controller/machine_controller.go`.
-
-> [!warning] Correction
-> The original path was `internal/controllers/`. Kubebuilder v4 uses `internal/controller/`.
 
 Add that code in the `Reconcile` method, at the `TODO(user)` location:
 
@@ -687,10 +684,6 @@ Import the following packages referenced by the previous code:
 "sigs.k8s.io/controller-runtime/pkg/handler"
 "k8s.io/apimachinery/pkg/types"
 ```
-
-> [!warning] Correction
-> The original also imported `sigs.k8s.io/controller-runtime/pkg/source`. This code does
-> not use it, and Go refuses to build with an unused import.
 
 After this, when we update a switch, it should reflect on the machine.
 

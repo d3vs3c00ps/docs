@@ -123,10 +123,6 @@ Ingress controller already holds port 80, see method 3.
 
 `--test-cert` uses the staging environment; remove it for a real certificate.
 
-> [!note] Correction
-> The original copied from `letsencrypt/live/test/` in this method — the
-> directory is named after the domain, as the same step in method 3 shows.
-
 ## Method 3: certbot behind an Ingress
 
 When port 80 is taken by the Ingress controller, or the nodes sit on an
@@ -162,10 +158,6 @@ with Endpoints resources:
 >   sudo chown -R $USER letsencrypt
 >   cp letsencrypt/live/$DOMAIN/{cert,privkey}.pem .
 >   ```
-
-> [!note] Correction
-> The original pointed at `~/containers.training/...` — the clone directory is
-> `container.training`.
 
 ## Creating the Secret
 
@@ -210,7 +202,7 @@ kubectl create ingress hello \
 > - Check that the URL now works over `https` — the controller can take a
 >   minute to pick the Secret up.
 
-> [!warning] Correction: with Traefik, the `tls` section alone is not enough
+> [!warning] With Traefik, the `tls` section alone is not enough
 > Traefik's Ingress provider reads the `tls` section only to load the
 > certificate into its store. The route itself stays plain HTTP, and `https://`
 > requests answer **404**. Also tell Traefik to terminate TLS on that route:

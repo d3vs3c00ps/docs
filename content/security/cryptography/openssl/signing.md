@@ -84,11 +84,10 @@ openssl pkeyutl -verify -pubin -inkey ed25519-pub.pem -rawin \
 > openssl dgst -sha256 -verify pub.pem -sigopt rsa_padding_mode:pss -signature file.sig file.tar.gz
 > ```
 
-> [!warning] Correction
-> An earlier version said that `dgst -sign` cannot select PSS and should not be used
-> in new work. That is wrong: `-sigopt rsa_padding_mode:pss` works, tested with
-> OpenSSL 3.5. `dgst` and `pkeyutl` produce the same kind of signature; pick either,
-> and set the padding explicitly.
+> [!note] `dgst` can use PSS
+> `-sigopt rsa_padding_mode:pss` works with `dgst -sign`, tested with OpenSSL 3.5.
+> `dgst` and `pkeyutl` produce the same kind of signature; pick either, and set the
+> padding explicitly.
 
 ### RSA-PSS
 
@@ -133,9 +132,6 @@ openssl pkeyutl -decrypt -inkey key.pem \
 > `openssl rsautl` is deprecated as of OpenSSL 3.0. More importantly, both it and
 > `pkeyutl` default to **PKCS#1 v1.5** padding, which is vulnerable to Bleichenbacher
 > padding-oracle attacks. Specify OAEP explicitly, as above.
->
-> This exact issue was corrected in [[security/boot-integrity/luks]], where a
-> key-wrapping script used `rsautl` with default padding.
 
 > [!important] RSA can only encrypt a very small amount of data
 > An RSA key encrypts at most (key size − padding overhead) bytes — roughly 190 bytes
@@ -162,8 +158,8 @@ openssl enc -d -aes-256-cbc -pbkdf2 -iter 600000 \
 > `*** WARNING : deprecated key derivation used.` Always pass `-pbkdf2` and a high
 > `-iter`.
 >
-> Correction: an earlier version said this default hash is MD5. It was MD5 before
-> OpenSSL 1.1.0; since then it is one round of SHA-256. Still one round, still weak.
+> The hash is one round of SHA-256 since OpenSSL 1.1.0 (MD5 before). Still one round,
+> still weak.
 >
 > `enc` also provides **no authentication** — an attacker can modify the ciphertext
 > and you will not know. For anything that matters, use `openssl cms` with an AEAD
@@ -190,14 +186,13 @@ openssl cms -encrypt -binary -in file.txt -out file.p7m -outform PEM \
 openssl cms -decrypt -in file.p7m -inform PEM -inkey key.pem -out file.txt
 ```
 
-> [!warning] Correction
-> The signing example had no `-nodetach`. `cms -sign` makes a **detached** signature
-> by default, so the `-verify` command above failed with `no content`. To keep the
-> signature in a separate file, verify with `-content file.txt` instead. Without
-> `-binary`, `cms -sign` and `cms -encrypt` work in S/MIME text mode and turn every
-> line ending into CRLF, so the file you get back is not the file you put in. The
-> encryption example used `-aes256` (CBC, not authenticated); `-aes-256-gcm` needs
-> OpenSSL 3.0 or later on both sides.
+> [!warning] Detached by default, and text mode
+> `cms -sign` makes a **detached** signature by default; `-nodetach` keeps the content
+> inside. To keep the signature in a separate file, verify with `-content file.txt`.
+> Without `-binary`, `cms -sign` and `cms -encrypt` work in S/MIME text mode and turn
+> every line ending into CRLF, so the file you get back is not the file you put in.
+> `-aes256` is CBC, not authenticated; `-aes-256-gcm` needs OpenSSL 3.0 or later on
+> both sides.
 
 CMS handles the hybrid construction, so file size is not a constraint. It is what
 S/MIME and many document-signing systems use underneath.

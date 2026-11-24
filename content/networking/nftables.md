@@ -152,12 +152,6 @@ Private IPv4 ranges worth knowing when writing rules:
 | `224.0.0.0/4` | multicast (historically class D) |
 | `240.0.0.0/4` | reserved (historically class E) |
 
-> [!warning] Corrections from the original notes
-> The original listed these as address "classes" A/B/C, and gave class E as
-> `240.0.0.0/5`. Classful addressing was superseded by CIDR in 1993 — these are
-> **RFC 1918 private ranges**, which happen to sit inside the old class A/B/C
-> space but are not the classes themselves. Class E is `240.0.0.0/4`, not `/5`.
-
 Enable routing if you need it:
 
 ```bash
@@ -172,17 +166,6 @@ EOF
 sysctl --system
 ```
 
-> [!warning] Correction from the original notes
-> The original wrote both settings with `>` to the same file:
->
-> ```bash
-> echo "net.ipv4.ip_forward = 1" > /etc/sysctl.d/net-forward.conf
-> echo "net.ipv6.conf.all.forwarding = 1" > /etc/sysctl.d/net-forward.conf
-> ```
->
-> The second `>` truncates the file, so only the IPv6 line survives and IPv4
-> forwarding is never enabled. Use `>>`, or a single heredoc as above.
-
 ### iptables and firewalld
 
 Only one tool should own the firewall.
@@ -196,10 +179,9 @@ Only one tool should own the firewall.
   writes nftables rules. If you manage nftables by hand, stop it:
   `systemctl disable --now firewalld`.
 
-> [!warning] Correction
-> An earlier version said `systemctl disable --now iptables.service`. There is no
-> such unit on openSUSE Leap 16 or a default RHEL install: it comes only from the
-> old `iptables-services` package.
+> [!note] No `iptables.service`
+> There is no `iptables.service` unit on openSUSE Leap 16 or a default RHEL install:
+> it comes only from the old `iptables-services` package.
 
 ## Actions
 
@@ -218,11 +200,10 @@ Only one tool should own the firewall.
 When a packet reaches the end of a base chain, the chain's policy decides. At the end
 of a regular chain, evaluation goes back to the rule after the `jump`.
 
-> [!warning] Correction from the original notes
-> The original described `return` as jumping "to the first rule of the last chain".
-> It returns to the rule *following* the `jump` that entered the current chain —
-> ordinary subroutine semantics. The distinction between `jump` (returns) and
-> `goto` (does not) is the one to remember.
+> [!note] `return` and `goto`
+> `return` goes back to the rule *following* the `jump` that entered the current
+> chain. The distinction between `jump` (returns) and `goto` (does not) is the one to
+> remember.
 
 > [!note] `accept` is only terminal within its chain
 > A packet accepted in one base chain is still evaluated by base chains on later
@@ -310,10 +291,9 @@ nft list ruleset >> /etc/nftables/rules/main.nft
 systemctl enable --now nftables.service
 ```
 
-> [!warning] Correction
-> An earlier version wrote the ruleset to `/etc/nftables.conf` on every system. On
-> Leap the service never reads that file: it runs only if `main.nft` exists, and then
-> loads that. `systemctl cat nftables.service` shows which file your system uses.
+> [!tip] Which file does the service load?
+> `systemctl cat nftables.service` shows it. On Leap the service runs only if
+> `main.nft` exists, and never reads `/etc/nftables.conf`.
 
 ## Monitoring
 

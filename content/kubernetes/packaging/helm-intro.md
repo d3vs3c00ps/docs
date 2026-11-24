@@ -169,10 +169,9 @@ upstream_sync: manual
 >   | bash
 >   ```
 
-> [!warning] Correction
-> The original used `get-helm-3`, which installs Helm 3, and said `get` installs
-> Helm 2. Helm 2 has had no support since 2020, and its `get` script still
-> installs `tiller`. Use `get-helm-4`.
+> [!note] `get-helm-4`
+> `get-helm-3` installs Helm 3. The old `get` script installs Helm 2, which has had no
+> support since 2020, and its `tiller`.
 
 ## Charts and repositories
 
@@ -238,11 +237,9 @@ Then go to → https://artifacthub.io/packages/helm/juice-shop/juice-shop
 >   helm install my-juice-shop oci://ghcr.io/securecodebox/helm/juice-shop
 >   ```
 
-> [!warning] Correction
-> The original first added a chart repository with
-> `helm repo add juice https://charts.securecodebox.io`, then installed
-> `juice/juice-shop`. That host no longer exists. The chart is now published in an
-> OCI registry: an `oci://` reference needs no `helm repo add`.
+> [!note] OCI charts need no `helm repo add`
+> The chart is published in an OCI registry: an `oci://` reference needs no
+> `helm repo add`.
 
 Note: with a classic (HTTP) chart repository, it is also possible to install a
 chart directly, with `--repo https://...`

@@ -189,9 +189,8 @@ empty.
 Annotation *values* can be any string, even long text or JSON. To store binary data,
 encode it first (with base64, for example).
 
-> [!warning] Correction
-> The original page said that the maximum size of annotations "isn't defined". It is:
-> all the annotations of one object together are limited to 256 KiB. A few dozen
+> [!note] Size limit
+> All the annotations of one object together are limited to 256 KiB. A few dozen
 > kilobytes is fine. A larger annotation is rejected by the API server.
 
 ---

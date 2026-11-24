@@ -16,10 +16,9 @@ Vault needs the Python `cryptography` package. pip installs it with `ansible-cor
 > [!note] Tested
 > Tested with `ansible` 15.0.0 (ansible-core 2.22) on openSUSE Leap 16.
 
-> [!warning] Correction: no pure-Python fallback
-> The original said that without `cryptography`, Ansible falls back to a slower
-> pure-Python implementation. There is no fallback any more: `ansible-vault` stops
-> with "requires the cryptography library".
+> [!note] `cryptography` is required
+> There is no pure-Python fallback: without `cryptography`, `ansible-vault` stops with
+> "requires the cryptography library".
 
 ## Managing the master password
 
@@ -105,8 +104,7 @@ mysql_admin_password: !vault |
           37373730313364346430633565396434326365616633366464646463343833643738
 ```
 
-The original output ended with `Encryption successful`. ansible-core 2.22 no longer
-prints that line.
+ansible-core 2.22 prints no `Encryption successful` line.
 
 This lets you build a file of encrypted variables that stays more workable than a
 fully encrypted vault — the file remains readable YAML and diffs sensibly, with only
@@ -159,9 +157,9 @@ ansible-playbook site.yml --vault-id dev@prompt --vault-id prod@prompt
 > time. See vaultwarden-docker for the unrelated but similarly named
 > password manager.
 
-> [!warning] Correction: output masking is new
-> The original said a decrypted value shows in task output. That was true before
-> ansible-core 2.22. Now the exact value is masked, but changed copies of it are not.
+> [!note] Output masking
+> Since ansible-core 2.22, the exact decrypted value is masked in task output, but
+> changed copies of it are not.
 
 ## Where to go next
 

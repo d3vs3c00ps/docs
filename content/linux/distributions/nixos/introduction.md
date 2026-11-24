@@ -146,12 +146,11 @@ Being honest about this matters, because the enthusiasm around NixOS tends not t
 > properly — but they are extra work every time, and this is the single most common
 > reason people abandon NixOS.
 
-> [!warning] Correction
-> An earlier version said there is no `/usr/bin`. There is one, with `/usr/bin/env`
-> only, so `#!/usr/bin/env bash` scripts work. It also named `buildFHSUserEnv`, which
-> was renamed `buildFHSEnv` and is gone from nixpkgs 26.05. The example
-> configuration lacked `security.acme`: without `acceptTerms` and an email,
-> `enableACME` stops the build with an assertion error.
+> [!note] Details
+> There is a `/usr/bin`, with `/usr/bin/env` only, so `#!/usr/bin/env bash` scripts
+> work. `buildFHSEnv` (once `buildFHSUserEnv`) is gone from nixpkgs 26.05. Without
+> `security.acme.acceptTerms` and an email, `enableACME` stops the build with an
+> assertion error.
 
 The rest:
 

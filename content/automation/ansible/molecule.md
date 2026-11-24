@@ -17,21 +17,14 @@ run changes nothing, and runs your assertions.
 > Leap 16, against an existing host over SSH. The Docker driver example is not
 > tested: the test environment has no Docker and no `molecule-plugins`.
 
-> [!warning] Correction: rewritten for Molecule 26
-> The original described Molecule 2/3, and a later update listed the changes up to
-> Molecule 6. Two of those were wrong for current Molecule:
->
-> - `molecule init role x` does not exist. Molecule 6 removed `init role`: create
->   the role with `ansible-galaxy role init`, then add a scenario with
->   `molecule init scenario`.
-> - A new scenario no longer has a `driver`, `platforms`, `provisioner` or
->   `verifier` section. It has an `ansible:` section, and you write `create.yml`
->   and `destroy.yml` yourself, or use a driver plugin.
->
-> Still true from that list: `lint:` is gone (run `ansible-lint` yourself), the
-> verifier is an Ansible playbook (`verify.yml`, not TestInfra), and the playbook
-> is `converge.yml`. Check `molecule --version` and the current
-> [documentation](https://ansible.readthedocs.io/projects/molecule/).
+> [!note] Molecule 26
+> `molecule init role` does not exist: create the role with `ansible-galaxy role init`,
+> then add a scenario with `molecule init scenario`. A new scenario has no `driver`,
+> `platforms`, `provisioner` or `verifier` section: it has an `ansible:` section, and
+> you write `create.yml` and `destroy.yml` yourself, or use a driver plugin. There is
+> no `lint:` (run `ansible-lint` yourself), the verifier is an Ansible playbook
+> (`verify.yml`), and the playbook is `converge.yml`. Check `molecule --version` and
+> the current [documentation](https://ansible.readthedocs.io/projects/molecule/).
 
 ## Creating a role and a scenario
 

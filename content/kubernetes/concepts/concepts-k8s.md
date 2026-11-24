@@ -123,10 +123,9 @@ The nodes that run your containers run a set of services:
 Nodes were once called "minions". You may see that word in old articles or
 documentation.
 
-> [!warning] Correction
-> The original said the container engine is "typically Docker". Kubernetes 1.24
-> removed direct support for Docker Engine; see the extra details below. The
-> `CONTAINER-RUNTIME` column shows the engine of each node:
+> [!note] Which container engine?
+> Kubernetes 1.24 removed direct support for Docker Engine; see the extra details
+> below. The `CONTAINER-RUNTIME` column shows the engine of each node:
 > ```bash
 > kubectl get nodes -o wide
 > ```
@@ -158,7 +157,7 @@ called the "master". See [[kubernetes/concepts/architecture]] for more.
 >   resilient. The control plane is then replicated on several nodes. This is
 >   sometimes called a "multi-master" setup.
 >
-> > [!warning] Correction
+> > [!note] `control-plane`, not `master`
 > > Kubernetes dropped the word "master" for nodes. Since 1.25, kubeadm labels and
 > > taints control plane nodes with `node-role.kubernetes.io/control-plane` only, not
 > > `node-role.kubernetes.io/master`. See the taints with:
@@ -220,12 +219,10 @@ called the "master". See [[kubernetes/concepts/architecture]] for more.
 > - You need to build images and ship them around.
 > - You can do that without Docker, for example with Buildah or Podman (see
 >   [[containers/podman]]), but with some languages and frameworks it is harder.
-> - The original course ran its app on a single node with Docker first.
 >
 > > [!note]
-> > The original said that Docker "is still the most stable container engine today".
-> > That opinion is from about 2018. Today, containerd (which Docker Engine itself uses)
-> > and CRI-O are the usual engines on Kubernetes nodes.
+> > On Kubernetes nodes, the usual engines are containerd (which Docker Engine itself
+> > uses) and CRI-O.
 
 > [!note]- Extra details
 > ## Some runtimes available through CRI
@@ -236,7 +233,7 @@ called the "master". See [[kubernetes/concepts/architecture]] for more.
 >   - comes with its own CLI, `ctr`.
 > - [CRI-O](https://github.com/cri-o/cri-o/blob/main/README.md):
 >   - maintained by Red Hat, SUSE and the community;
->   - used by OpenShift (the original also cited openSUSE Kubic, which has ended);
+>   - used by OpenShift;
 >   - designed as a minimal runtime for Kubernetes.
 > - [And more](https://kubernetes.io/docs/setup/production-environment/container-runtimes/).
 

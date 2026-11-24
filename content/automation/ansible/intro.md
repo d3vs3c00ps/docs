@@ -52,10 +52,9 @@ YAML is a simple format, but it has rules:
 - A document conventionally begins with `---`.
 - Strings containing `{{ }}` must be quoted, or YAML reads them as a dictionary.
 
-> [!note] Correction from the original notes
-> The original stated a file "must end with `...`". It must not — `...` is the
-> optional *end of document* marker in YAML, needed only when several documents share
-> one stream. Ansible playbooks almost never use it, and its absence is not an error.
+> [!note] No `...` needed
+> `...` is the optional *end of document* marker in YAML, needed only when several
+> documents share one stream. Playbooks almost never use it.
 
 > [!tip] The quoting rule catches everyone once
 > `msg: {{ var }}` is invalid YAML, because `{` starts a flow mapping. It has to be

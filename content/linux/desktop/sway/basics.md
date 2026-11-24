@@ -73,9 +73,9 @@ Reload after each change with `$mod+Shift+c`, or `swaymsg reload`. A line with a
 error shows a red bar (`swaynag`) at the top of the screen. Sway still applies the
 rest of the new config, so check it first with `sway -C`.
 
-> [!warning] Correction
-> This note said that after a syntax error the previous config stays active. Sway
-> applies the new config and skips only the lines with errors.
+> [!note] A config with errors still loads
+> After a syntax error, Sway applies the new config and skips only the lines with
+> errors.
 
 ## The container tree
 

@@ -56,9 +56,8 @@ setenforce 1    # enforcing
 > At the next boot every file is relabelled. On a large filesystem this takes a
 > while, and the machine is unavailable throughout.
 
-> [!warning] Correction
-> An earlier version said permissive mode also leaves new files unlabelled. It does
-> not: in permissive mode the policy is loaded and files get their labels as usual.
+> [!note] Permissive still labels
+> In permissive mode the policy is loaded and new files get their labels as usual.
 > Only the disabled state skips labelling. That is why you switch to permissive, not
 > disabled, to debug.
 
@@ -164,9 +163,9 @@ tied to a particular file or directory. Users' home directories, for example, ho
 wildly different content; what they have in common is belonging to a user, hence the
 type `user_home_t`.
 
-> [!warning] Correction
-> An earlier version named this type `home_user_t`. The targeted policy has no such
-> type: it is `user_home_t` (and `user_home_dir_t` for the home directory itself).
+> [!note] `user_home_t`
+> The type is `user_home_t` (and `user_home_dir_t` for the home directory itself).
+> There is no `home_user_t`.
 
 ## What it actually buys you
 

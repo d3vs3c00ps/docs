@@ -97,9 +97,9 @@ spec:
             name: app-vm-root
 ```
 
-> [!warning] Correction
-> An earlier version used the preference `rocky.9`. KubeVirt's common preferences
-> have no such name. `rhel.9` fits Rocky Linux 9 and other RHEL 9 rebuilds.
+> [!note] `rhel.9`
+> KubeVirt's common preferences have no `rocky.9`. `rhel.9` fits Rocky Linux 9 and
+> other RHEL 9 rebuilds.
 
 Cloning from a golden PVC rather than pulling from a URL keeps builds fast and
 deterministic — the image is built once, elsewhere, and referenced here. A clone from
@@ -176,14 +176,11 @@ Argo CD will report a VM as `OutOfSync` for reasons that are not drift.
 A change under `spec.template` does not restart a running VM. KubeVirt applies it at
 the next restart and sets the `RestartRequired` condition on the VM until then.
 
-> [!warning] Correction
-> An earlier version said that editing a `dataVolumeTemplates` entry makes Argo
-> recreate the DataVolume and destroy the disk. Argo does not manage that DataVolume:
-> KubeVirt creates it, once, when it is missing. So an edit does not change a disk
-> that exists. Rename the entry (and the volume that uses it), and the VM gets a new,
-> freshly imported disk.
-> Treat the template as fixed after the first apply, and use a new VM name for a
-> rebuild.
+> [!note] Argo does not manage that DataVolume
+> KubeVirt creates it, once, when it is missing, so editing a `dataVolumeTemplates`
+> entry does not change a disk that exists. Rename the entry (and the volume that uses
+> it), and the VM gets a new, freshly imported disk. Treat the template as fixed after
+> the first apply, and use a new VM name for a rebuild.
 
 ```yaml
 metadata:

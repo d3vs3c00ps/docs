@@ -68,7 +68,7 @@ ArgoCD manages **applications** by **syncing** their **live state** with their *
 >       https://raw.githubusercontent.com/argoproj/argo-cd/v3.5.7/manifests/install.yaml
 >   ```
 >
->   (the original used the `stable` branch, which moves; this page was tested with
+>   (pinned, because the `stable` branch moves; this page was tested with
 >   v3.5.7. Use `kubectl create`, not `kubectl apply`: some CRDs are too big for the
 >   annotation that client-side apply writes)
 

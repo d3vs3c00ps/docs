@@ -285,8 +285,7 @@ These are the steps when dynamic provisioning happens:
   - delete the Namespace that they belong to
 
 > [!note] `persistentVolumeClaimRetentionPolicy`
-> The original suggested adding the StatefulSet to the PVCs' `ownerReferences` by
-> hand. Since Kubernetes 1.32 (GA), the StatefulSet can do it:
+> No need to add the StatefulSet to the PVCs' `ownerReferences` by hand. Since Kubernetes 1.32 (GA), the StatefulSet can do it:
 > `spec.persistentVolumeClaimRetentionPolicy.whenDeleted: Delete` (and
 > `whenScaled: Delete` for scale-downs). The default is `Retain` for both.
 

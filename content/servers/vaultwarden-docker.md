@@ -72,9 +72,8 @@ server {
 ```
 
 > [!note] `listen ... http2` is deprecated
-> The original had `listen 443 ssl http2;`. Since nginx 1.25.1 HTTP/2 is enabled
-> with a separate `http2 on;` directive, and the old form logs a deprecation
-> warning.
+> Since nginx 1.25.1 HTTP/2 is enabled with a separate `http2 on;` directive, and
+> `listen 443 ssl http2;` logs a deprecation warning.
 
 ### Self-signed certificate
 
@@ -178,10 +177,10 @@ services:
       - "443:443"
 ```
 
-> [!note] Changes from the original compose file
-> - `links:` was replaced with `depends_on:`. `links` is legacy and unnecessary —
->   containers on the default Compose network already resolve each other by service
->   name, which is what makes `proxy_pass http://vaultwarden` work.
+> [!note] Two details
+> - `depends_on:` is enough: containers on the default Compose network resolve each
+>   other by service name, which is what makes `proxy_pass http://vaultwarden` work.
+>   `links:` is legacy and unnecessary.
 > - MariaDB's own `MARIADB_*` variables are preferred over the `MYSQL_*` aliases.
 
 > [!warning] `ADMIN_TOKEN` should be a hash

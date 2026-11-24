@@ -71,10 +71,10 @@ keyAuthorization = token || "." || base64url(JWK thumbprint of the account key)
 The JWK thumbprint (RFC 7638) is already a SHA-256 hash of the account's public key,
 written as JSON.
 
-> [!warning] Correction
-> An earlier version wrote `base64url(SHA256(JWK thumbprint))`, which hashes twice.
-> RFC 8555 (section 8.1) uses the thumbprint as it is. The test of this note
-> recomputes the key authorization that the client sends and checks it.
+> [!note] One hash, not two
+> RFC 8555 (section 8.1) uses the JWK thumbprint as it is: `base64url(SHA256(...))`
+> applied to the thumbprint again would hash twice. The test of this note recomputes
+> the key authorization that the client sends and checks it.
 
 ## The three challenges
 
@@ -278,10 +278,9 @@ lego run --email security@example.com \
      --accept-tos
 ```
 
-> [!warning] Correction — lego v5 moved the flags after `run`
-> An earlier version used the lego v4 form, `lego --email ... --accept-tos run`. In
-> lego v5 the options belong to the `run` subcommand, and the old form fails with
-> `flag provided but not defined`.
+> [!note] lego v5 options go after `run`
+> In lego v5 the options belong to the `run` subcommand. The v4 form,
+> `lego --email ... --accept-tos run`, fails with `flag provided but not defined`.
 
 ### Always test against staging first
 

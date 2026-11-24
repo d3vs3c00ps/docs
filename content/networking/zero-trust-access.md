@@ -54,11 +54,6 @@ application.
 > address on your network. The concentrator has long been a favourite target
 > because it is internet-facing and grants network access.
 
-> [!warning] Correction
-> An earlier version said the application had "no attack surface reachable from
-> the internet at all" and "no login page to brute force". The proxy in front of
-> it is still internet-facing, with a login page.
-
 ## The alternatives
 
 | Tool | Model | Notes |

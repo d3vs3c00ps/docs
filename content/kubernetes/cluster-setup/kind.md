@@ -188,7 +188,7 @@ nodes:
 ([`k8s/kind-12300.yaml`](https://github.com/jpetazzo/container.training/blob/565636291ec03abf1f2ab8bf6b935478e00e69a2/k8s/kind-12300.yaml))
 
 > [!note] Two forms of `extraArgs`
-> The original (and the upstream `kind-12300.yaml`) wrote `extraArgs` as a map:
+> The upstream `kind-12300.yaml` writes `extraArgs` as a map:
 > `service-node-port-range: "12301-12309"`. kubeadm's current `v1beta4` configuration
 > uses a list of `name` / `value` pairs, as above. kind 0.33 with Kubernetes 1.37
 > accepts both forms (tested): the API server gets the flag either way. See also

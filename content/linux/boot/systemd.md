@@ -211,8 +211,8 @@ cover here.
 | `NoNewPrivileges=` | the process and its children cannot escalate privileges |
 
 > [!note] Renamed directives
-> The original notes listed `ReadWriteDirectories=`, `ReadOnlyDirectories=` and
-> `InaccessibleDirectories=`. Those names are deprecated; the `*Paths=` forms above
+> `ReadWriteDirectories=`, `ReadOnlyDirectories=` and `InaccessibleDirectories=` are
+> deprecated; the `*Paths=` forms above
 > replace them.
 
 `systemd-analyze security <unit>` scores a unit against these and is the fastest
@@ -245,11 +245,10 @@ systemctl restart httpd.service
 systemctl reload httpd.service
 ```
 
-> [!warning] Correction — braces are not a menu
-> The original note wrote `systemctl {start,stop,restart,reload} httpd.service`.
-> Typed into bash, the braces expand to
-> `systemctl start stop restart reload httpd.service`: one `start` of four units
-> named `stop`, `restart`, `reload` and `httpd`. Pick one verb per command.
+> [!warning] Braces are not a menu
+> Typed into bash, `systemctl {start,stop,restart,reload} httpd.service` expands to
+> `systemctl start stop restart reload httpd.service`: one `start` of four units named
+> `stop`, `restart`, `reload` and `httpd`. Pick one verb per command.
 
 Several at once:
 
@@ -476,8 +475,7 @@ systemctl set-property --runtime httpd CPUWeight=200
 ### Resource control properties
 
 > [!warning] cgroup v1 property names are deprecated
-> The original notes used `CPUShares=`, `MemoryLimit=` and the `BlockIO*` family.
-> Those are cgroup **v1** properties. Every current distribution boots with cgroup
+> `CPUShares=`, `MemoryLimit=` and the `BlockIO*` family are cgroup **v1** properties. Every current distribution boots with cgroup
 > **v2** by default. systemd 257 (RHEL 10, Leap 16) still accepts `CPUShares=` and
 > `MemoryLimit=` with a warning that support "will be removed soon". Use the v2
 > names.
@@ -504,11 +502,9 @@ MemoryAccounting=yes
 IOAccounting=yes
 ```
 
-> [!warning] Correction — a limit does not need accounting turned on
-> The original note said accounting must be enabled before a limit does anything.
-> It does not: setting a limit such as `MemoryMax=` or `IOWeight=` turns on the
-> matching cgroup controller by itself. `IOAccounting=yes` is only needed for the
-> I/O numbers.
+> [!note] A limit does not need accounting turned on
+> Setting a limit such as `MemoryMax=` or `IOWeight=` turns on the matching cgroup
+> controller by itself. `IOAccounting=yes` is only needed for the I/O numbers.
 
 An example limiting a service's write bandwidth on one path:
 

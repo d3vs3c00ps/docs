@@ -62,11 +62,6 @@ Run your first container:
 docker run hello-world
 ```
 
-> [!note] Correction from the original notes
-> It followed this with `docker stop hello-world`. That cannot work: `hello-world`
-> prints a message and exits immediately, so there is nothing to stop — and the
-> container would have had a random name anyway, not the image's name.
-
 After installation the host has a new network interface, `docker0`, which passes
 container packets through IP masquerade — see iptables.
 
@@ -127,7 +122,7 @@ docker exec -it leap_ftw date
 ```
 
 > [!note] `run` and `exec` are not interchangeable
-> The original listed both under "interactive mode". `run` creates a *new* container
+> `run` creates a *new* container
 > from an image; `exec` attaches to one that is already running. Running `exec`
 > against a stopped container fails.
 
@@ -163,14 +158,6 @@ Run a container publishing a port, in the background:
 docker run -d -p 8080:80 nginx
 ```
 
-> [!note] Correction from the original notes
-> It read
-> `docker run -d -p 80 nginx /usr/sbin/nginx -g "daemon off"`, which has three
-> problems: `-p 80` publishes to a *random* host port rather than mapping 80 to 80
-> (that needs `-p 80:80`); nginx's `-g` directive requires a trailing semicolon,
-> `"daemon off;"`; and overriding the command is unnecessary, because the official
-> nginx image already runs in the foreground.
-
 Remove containers and images:
 
 ```bash
@@ -179,10 +166,8 @@ docker rm $(docker ps -aq)          # every container
 docker rmi $(docker images -q)      # every image
 ```
 
-> [!note] Correction from the original notes
-> The last command was `docker rmi $(docker images --list)`. There is no `--list`
-> flag on `docker images`, and without `-q` the output is a formatted table rather
-> than IDs. In practice prefer the purpose-built command:
+> [!tip] Cleaning up
+> In practice, prefer the purpose-built commands:
 >
 > ```bash
 > docker system prune -a    # unused containers, networks, images
@@ -207,11 +192,9 @@ e70bd15b7f9d   host     host     local
 | `host` | the container **shares the host's network namespace**. It sees the host's interfaces directly, has no isolation, and needs no port publishing — a listener binds the host's port directly. |
 | `none` | no interfaces except loopback. The container can only talk to itself. |
 
-> [!warning] Correction from the original notes
-> `host` was described as "the container can only communicate with the host". That is
-> the opposite of what it does: host mode *removes* network isolation, giving the
-> container the host's full network access, external connectivity included. It is the
-> least isolated mode, not the most.
+> [!warning] `host` is the least isolated mode
+> Host mode *removes* network isolation: the container gets the host's full network
+> access, external connectivity included.
 
 Create a bridge network so containers on it can reach each other by name and reach
 the outside — for a cluster under Molecule, for
@@ -258,15 +241,15 @@ RUN echo "It works" > /srv/www/htdocs/index.html
 CMD ["start_apache2", "-DFOREGROUND"]
 ```
 
-> [!warning] Four corrections from the original Dockerfile
-> - `MAINTAINER` appeared **before** `FROM`. `FROM` must be the first instruction
->   (only `ARG` may precede it), so the build failed immediately.
+> [!warning] Four Dockerfile traps
+> - `FROM` must be the first instruction (only `ARG` may precede it). A `MAINTAINER`
+>   before it fails the build at once.
 > - `MAINTAINER` is deprecated in favour of `LABEL maintainer=`.
-> - The package refresh and the install were separate `RUN` instructions. Each
->   `RUN` is a layer, so the metadata cached by the first is baked permanently
->   into the image. Chain them and run `zypper clean --all` in the same `RUN`.
-> - There was no `CMD`, so the image inherited the base image's shell and exited
->   immediately — it never actually served anything.
+> - Run the package refresh and the install in one `RUN`, with `zypper clean --all`.
+>   Each `RUN` is a layer, so metadata cached by a separate refresh is baked
+>   permanently into the image.
+> - Without a `CMD`, the image inherits the base image's shell and exits at once: it
+>   never serves anything.
 
 > [!note] No `apache2ctl` on openSUSE
 > Debian's `apache2ctl` and the upstream `apachectl` do not exist in Leap 16's
@@ -307,7 +290,7 @@ A terminal interface for Docker commands —
 
 ### lazydocker
 
-Not in the original notes but the more actively maintained equivalent of dockly —
+The more actively maintained equivalent of dockly —
 [jesseduffield/lazydocker](https://github.com/jesseduffield/lazydocker).
 
 ### hadolint
@@ -318,11 +301,6 @@ above — [hadolint/hadolint](https://github.com/hadolint/hadolint).
 ```bash
 docker run --rm -i hadolint/hadolint < Dockerfile
 ```
-
-> [!note] Three tools from the original list are no longer maintained
-> **Kitematic** (a desktop container GUI) was discontinued by Docker in favour of
-> Docker Desktop. **Docker Compose UI** and **Elsy** are both archived. They have
-> been dropped rather than carried forward as dead links.
 
 ## See also
 

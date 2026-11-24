@@ -113,10 +113,10 @@ Four binding modes, and the choice determines what the VM can do.
 | **passt** (`passtBinding: {}`) | User-space networking. The guest sees the pod's IP address, with no NAT | Replaces slirp; no extra privileges |
 | **SR-IOV** (`sriov: {}`) | A virtual function of a physical NIC, passed through | Very high throughput |
 
-> [!warning] Correction
-> An earlier version called `masquerade` the default. It is not: a VM that lists no
-> interface gets `bridge`, the default of `spec.configuration.network.defaultNetworkInterface`
-> in the `KubeVirt` resource. Set the binding on every interface, as the examples here do.
+> [!warning] `masquerade` is not the default
+> A VM that lists no interface gets `bridge`, the default of
+> `spec.configuration.network.defaultNetworkInterface` in the `KubeVirt` resource. Set
+> the binding on every interface, as the examples here do.
 
 > [!note] passt changed twice
 > The first `passt: {}` binding was removed in KubeVirt v1.3, and passt moved to a
@@ -209,9 +209,8 @@ Requirements, all of which must hold:
 - Compatible CPU models across nodes
 - No PCI passthrough or other host-pinned device
 
-> [!warning] Correction
-> An earlier version also required the `LiveMigration` feature gate. Live migration
-> is GA: the gate is always on and cannot be turned off.
+> [!note] No feature gate
+> Live migration is GA: the `LiveMigration` gate is always on and cannot be turned off.
 
 ```yaml
 spec:
@@ -296,7 +295,7 @@ spec:
 ```
 
 `10DE:2204` is the PCI vendor and device ID: NVIDIA, GA102 GeForce RTX 3090. Get yours
-with `lspci -nn`. An earlier version named this device an RTX 3080 (that is `10DE:2206`).
+with `lspci -nn` (an RTX 3080 is `10DE:2206`).
 
 Needs the IOMMU enabled and devices bound to `vfio-pci` on the node — see
 [[virtualization/kvm/advanced]]. A VM with a passed-through device cannot live

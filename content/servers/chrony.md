@@ -18,10 +18,6 @@ The configuration file depends on the distribution:
 | RHEL | `/etc/chrony.conf` |
 | openSUSE Leap 16 | `/usr/etc/chrony.conf` from the package, plus drop-ins in `/etc/chrony.d/*.conf`. Put local settings in a drop-in. A file named `/etc/chrony.conf` replaces the package's file entirely |
 
-> [!warning] Correction
-> The original said the configuration lives in `/etc/chrony.conf`. On Leap 16
-> that file does not exist by default.
-
 ## Overall service state
 
 ```console

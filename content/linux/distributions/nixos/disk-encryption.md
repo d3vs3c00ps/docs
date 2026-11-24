@@ -152,12 +152,11 @@ sudo mkdir -p /etc/secrets/initrd
 sudo ssh-keygen -t ed25519 -N "" -f /etc/secrets/initrd/ssh_host_ed25519_key
 ```
 
-> [!warning] Correction
-> An earlier version wrote the key as a path, `/etc/secrets/initrd/...` without
-> quotes. A Nix path is copied into the world-readable `/nix/store` when the
-> configuration uses it, which is what this section says to avoid. Write it as a
-> string: NixOS then copies the file into the initrd at boot-loader install time,
-> not into the store.
+> [!warning] A string, not a path
+> Write the key file as a string. A Nix path (`/etc/secrets/initrd/...` without
+> quotes) is copied into the world-readable `/nix/store` when the configuration uses
+> it, which is what this section says to avoid. With a string, NixOS copies the file
+> into the initrd at boot-loader install time, not into the store.
 
 > [!danger] The initrd host key is a real host key, in a real initrd
 > The initrd is on the **unencrypted** boot partition, so anything embedded in it is

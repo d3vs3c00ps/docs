@@ -62,11 +62,10 @@ do not happen on NixOS, as long as the config keeps including `/etc/sway/config.
 A config from home-manager does not include it, but `systemd.enable = true` (below)
 adds the same export line itself.
 
-> [!warning] Correction
-> This note said home-manager keeps the `include /etc/sway/config.d/*` line. It does
-> not: the config it writes has no `include`. The export still happens, through the
-> `exec dbus-update-activation-environment --systemd …` line that its
-> `systemd.enable` adds. If you turn that off, add the `include` line in
+> [!note] No `include` line
+> The config home-manager writes has no `include /etc/sway/config.d/*` line. The export
+> still happens, through the `exec dbus-update-activation-environment --systemd …`
+> line that its `systemd.enable` adds. If you turn that off, add the `include` line in
 > `extraConfig`.
 
 > [!note] Package names that moved
@@ -151,11 +150,10 @@ in
 }
 ```
 
-> [!warning] Correction: `checkConfig` needs a package
-> The original block set `checkConfig = true` next to `package = null`. That does not
-> build: home-manager stops with `programs.sway.checkConfig requires non-null
-> programs.sway.package`. With the package from the NixOS module, turn the check off
-> and run `sway -C` yourself after a rebuild.
+> [!warning] `checkConfig` needs a package
+> `checkConfig = true` next to `package = null` does not build: home-manager stops with
+> `programs.sway.checkConfig requires non-null programs.sway.package`. With the package
+> from the NixOS module, turn the check off and run `sway -C` yourself after a rebuild.
 
 > [!tip] `sway -C` outside a session
 > Sway 1.12 creates a backend even for `-C`. From a TTY or over SSH it stops with
@@ -171,11 +169,9 @@ in
 > To **change** a key that already has a default, such as `$mod+Shift+e`, just set
 > it. home-manager gives each default key the lowest priority, so your value wins.
 
-> [!warning] Correction: no `lib.mkForce` needed
-> This note wrapped changed keys in `lib.mkForce` and said that without it the build
-> stops with a conflicting-definition error. That is no longer true with
-> home-manager 26.05: a plain value overrides the default. `lib.mkForce` still works,
-> but it is not needed.
+> [!note] No `lib.mkForce` needed
+> With home-manager 26.05, a plain value overrides the default. `lib.mkForce` still
+> works, but it is not needed.
 
 The default workspace keys are `$mod+1` … `$mod+0`, which do not work on azerty.
 Generate the azerty names from

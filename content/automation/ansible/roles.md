@@ -42,11 +42,10 @@ mkdir -p roles && cd roles
 ansible-galaxy init syslog-ng --offline
 ```
 
-> [!warning] Correction: no `/etc/ansible/roles` by default
-> The original used `cd /etc/ansible/roles`. A pip install creates no
-> `/etc/ansible` (see [[automation/ansible/installation]]). The default
-> `roles_path` is `~/.ansible/roles`, then `/usr/share/ansible/roles`, then
-> `/etc/ansible/roles`, and a `roles/` directory next to the playbook comes first.
+> [!note] No `/etc/ansible/roles` by default
+> A pip install creates no `/etc/ansible` (see [[automation/ansible/installation]]).
+> The default `roles_path` is `~/.ansible/roles`, then `/usr/share/ansible/roles`,
+> then `/etc/ansible/roles`, and a `roles/` directory next to the playbook comes first.
 
 Which produces:
 
@@ -118,12 +117,10 @@ galaxy_info:
 dependencies: []
 ```
 
-> [!warning] Correction: Galaxy's platform list is old
-> The original listed `name: openSUSE` with versions `"15.6"` and `"16.0"`.
-> ansible-lint checks `platforms` against Galaxy's fixed list and reported
-> `schema[meta]` for both. The name there is lowercase `opensuse`, and its only
-> versions are `6.1`, `7.1`, `7.2` and `all`. Use `all` where your version is
-> missing.
+> [!note] Galaxy's platform list is old
+> ansible-lint checks `platforms` against Galaxy's fixed list. The name there is
+> lowercase `opensuse`, and its only versions are `6.1`, `7.1`, `7.2` and `all`. Use
+> `all` where your version is missing, or ansible-lint reports `schema[meta]`.
 
 > [!warning] Dependencies run before the role, once per play
 > A role listed in `dependencies:` is executed before the role that declares it —

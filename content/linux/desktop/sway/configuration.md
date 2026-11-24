@@ -34,10 +34,9 @@ Alt is used by too many applications.
 > `pos 0 0  # comment` is an error. A comma in a trailing comment even starts a new
 > command.
 
-> [!warning] Correction
-> Several blocks in the Sway notes had comments at the end of config lines. They are
-> now on their own line or in the text. `sway -C` reports most of these errors, but
-> not the broken `set $mod` line.
+> [!warning] No comments at the end of a line
+> Put comments on their own line. `sway -C` reports most end-of-line comments as
+> errors, but not a broken `set $mod` line.
 
 ## Keybindings
 
@@ -184,9 +183,9 @@ Positions are in **logical** pixels — after scaling. That is the usual mistake
 down to 1706, so the next screen starts at `1706`, not at `2560`.
 `swaymsg -t get_outputs` shows the logical size in `rect.width`.
 
-> [!warning] Correction
-> This note used `pos 1707 0`. Sway rounds the logical width down, to 1706, so `1707`
-> leaves a one-pixel gap between the screens.
+> [!note] Why 1706
+> Sway rounds the logical width down, to 1706, so `pos 1707 0` leaves a one-pixel gap
+> between the screens.
 
 Connector names (`DP-2`) change when you plug into a different dock port. Use the
 full description from `get_outputs` instead to match one specific monitor:
@@ -278,9 +277,9 @@ can leave you with no keyboard layout, a bad `output` block with a black screen.
 Run `sway -C` first, keep a terminal open, and test such changes live with
 `swaymsg`.
 
-> [!warning] Correction
-> This section said that a failed reload keeps the old config. Sway 1.10 applies the
-> new config without the lines that have errors.
+> [!note] A failed reload
+> Sway 1.10 applies the new config without the lines that have errors. It does not keep
+> the old config.
 
 ## Where to go next
 

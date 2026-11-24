@@ -32,11 +32,10 @@ parts like storage systems and load balancers.
 - kube-proxy: a component for communication inside the cluster. It is *not* an
   overlay network or a CNI plugin.
 
-> [!warning] Correction
-> The original listed Docker as a container engine, and said that kubelet runs the
-> network plugins. Kubernetes 1.24 removed the code that drove Docker Engine directly
-> (see [[kubernetes/concepts/versions-k8s]]). Since then, the container engine runs
-> the network plugins.
+> [!note] Docker Engine and network plugins
+> Kubernetes 1.24 removed the code that drove Docker Engine directly (see
+> [[kubernetes/concepts/versions-k8s]]). Since then, the container engine runs the
+> network plugins, not kubelet.
 
 On a cluster built with `kubeadm` (or kind), kubelet is a system service on each
 node, and kube-proxy runs as a Pod on each node:
@@ -182,8 +181,8 @@ Let's create a simple object.
 This does the same as `kubectl create namespace hello`.
 
 > [!note]
-> In the original, the lines of this block were indented, `EOF` included. A heredoc
-> ends only at an `EOF` at the start of a line, so the command never ended.
+> Do not indent the lines of this block: a heredoc ends only at an `EOF` at the start
+> of a line.
 
 ## Read
 
@@ -239,10 +238,6 @@ metadata:
 > ```bash
 > kubectl api-resources --api-group=batch
 > ```
->
-> > [!warning] Correction
-> > The original gave `extensions/v1beta1` as an example. Kubernetes 1.22 removed the
-> > last resources of that group: no current cluster serves it.
 
 > [!note]- Extra details
 > ## Group-Version-Kind, or GVK

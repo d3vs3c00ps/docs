@@ -30,8 +30,7 @@ reload:
 systemctl reload nginx
 ```
 
-> [!warning] Correction
-> The original said to reload "so nginx does not keep serving from memory".
+> [!note] No reload needed
 > nginx does not serve cached bodies from memory: they are always read from the
 > files, so deleting them is enough.
 
@@ -79,12 +78,11 @@ limit_req zone=allips burst=200 nodelay;
 This limits each client IP to 200 requests per second, allowing a burst of 200
 above that before rejecting.
 
-> [!warning] Correction: `10m` is memory, not time
-> The original notes read these as "over a 10 minute period". `10m` is the **size
-> of the shared memory zone** that holds the per-IP state — 10 megabytes, enough
-> for roughly 160,000 IPv4 addresses. It has nothing to do with duration. The
-> actual rate is set only by `rate=` for `limit_req`, and `limit_conn` has no time
-> component at all since it counts connections currently open.
+> [!warning] `10m` is memory, not time
+> `10m` is the **size of the shared memory zone** that holds the per-IP state:
+> 10 megabytes, enough for roughly 160,000 IPv4 addresses. It has nothing to do with
+> duration. The rate is set only by `rate=` for `limit_req`, and `limit_conn` has no
+> time component at all, since it counts connections currently open.
 
 Both limits run after the rewrite phase. A `location` that answers with `return`
 is never limited, because `return` ends the request first.

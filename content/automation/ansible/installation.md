@@ -53,12 +53,11 @@ A distribution package (`zypper install ansible`, `dnf install ansible`) sets up
 └── roles         # the default directory for roles
 ```
 
-> [!warning] Correction: pip creates no `/etc/ansible`
-> The original said everything lives in `/etc/ansible`. A pip install creates no
-> such directory, and the Leap 16 package creates it **empty**. With no
-> `ansible.cfg` anywhere, Ansible runs on built-in defaults (`ansible-config dump`
-> shows `CONFIG_FILE() = None`). Generate a full commented file with
-> `ansible-config init --disabled > ansible.cfg`.
+> [!note] pip creates no `/etc/ansible`
+> A pip install creates no `/etc/ansible`, and the Leap 16 package creates it
+> **empty**. With no `ansible.cfg` anywhere, Ansible runs on built-in defaults
+> (`ansible-config dump` shows `CONFIG_FILE() = None`). Generate a full commented file
+> with `ansible-config init --disabled > ansible.cfg`.
 
 > [!note] Prefer a per-project configuration
 > Ansible looks for `ansible.cfg` in this order: `$ANSIBLE_CONFIG`, `./ansible.cfg`
@@ -105,11 +104,11 @@ pipelining = True
 ssh_args = -o ControlMaster=auto -o ControlPersist=60s
 ```
 
-> [!warning] Correction: `stdout_callback = yaml` no longer works
-> The original used the `yaml` callback. It came from `community.general` and was
-> removed in version 12: a playbook now stops with *"The 'community.general.yaml'
-> callback plugin has been removed"*. The built-in `default` callback does the same
-> since ansible-core 2.13, with `callback_result_format = yaml`.
+> [!warning] `stdout_callback = yaml` no longer works
+> The `yaml` callback came from `community.general` and was removed in version 12: a
+> playbook stops with *"The 'community.general.yaml' callback plugin has been
+> removed"*. The built-in `default` callback does the same since ansible-core 2.13,
+> with `callback_result_format = yaml`.
 
 > [!warning] `host_key_checking = False` trades security for convenience
 > It disables verification of host keys, which removes protection against
@@ -128,12 +127,11 @@ ansible-config view
 AWX is the community counterpart to Ansible Automation Platform (formerly Ansible
 Tower) — see awx-tower.
 
-> [!warning] The original installation notes are obsolete
-> They installed AWX with `docker-compose` on Debian *stretch*, using
-> `apt-key add` and `python-pip`. All of that is dead: stretch reached end of life
-> in 2022, `apt-key` is deprecated, `python-pip` was Python 2, and — most
-> importantly — **AWX dropped Docker Compose support entirely at version 18**. It is
-> now deployed on Kubernetes with the AWX Operator:
+> [!warning] AWX runs on Kubernetes
+> **AWX dropped Docker Compose support entirely at version 18.** Guides that install
+> it with `docker-compose` on Debian *stretch*, with `apt-key add` and `python-pip`,
+> are dead: stretch reached end of life in 2022, `apt-key` is deprecated, and
+> `python-pip` was Python 2. AWX is deployed on Kubernetes with the AWX Operator:
 >
 > ```bash
 > kubectl apply -k https://github.com/ansible/awx-operator/config/default

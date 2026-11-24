@@ -84,11 +84,11 @@ helm upgrade --install --namespace cnpg-system --create-namespace \
   --version 0.29.1
 ```
 
-> [!warning] Correction
-> The original passed `--version 1.25.1`, the version of the operator. Helm's
-> `--version` is the *chart* version, which has its own numbers, so Helm answered
-> `chart "cloudnative-pg" version "1.25.1" not found`. Chart 0.29.1 installs
-> operator 1.30.1 (tested on Kubernetes 1.37).
+> [!note] Chart version, not operator version
+> Helm's `--version` is the *chart* version, which has its own numbers: with
+> `--version 1.25.1` (an operator version), Helm answers `chart "cloudnative-pg"
+> version "1.25.1" not found`. Chart 0.29.1 installs operator 1.30.1 (tested on
+> Kubernetes 1.37).
 
 Interesting options to add, to integrate with Prometheus Operator:
 ```bash

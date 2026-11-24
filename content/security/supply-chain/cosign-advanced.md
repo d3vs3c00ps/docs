@@ -96,10 +96,9 @@ up an entry by artifact or by email. Keep the Sigstore bundle that cosign writes
 > with a signing config that has no log — see
 > [[security/supply-chain/cosign#Key-based signing]].
 
-> [!warning] Correction
-> The note said `COSIGN_EXPERIMENTAL=0` keeps key signatures out of Rekor. It does
-> not: that variable gated keyless signing in cosign v1, and has had no effect since
-> v2. Key signatures went to the public log in v2 too.
+> [!warning] `COSIGN_EXPERIMENTAL` does nothing
+> It gated keyless signing in cosign v1, and has had no effect since v2.
+> `COSIGN_EXPERIMENTAL=0` does not keep key signatures out of Rekor.
 
 ## Attestations
 
@@ -211,12 +210,11 @@ That rule says: only run images whose signed provenance states they were built f
 `main`. For keyless provenance, replace `key:` with a `keyless:` identity. See
 [[kubernetes/security/kyverno]].
 
-> [!warning] Correction
-> The note showed a `verifyImages` fragment of a `kyverno.io/v1` `ClusterPolicy`.
-> Kyverno 1.19 marks `ClusterPolicy` as deprecated, and its `verifyImages` rule did
-> not find attestations in the cosign v3 layout in our test. The fragment also failed
-> as written: with the default `Audit` action, Kyverno refuses `mutateDigest: true`.
-> The `ImageValidatingPolicy` above was tested with the Kyverno 1.19.2 CLI.
+> [!note] Not a `ClusterPolicy`
+> Kyverno 1.19 marks `ClusterPolicy` as deprecated, and its `verifyImages` rule did not
+> find attestations in the cosign v3 layout in our test. With the default `Audit`
+> action, Kyverno also refuses `mutateDigest: true`. The `ImageValidatingPolicy` above
+> was tested with the Kyverno 1.19.2 CLI.
 
 ## Where to go next
 

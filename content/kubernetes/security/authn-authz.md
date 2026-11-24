@@ -325,10 +325,9 @@ upstream_sync: manual
 >
 > If our token is a JWT / OIDC token, this command will show its content.
 >
-> > [!warning] Correction
-> > The original piped the token through `base64 -d`, then `cut -d. -f2`, then
-> > `base64 -d` again. The token in a kubeconfig is not base64-wrapped, so the
-> > first decode fails (`base64: invalid input`). A JWT is three base64url parts
+> > [!note] `jq`, not `base64 -d`
+> > The token in a kubeconfig is not base64-wrapped, so `base64 -d` on it fails
+> > (`base64: invalid input`). A JWT is three base64url parts
 > > separated by dots, without padding; the second part is the payload. jq
 > > (1.7+) decodes it, after mapping the base64url characters `-` and `_`.
 
@@ -865,8 +864,8 @@ It's important to note a couple of details in these flags...
 >
 > - Where does this match come from?
 >
-> > [!warning] Correction: kubeadm 1.29 moved the admin out of `system:masters`
-> > The original showed `O=system:masters` in the admin certificate. Since
+> > [!warning] kubeadm 1.29 moved the admin out of `system:masters`
+> > Older clusters show `O=system:masters` in the admin certificate. Since
 > > kubeadm 1.29, `admin.conf` uses the group `kubeadm:cluster-admins`, bound to
 > > `cluster-admin` by an ordinary ClusterRoleBinding of the same name, so it can
 > > be revoked. `system:masters` bypasses RBAC entirely and cannot be revoked; it

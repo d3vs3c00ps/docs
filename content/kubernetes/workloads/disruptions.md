@@ -121,9 +121,8 @@ RAM or disk usage):
 
 It evicts Pods in that order, until enough resources are freed.
 
-> [!warning] Correction
-> The original said that the kubelet *only* considers Pods that use more than they
-> requested. It considers all Pods: Pods that stay below their requests are only
+> [!note] Which Pods are considered
+> The kubelet considers all Pods. Pods that stay below their requests are only
 > evicted last, when evicting the others is not enough.
 
 ## Soft (graceful) vs hard (forceful) eviction

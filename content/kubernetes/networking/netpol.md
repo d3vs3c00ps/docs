@@ -130,12 +130,9 @@ spec:
 
 The first command shows the nginx page. The second times out after 3 seconds.
 
-> [!note] Correction
-> The original lab used `--image=centos -- curl -m3`. CentOS images stopped
-> getting updates in 2024; a 300 MB pull to run one `curl` is also no fun on a
-> slow link. Alpine's busybox `wget` does the same job (`-T3` is the timeout).
-> `--restart=Never` makes the command's exit code reflect the probe: without it
-> the pod restarts on failure instead of reporting it.
+> [!note] `--restart=Never`
+> It makes the command's exit code reflect the probe: without it the pod restarts on
+> failure instead of reporting it. `-T3` is busybox `wget`'s timeout.
 
 ## An important warning
 

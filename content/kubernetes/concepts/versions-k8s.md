@@ -27,12 +27,10 @@ Check the versions of the tools you use:
 `kubectl version` shows two versions: the `Client Version` (`kubectl` itself) and the
 `Server Version` (the API server of your cluster).
 
-> [!warning] Correction
-> The original listed the versions of the training machines: Kubernetes 1.19.2,
-> Docker Engine 19.03.13 and Docker Compose 1.25.4. These are long out of support. This
-> page was last tested with Kubernetes 1.37.0 (a kind cluster) and `kubectl` 1.37.1.
-> The original also used `docker-compose -v`. That is Compose v1, which reached its end
-> of life in 2023. Compose v2 is a Docker CLI plugin: use `docker compose version`.
+> [!note] Tested versions
+> This page was last tested with Kubernetes 1.37.0 (a kind cluster) and `kubectl`
+> 1.37.1. Docker Compose v1 (`docker-compose -v`) reached its end of life in 2023.
+> Compose v2 is a Docker CLI plugin: use `docker compose version`.
 
 > [!note]- Extra details
 > ## Kubernetes and Docker compatibility
@@ -51,7 +49,7 @@ Check the versions of the tools you use:
 > - The Docker API is versioned, and it is strongly backward compatible. If a client
 >   uses API v1.25, for example, the Docker Engine keeps behaving the same way.
 >
-> > [!warning] Correction
+> > [!warning] No more dockershim
 > > Kubernetes 1.24 removed *dockershim*, the code that let the kubelet drive Docker
 > > Engine. The kubelet now talks to a container runtime through the CRI (Container
 > > Runtime Interface): usually containerd or CRI-O. To use Docker Engine, you need the
@@ -71,11 +69,9 @@ Check the versions of the tools you use:
 - At any time, the three latest *minor* releases are maintained. Each *minor* release
   gets patches for about 14 months: 12 months of support, then 2 months to upgrade.
 
-> [!warning] Correction
-> The original said "a new minor release about every 3 months" and "each minor release
-> is maintained about 9 months". That was true until 2021. Since Kubernetes 1.22, there
-> are three minor releases per year, each supported for about 14 months. See
-> [Releases](https://kubernetes.io/releases/).
+> [!note] Release cadence
+> Since Kubernetes 1.22 there are three minor releases per year, each supported for
+> about 14 months. See [Releases](https://kubernetes.io/releases/).
 
 ## Kubernetes version compatibility
 

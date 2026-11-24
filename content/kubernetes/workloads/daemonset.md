@@ -117,10 +117,10 @@ is to remove these fields from the YAML.
 
 Let's remove the `replicas` and `strategy` fields and try again.
 
-> [!warning] Correction
-> The original said to remove only the `replicas:` line. `kubectl create deployment`
-> also writes `strategy: {}`, and the API server rejects it too
-> (`strict decoding error: unknown field "spec.strategy"`). Remove both lines.
+> [!warning] Remove `strategy: {}` too
+> `kubectl create deployment` also writes `strategy: {}`, and the API server rejects
+> it in a DaemonSet (`strict decoding error: unknown field "spec.strategy"`). Remove
+> both lines.
 
 > [!example] Hands-on
 > - Edit the `rng.yaml` file and remove the `replicas:` and `strategy:` lines, or:
@@ -272,10 +272,9 @@ The parent creates another Pod to replace it. The old Pod keeps running, on its 
 >   controller, even when they match its selector. It only adopts Pods that have no
 >   owner.
 >
-> > [!warning] Correction
-> > The original said that daemon sets have an "invisible" selector like
-> > `app=rng,controller-revision-hash=abcd1234`. The daemon set's selector is only
-> > `app=rng`. Its Pods do get a `controller-revision-hash` label, but the isolation
+> > [!note] No hidden selector
+> > The daemon set's selector is only `app=rng`, not something like
+> > `app=rng,controller-revision-hash=abcd1234`. Its Pods do get a `controller-revision-hash` label, but the isolation
 > > comes from the owner references.
 
 ## Removing a pod from the load balancer
@@ -352,8 +351,7 @@ json: cannot unmarshal bool into Go struct field ServiceSpec.spec.selector of ty
 ```
 
 > [!note]
-> The original showed only the second message, for `kubectl edit`. With kubectl 1.37,
-> `kubectl edit` shows the first one.
+> With kubectl 1.37, `kubectl edit` shows the first message.
 
 Why?
 
@@ -431,8 +429,8 @@ Service. If we remove more Pods, the effect is more visible.
 > not required. The template must match the selector: a resource refuses to create
 > resources that it would not select.
 >
-> > [!warning] Correction
-> > The original said to update both the selector and the template. In `apps/v1`, the
+> > [!warning] The selector is immutable
+> > In `apps/v1`, the
 > > selector of a DaemonSet, Deployment or ReplicaSet is immutable: the API server
 > > rejects the change (`field is immutable`). Adding `active: "yes"` to the template
 > > labels is enough; the selector `app=rng` still matches. Changing the template
@@ -511,8 +509,8 @@ These are building blocks for canary and blue/green deployments.
 > - We can change these EndpointSlices by hand, but the control plane overwrites our
 >   changes. Except if the Service has no selector!
 >
-> > [!warning] Correction
-> > The original described the older Endpoints resource. `kube-proxy` reads
+> > [!note] EndpointSlices, not Endpoints
+> > `kube-proxy` reads
 > > EndpointSlices (`discovery.k8s.io/v1`), and since Kubernetes 1.33 the `v1`
 > > Endpoints API is deprecated: `kubectl get endpoints` prints a warning. The
 > > Endpoints objects are still kept up to date, for compatibility.

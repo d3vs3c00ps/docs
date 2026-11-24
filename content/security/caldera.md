@@ -68,10 +68,10 @@ users:
     blue: "another-real-password"
 ```
 
-> [!warning] Correction
-> An earlier version suggested a `conf/local.yml` holding only `users`. Caldera then
-> reads that file instead of `default.yml`, finds no `crypt_salt`, and stops at start
-> with `TypeError: encoding without a string argument`. Edit the generated file.
+> [!warning] Edit the generated file
+> A `conf/local.yml` holding only `users` does not work: Caldera then reads that file
+> instead of `default.yml`, finds no `crypt_salt`, and stops at start with
+> `TypeError: encoding without a string argument`.
 
 > [!warning] Moving from `--insecure` to a normal start
 > Caldera saves its state (agents, operations) encrypted with the key from the config
@@ -115,10 +115,6 @@ deployed, so an exercise agent is not mistaken for a real intrusion six months l
 
 Useful built-in profiles: *Discovery*, *Collection*, *Check* (a harmless
 connectivity test), and *Thief* (collection and exfiltration).
-
-> [!warning] Correction
-> An earlier version listed a *Hunter* profile. The current stockpile plugin has no
-> profile of that name; *Collection* covers the same ground.
 
 Start with *Check*, then *Discovery*. Jumping straight to a full profile on a
 production network produces a lot of alerts and very little learning.

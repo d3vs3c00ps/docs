@@ -89,10 +89,9 @@ NODE_IP=$(kubectl get nodes \
 echo "https://$NODE_IP:$NODE_PORT"
 ```
 
-> [!warning] Correction
-> An earlier version said the web UI is a NodePort service and led with the NodePort
-> lookup. With the chart's defaults (core 2.11) it is `ClusterIP`, so `NODE_PORT` came
-> out empty.
+> [!note] `ClusterIP` by default
+> With the chart's defaults (core 2.11), the web UI service is `ClusterIP`, not
+> `NodePort`.
 
 Then open `https://localhost:8443`. The console uses a self-signed certificate, so
 expect a browser warning on first connection.

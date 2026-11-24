@@ -195,9 +195,9 @@ spec:
 
   (the PVC will be named `<claim-name>-<stateful-set-name>-<pod-index>`)
 
-> [!warning] Correction
-> The original wrote the name with dots. Kubernetes joins the parts with dashes,
-> e.g. `data-consul-0` for claim `data`, Stateful set `consul`, pod 0.
+> [!note] Dashes, not dots
+> Kubernetes joins the parts with dashes, e.g. `data-consul-0` for claim `data`,
+> Stateful set `consul`, pod 0.
 
 - Persistent Volume Claims are matched 1-to-1 with Persistent Volumes
 

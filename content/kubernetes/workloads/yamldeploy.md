@@ -55,9 +55,8 @@ similar to Terraform, for example.
 >   YAML that `kubectl` generates;
 > - `kubectl set ...` changes images, service accounts, resources, and more.
 >
-> > [!warning] Correction
-> > The original showed `kubectl create deployment ... --overrides`. That option
-> > does not exist: `kubectl create deployment` fails with
+> > [!warning] Only `kubectl run`
+> > `kubectl create deployment` has no `--overrides` option: it fails with
 > > `unknown flag: --overrides`. Only `kubectl run` has it.
 
 ## Various ways to write YAML
@@ -318,9 +317,8 @@ We can also use `kubectl delete -f`, `kubectl label -f`, and more.
 >
 > Run it once with `--dry-run=server` first: it lists what would be pruned.
 >
-> > [!warning] Correction
-> > The original example was `kubectl apply -f directory-with-yaml/ --prune --all`.
-> > Do not use it. The default list of kinds to prune includes cluster-scoped kinds,
+> > [!danger] Never `--prune --all` alone
+> > Do not run `kubectl apply -f directory-with-yaml/ --prune --all`. The default list of kinds to prune includes cluster-scoped kinds,
 > > like Namespace and PersistentVolume. So `--prune --all` also deletes *every*
 > > Namespace of the cluster that was created with `kubectl apply` and is not in your
 > > directory, with everything in it. On a kind cluster, that includes

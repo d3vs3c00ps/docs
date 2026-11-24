@@ -102,12 +102,9 @@ hf download Jackrong/Qwopus3.5-27B-v3-GGUF <filename>.gguf --local-dir ~/models
 llama-server -m ~/models/<filename>.gguf --host 127.0.0.1 --port 8080 -ngl 99 -c 32768
 ```
 
-> [!warning] Correction: the command is `hf`
-> The original used `huggingface-cli download`. huggingface_hub 1.x removed
-> `huggingface-cli`; the same arguments work with `hf download`.
->
-> The repository name was also wrong: `Jackrong/Qwopus-27B-v3-GGUF` does not exist.
-> It is `Jackrong/Qwopus3.5-27B-v3-GGUF`.
+> [!note] `hf`, not `huggingface-cli`
+> huggingface_hub 1.x removed `huggingface-cli`. Older guides use it; the same
+> arguments work with `hf download`.
 
 For Ollama, see [[ai/ollama]] on loading custom GGUF files through a Modelfile.
 

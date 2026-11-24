@@ -39,11 +39,6 @@ upstream_sync: manual
 >   helm upgrade orange oci://ghcr.io/securecodebox/helm/juice-shop --set ingress.enabled=true
 >   ```
 
-> [!warning] Correction
-> The original first added the repository `https://charts.securecodebox.io` and
-> used `juice/juice-shop`. That host no longer exists; the chart is now in the OCI
-> registry above, which needs no `helm repo add`.
-
 ## Release history
 
 - Helm stores successive revisions of each release

@@ -38,15 +38,13 @@ top -b -n 1         # batch mode, one iteration — for scripts and logs
 top -d 5            # refresh every 5 seconds
 ```
 
-> [!warning] Correction — `-c` does not restore the last session
-> The original version of this note described `top -c` as "starts top with the last
-> closed state". It does not. `-c` reverses the saved state of the **command-line
-> display**, the same as pressing `c` once running. With no saved layout, that turns
-> the full command line on.
+> [!note] `-c` is not "restore the last session"
+> `-c` reverses the saved state of the **command-line display**, the same as pressing
+> `c` once running. With no saved layout, that turns the full command line on.
 >
 > Persisting a layout is a separate mechanism: arrange the display how you want it,
 > then press `W`. Current procps-ng writes `~/.config/procps/toprc` (older versions
-> wrote `~/.toprc`, which is still read if it exists). Subsequent runs read that file
+> wrote `~/.toprc`, which is still read if it exists). Later runs read that file
 > automatically.
 
 > [!tip] Batch mode is the one worth remembering
@@ -108,9 +106,8 @@ The three worth watching:
 - **`st` high** — you are on a VM and the host is oversubscribed. Nothing inside the
   guest can fix it.
 
-> [!warning] Correction — `wa` is disk I/O only
-> The original note said `wa` covers storage *or network* I/O. It does not. `wa`
-> counts idle time while a process waits for block I/O (a disk). A process that
+> [!note] `wa` is disk I/O only
+> `wa` counts idle time while a process waits for block I/O (a disk). A process that
 > waits for the network is just sleeping, and its wait shows as `id`.
 
 ### Memory
@@ -136,11 +133,8 @@ MiB Mem :   3898.5 total,    385.2 free,   1167.0 used,   2346.2 buff/cache
 > process needs it. The number that tells you whether you are short of memory is
 > **`avail Mem`** on the swap line, not `free`.
 
-> [!warning] Correction — top reports in binary units, not decimal
-> The original note stated that "the top utility reports memory consumption in
-> decimal", immediately after correctly explaining the difference. That contradicts
-> the header, which says `MiB`. A **mebibyte** is 1024², a megabyte is 1000². `top`
-> labels its output `MiB` because it is genuinely reporting mebibytes — binary units.
+> [!note] Binary units
+> `top` labels its output `MiB` because it reports mebibytes: 1024², not 1000².
 
 ### Swap
 

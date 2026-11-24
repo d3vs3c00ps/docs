@@ -280,11 +280,6 @@ A ConfigMap can also appear as environment variables in the container, with
 `valueFrom.configMapKeyRef` (one key) or `envFrom` (all keys). This suits ConfigMaps
 that hold individual parameters.
 
-> [!warning] Correction
-> The original page said that environment variables from a ConfigMap use "the
-> downward API". They do not: they use `configMapKeyRef` or `envFrom`. The downward
-> API exposes information about the Pod itself.
-
 Let's see how to do both.
 
 ## Example: HAProxy configuration
@@ -338,8 +333,7 @@ another, so we use `x.y.svc`.
 >   ```
 
 > [!note]
-> The original command used the image `nixery.dev/curl`, which exists only for
-> amd64. `curlimages/curl` is multi-architecture.
+> `curlimages/curl` is multi-architecture; `nixery.dev/curl` exists only for amd64.
 
 ## Creating the HAProxy configuration
 
@@ -380,10 +374,9 @@ The official HAProxy image starts HAProxy in the foreground (`-db`), which overr
 >   kubectl get configmap haproxy -o yaml
 >   ```
 
-> [!warning] Correction
-> The original command was `--from-file=~/container.training/k8s/haproxy.cfg`. The
-> shell does not expand `~` after `--from-file=`, so `kubectl` gets a literal `~` and
-> fails with "no such file or directory". Use a space instead of `=`, or `$HOME`.
+> [!warning] No `~` after `=`
+> The shell does not expand `~` after `--from-file=`, so `kubectl` gets a literal `~`
+> and fails with "no such file or directory". Use a space instead of `=`, or `$HOME`.
 
 ## Using the ConfigMap
 
@@ -408,7 +401,7 @@ spec:
       mountPath: /usr/local/etc/haproxy/
 ```
 
-> [!warning] Correction
+> [!note] The image tag
 > The upstream manifest uses the image `haproxy:1`. That tag is HAProxy 1.9, which
 > reached end of life in 2020. `haproxy:3.2` is a long-term support (LTS) version.
 

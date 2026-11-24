@@ -83,11 +83,10 @@ grey for failed to start or crashed.
 | Filesystem | `@modelcontextprotocol/server-filesystem` | Read and write files outside the workspace |
 | Git | `mcp-server-git` (Python, run with `uvx`) | Log, diff, status, commit |
 
-> [!warning] Correction: three of the original packages
-> `@modelcontextprotocol/server-git` does not exist on npm: the git server is the
-> Python package `mcp-server-git`. `@modelcontextprotocol/server-postgres` is marked
-> "Archived and unmaintained", and `@modelcontextprotocol/server-brave-search` is
-> deprecated on npm. Both are removed from the table; look in the registry for
+> [!warning] Some well-known servers are gone
+> There is no `@modelcontextprotocol/server-git` on npm: the git server is the Python
+> package `mcp-server-git`. `@modelcontextprotocol/server-postgres` is archived and
+> `@modelcontextprotocol/server-brave-search` is deprecated. Look in the registry for
 > maintained replacements.
 
 The [server registry](https://github.com/modelcontextprotocol/servers) has many more.
@@ -137,11 +136,11 @@ if __name__ == "__main__":
     mcp.run(transport="stdio")
 ```
 
-> [!warning] Correction: `FastMCP` is `MCPServer` in mcp 2.x
-> The original imported `from mcp.server.fastmcp import FastMCP`. `pip install
-> "mcp[cli]"` now installs mcp 2.x (2.3.0 tested), where that import fails with
-> "FastMCP was renamed to MCPServer". The decorators and `mcp.run()` are the same.
-> Code written for 1.x needs `pip install "mcp[cli]<2"`.
+> [!note] `FastMCP` is `MCPServer` in mcp 2.x
+> `pip install "mcp[cli]"` installs mcp 2.x (2.3.0 tested), where
+> `from mcp.server.fastmcp import FastMCP` fails with "FastMCP was renamed to
+> MCPServer". The decorators and `mcp.run()` are the same. Code written for 1.x needs
+> `pip install "mcp[cli]<2"`.
 
 > [!important] Three rules for Python MCP servers
 > 1. **Never write to stdout.** It corrupts the JSON-RPC stream. Use `stderr` or the
@@ -284,18 +283,6 @@ func main() {
 	}
 }
 ```
-
-> [!warning] Corrections to the original example
-> - **It mixed two SDKs.** It imported `github.com/modelcontextprotocol/go-sdk/mcp`
->   and `.../go-sdk/server`, but used the mcp-go API. The official go-sdk (v1.8.0)
->   has no `server` package, so `go get` fails. The official version above is new;
->   the original code now uses the mcp-go imports.
-> - **`req.Params.Arguments` cannot be indexed** in mcp-go v1.6.0: it is `any`. Use
->   `req.GetArguments()`.
-> - **`os` was not imported**, despite `os.Stderr` and `os.Exit` being used.
-> - **The argument type assertions were unchecked** — they panic if the client sends
->   a non-string. Use the two-value form, as above. See
->   errors.
 
 **Why Go for MCP servers** — compiled binaries start instantly with no interpreter
 startup cost, which matters when the agent spawns the server per session; goroutines

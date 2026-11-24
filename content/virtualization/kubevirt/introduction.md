@@ -124,10 +124,10 @@ kubectl get nodes -o json | jq '.items[].status.allocatable | keys' | grep -i kv
 No output means no node offers KVM. Before you install KubeVirt, check the node itself
 instead: `ls /dev/kvm` on the host.
 
-> [!warning] Correction
-> An earlier version said that KubeVirt falls back to software emulation without
-> `/dev/kvm`. It does not: VMs stay pending until you turn emulation on. Emulation is
-> much slower and only fits CI and labs. Turn it on in the `KubeVirt` resource:
+> [!warning] No automatic fallback to emulation
+> Without `/dev/kvm`, KubeVirt does not fall back to software emulation: VMs stay
+> pending until you turn emulation on. Emulation is much slower and only fits CI and
+> labs. Turn it on in the `KubeVirt` resource:
 >
 > ```yaml
 > spec:

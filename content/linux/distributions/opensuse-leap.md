@@ -42,10 +42,9 @@ metadata and only discard the packages, give no option:
 zypper clean
 ```
 
-> [!warning] Correction
-> The original note used `zypper clean --packages`. That option does not exist:
-> zypper stops with `The flag --packages is not known`. Plain `zypper clean`
-> removes the cached packages only.
+> [!note] No `--packages`
+> `zypper clean --packages` stops with `The flag --packages is not known`. Plain
+> `zypper clean` removes the cached packages only.
 
 > [!note] The cache is usually smaller than APT's
 > Unlike APT, zypper does not keep downloaded RPMs by default — `keeppackages`
@@ -155,9 +154,9 @@ Locks live in `/etc/zypp/locks`, one stanza per lock, and accept globs
 > zypper reports a conflict only when another package needs the locked one to
 > change.
 
-> [!warning] Correction
-> The original note said a lock makes zypper stop and ask instead of skipping
-> the package. For `zypper update` it skips the package, and says so in its list.
+> [!note] What a lock does
+> `zypper update` skips a locked package, and says so in its list. It does not stop
+> and ask.
 
 ### Repositories on Leap 16
 
@@ -263,9 +262,8 @@ zypper needs-rebooting    # is a full reboot required?
 (`REBOOT_CMD`) when a newer kernel is installed or when a service listed in
 `SERVICES_TRIGGERING_REBOOT` needs a restart.
 
-> [!warning] Correction
-> The original note said `os-update` calls both commands. It only calls
-> `zypper ps`; checked in the `os-update` script of Leap 16.0.
+> [!note] `os-update`
+> `os-update` only calls `zypper ps`; checked in the `os-update` script of Leap 16.0.
 
 ## Useful commands
 
@@ -334,10 +332,9 @@ chkstat --system            # check and apply
 chkstat --system --warn     # report only
 ```
 
-> [!warning] Correction: there is no `--dry-run`
-> The original note used `chkstat --system --dry-run` for a report. chkstat has no
-> such option: it reads `--dry-run` as the one path to check, prints `Cannot check
-> this path`, and reports nothing else. Use `--warn`.
+> [!warning] There is no `--dry-run`
+> chkstat reads `--dry-run` as the one path to check, prints `Cannot check this path`,
+> and reports nothing else. Use `--warn`.
 
 The profile is selected in `/etc/sysconfig/security` via
 `PERMISSION_SECURITY`, with `easy`, `secure` and `paranoid` shipped in
@@ -367,11 +364,10 @@ Show only files whose contents changed, ignoring config:
 rpm -Va | grep '^..5' | grep -v '^.\{9\}  c '
 ```
 
-> [!warning] Correction
-> The original filter was `rpm -Va | grep -v '^..5......  c '`. It only hides
-> changed config files, and still shows every other line, such as mode, owner or
-> time changes. The new filter keeps the lines with `5` in the digest column, then
-> drops config files.
+> [!note] Why this filter
+> `rpm -Va | grep -v '^..5......  c '` only hides changed config files, and still
+> shows every other line, such as mode, owner or time changes. The filter above keeps
+> the lines with `5` in the digest column, then drops config files.
 
 > [!note] Strictly stronger than `debsums`
 > RPM verification uses SHA-256 and checks mode, ownership and size as well as
@@ -414,9 +410,9 @@ remove them:
 zypper dist-upgrade --remove-orphaned
 ```
 
-> [!warning] Correction
-> The original note said `zypper dist-upgrade` removes orphaned packages by
-> itself. It does not; it needs `--remove-orphaned`.
+> [!note] Orphans
+> `zypper dist-upgrade` does not remove orphaned packages by itself; it needs
+> `--remove-orphaned`.
 
 ### Auditing with lynis
 
@@ -430,11 +426,10 @@ for automated audits.
 zypper install lynis
 ```
 
-> [!warning] Correction
-> The original note said `lynis` is not in the Leap repositories and must come
-> from the `security` project on the Open Build Service. Leap 16.0 ships it in
-> `repo-oss`. Use the OBS project only if you need a newer version, with a
-> priority above 99 (see [[#Repository priorities]]).
+> [!note] `lynis` is in `repo-oss`
+> Leap 16.0 ships `lynis` in `repo-oss`. Use the `security` project on the Open Build
+> Service only if you need a newer version, with a priority above 99 (see
+> [[#Repository priorities]]).
 
 ```bash
 lynis audit system --quick
@@ -500,11 +495,9 @@ echo your.name >> /etc/cron.allow
 > empty `cron.allow`. `cron.deny` lists users to refuse when there is no
 > `cron.allow`.
 
-> [!warning] Correction
-> The original note denied everyone with `echo ALL >> /etc/cron.deny`. cronie
-> has no `ALL` keyword: it reads `ALL` as a user name, and every other user may
-> still use `crontab`. It also said an empty `cron.allow` locks out root; cronie
-> lets root through.
+> [!warning] cronie has no `ALL` keyword
+> `echo ALL >> /etc/cron.deny` denies a user named `ALL`: every other user may still use
+> `crontab`. An empty `cron.allow` does not lock out root: cronie lets root through.
 
 > [!tip] Leap 16 defaults to `cronie`
 > Systemd timers are the better target for anything you control, since they get

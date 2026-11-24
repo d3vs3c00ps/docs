@@ -695,9 +695,8 @@ and providing defaults on RAM usage.
 Note the `type: Container` line. A LimitRange can also use `type: Pod`: then `min` and
 `max` apply to the sum of all containers in the Pod (there are no Pod defaults).
 
-> [!warning] Correction
-> The original said that per-Pod limits were "not officially documented yet". The
-> `Pod` type is documented and enforced: with `max: {cpu: 200m}`, a Pod with two
+> [!note] Per-Pod limits
+> The `Pod` type is documented and enforced: with `max: {cpu: 200m}`, a Pod with two
 > containers of 150m each is refused ("maximum cpu usage per Pod is 200m").
 
 ## LimitRange details

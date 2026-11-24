@@ -91,10 +91,8 @@ upstream_sync: manual
 
   (3 nodes for the control plane + 5 worker nodes)
 
-> [!note] Updated
-> The upstream course used `rancher/k3s:v1.18.9-k3s1`, from 2020. The image is now a
-> current release. k3s itself, and more k3d options, are covered in
-> [[kubernetes/cluster-setup/k3s]].
+> [!note]
+> k3s itself, and more k3d options, are covered in [[kubernetes/cluster-setup/k3s]].
 
 - Clusters are automatically added to `.kube/config` file
 

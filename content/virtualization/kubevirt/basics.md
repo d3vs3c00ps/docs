@@ -215,8 +215,7 @@ virtctl vnc rocky-01            # graphical
 virtctl ssh fedora@vm/fedora-01
 ```
 
-> [!warning] Correction
-> An earlier version had `virtctl pause rocky-01` and `virtctl ssh fedora@fedora-01`.
+> [!note] The type comes first
 > `pause` and `unpause` need the type first (`vm` or `vmi`), and `ssh` needs
 > `type/name`. The short forms fail with `accepts 2 arg(s)` and
 > `target must contain type and name separated by '/'`.

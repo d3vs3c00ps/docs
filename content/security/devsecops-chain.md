@@ -88,10 +88,10 @@ release:
 # → Dependency-Track re-scanning, Falco or NeuVector, Caldera exercises
 ```
 
-> [!warning] Correction
-> The pre-commit line was `gitleaks detect --staged`. `detect` has no `--staged` flag
-> (gitleaks 8.30 refuses it), and `detect` and `protect` are deprecated since 8.19. The
-> current command is `gitleaks git --pre-commit --staged`.
+> [!note] The gitleaks command
+> `gitleaks detect` has no `--staged` flag (gitleaks 8.30 refuses it), and `detect` and
+> `protect` are deprecated since 8.19. The current command is
+> `gitleaks git --pre-commit --staged`.
 
 > [!important] The deploy gate must not live in the pipeline
 > A check that runs in CI can be bypassed by anyone who can deploy another way —

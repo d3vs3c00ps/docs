@@ -90,9 +90,8 @@ spec:
               drop: ["ALL"]
 ```
 
-> [!warning] Correction
-> An earlier version of this page used the tag `v3.10.3`, which does not exist:
-> goldpinger tags have no `v` prefix.
+> [!note] No `v` prefix
+> goldpinger tags have no `v` prefix: `v3.10.3` does not exist.
 
 It needs RBAC to list its own pods, which is how instances discover each other: a
 ServiceAccount, a ClusterRole, and a binding between them:
@@ -200,12 +199,6 @@ goldpinger_kube_master_response_time_s_bucket
   labels:
     severity: warning
 ```
-
-> [!warning] Correction
-> An earlier version of this page filtered `.hosts[]` on `OK` (that list has no `OK`
-> field, so the filter never found anything) and used a `goldpinger_nodes_health_total`
-> metric and `status_code`/`host` labels that goldpinger 3.11 does not export. The
-> filter, the metric list and the first alert were rewritten from the real output.
 
 See [[kubernetes/observability/prometheus]].
 

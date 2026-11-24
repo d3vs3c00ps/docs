@@ -41,10 +41,10 @@ The model providers are extras. For the local ones below, install them too:
 pip install 'strands-agents[ollama,openai]'
 ```
 
-> [!warning] Correction
-> This note gave only the first line. With it alone, `from strands.models.ollama import
-> OllamaModel` fails with `No module named 'ollama'`, and the OpenAI provider fails
-> the same way. LiteLLM is the `litellm` extra.
+> [!note] Install the extras
+> With the base package alone, `from strands.models.ollama import OllamaModel` fails
+> with `No module named 'ollama'`, and the OpenAI provider fails the same way.
+> LiteLLM is the `litellm` extra.
 
 ## A minimal agent
 
@@ -164,8 +164,6 @@ That composes well: write the tool once as an MCP server, use it from your edito
 from an agent.
 
 ## Evaluating it
-
-Honest assessment, since the section did not previously cover agent frameworks.
 
 **Where it is a reasonable choice:**
 

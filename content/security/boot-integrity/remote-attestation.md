@@ -89,10 +89,9 @@ ima_policy=tcb|appraise_tcb ima_appraise=log ima_template=ima-ng
 | `ima_appraise=fix` | Write the reference values (the `security.ima` extended attributes) |
 | `ima_appraise=enforce` | **Refuse to execute** files failing appraisal. The default when appraisal is on |
 
-> [!warning] Correction
-> An earlier version used `ima_policy=tcb ima_appraise=log` and described `log` as
-> "measure and log only". `ima_appraise=` only acts on files that an appraisal rule
-> selects, and the `tcb` policy has none, so that line appraised nothing. Appraisal
+> [!warning] `ima_appraise` needs an appraisal policy
+> `ima_appraise=` only acts on files that an appraisal rule selects, and the `tcb`
+> policy has none, so `ima_policy=tcb ima_appraise=log` appraises nothing. Appraisal
 > needs `appraise_tcb` (or your own policy). Source: the kernel's
 > `admin-guide/kernel-parameters` documentation for `ima_policy` and `ima_appraise`.
 

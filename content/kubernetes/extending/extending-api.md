@@ -139,9 +139,9 @@ then make or request changes where needed.*
 
   (alpha in Kubernetes 1.32, beta in 1.34, GA in 1.36)
 
-> [!warning] Correction
-> The original said that mutating admission policies were "coming". They are GA since
-> Kubernetes 1.36 (`admissionregistration.k8s.io/v1`), and work on kind 1.37.
+> [!note] Mutating admission policies are GA
+> They are GA since Kubernetes 1.36 (`admissionregistration.k8s.io/v1`), and work on
+> kind 1.37.
 
 [ac-controllers]: https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers/
 [ac-webhooks]: https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/

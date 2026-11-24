@@ -26,13 +26,11 @@ ansible-doc -s <module>     # just the playbook snippet
 ```
 
 > [!note] Module counts move fast
-> The original notes recorded "1046 built-in modules in 2.14.1, plus several hundred
-> in collections". Since ansible-core 2.10 the split has shifted decisively: the
-> engine ships only a small set of `ansible.builtin` modules and everything else
+> Since ansible-core 2.10, the engine ships only a small set of `ansible.builtin` modules and everything else
 > lives in collections. Use `ansible-doc -l` on your own installation rather than
 > any published figure.
 
-> [!warning] Correction: `ansible-doc -l` crashes in Ansible 15.0.0
+> [!warning] `ansible-doc -l` crashes in Ansible 15.0.0
 > With no argument, `ansible-doc -l` stops with
 > `'_AnsibleTaggedDict' object has no attribute 'strip'`. The cause is the
 > `google.cloud` collection that the `ansible` package bundles. List one collection
@@ -48,11 +46,10 @@ ansible-doc -s <module>     # just the playbook snippet
 > remove the ambiguity when two collections provide the same short name — and
 > `ansible-lint` will require them (rule `fqcn[action-core]`).
 
-> [!warning] Correction: `ansible.builtin.yum` is gone
-> The original tip used `ansible.builtin.yum`. ansible-core 2.17 removed the `yum`
-> module, and `ansible-doc ansible.builtin.yum` now says it was not found. A task
-> that uses the name still runs, as a redirect to `ansible.builtin.dnf`. Write
-> `ansible.builtin.dnf`.
+> [!warning] `ansible.builtin.yum` is gone
+> ansible-core 2.17 removed the `yum` module, and `ansible-doc ansible.builtin.yum`
+> says it was not found. A task that uses the name still runs, as a redirect to
+> `ansible.builtin.dnf`. Write `ansible.builtin.dnf`.
 
 ### command and shell
 
@@ -65,11 +62,10 @@ ansible-doc -s <module>     # just the playbook snippet
 globs, so less risk of injection. Use `shell` only when you genuinely need shell
 features.
 
-> [!warning] Correction: `command` still expands variables
-> The original said `command` does no expansion. It does expand environment
-> variables: `-a 'echo "$HOME > /tmp/x"'` prints `/home/ansible > /tmp/x`. The `>`
-> stays plain text, so no file is written. The option `expand_argument_vars`
-> controls this, and it is on by default.
+> [!note] `command` still expands environment variables
+> `-a 'echo "$HOME > /tmp/x"'` prints `/home/ansible > /tmp/x`: the variable is
+> expanded, but the `>` stays plain text, so no file is written. The option
+> `expand_argument_vars` controls this, and it is on by default.
 
 ### script and raw
 
@@ -123,7 +119,7 @@ The first thing you can do with Ansible is run *ad-hoc* commands — executing
 directly against the target servers using the supplied modules.
 
 Run a command with `-a` alone. With no `-m`, Ansible uses the `command` module
-(the original called this a raw command, but it does not use `raw`):
+(this is not a raw command: it does not use the `raw` module):
 
 ```bash
 ansible all -a "echo ansible FTW"
@@ -142,15 +138,10 @@ ansible svr-apache-01 -b -m service -a "name=apache2 state=restarted"
 ansible svr-apache-01 -m shell -a "du -hs /opt"
 ```
 
-> [!warning] Correction from the original notes
-> These examples used typographic quotes — `-a “name=httpd”`. The shell does not
-> treat those as quotes, so the argument is passed literally including the curly
-> characters and the command fails. Straight ASCII quotes only.
-
-> [!warning] Correction: `-b` and the `apache2` name
-> The original examples had no `-b` (`--become`). Without root, zypper stops with
-> "Root privileges are required". They also used `httpd`, the Red Hat name. On
-> openSUSE the package and the service are both called `apache2`.
+> [!note] `-b`, and `apache2` on openSUSE
+> Without `-b` (`--become`), zypper stops with "Root privileges are required". On
+> openSUSE the package and the service are both called `apache2`; `httpd` is the Red
+> Hat name.
 
 Test connectivity against everything, a group, or one host:
 

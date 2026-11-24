@@ -20,12 +20,11 @@ sudo zypper install libvirt libvirt-daemon-qemu virt-install virt-manager
 sudo dnf install qemu-kvm libvirt virt-install
 ```
 
-> [!warning] Correction
-> The original Leap line installed `qemu-kvm`. Leap 16 has no such package on ARM64;
-> `libvirt-daemon-qemu` already pulls the right QEMU. The original RHEL line also
-> installed `virt-manager`, which RHEL 10 and Rocky 10 no longer ship. Use the web
-> console (`cockpit-machines`) there, or install virt-manager on your desktop and
-> connect over SSH.
+> [!note] Package names
+> Leap 16 has no `qemu-kvm` package on ARM64; `libvirt-daemon-qemu` already pulls the
+> right QEMU. RHEL 10 and Rocky 10 no longer ship `virt-manager`. Use the web console
+> (`cockpit-machines`) there, or install virt-manager on your desktop and connect over
+> SSH.
 
 Start libvirt and add yourself to the groups. Current distributions (Leap 16,
 RHEL 9 and later, Fedora) run one daemon per driver, started on demand by a socket:
@@ -90,9 +89,9 @@ virsh pool-info default
 virsh vol-list default
 ```
 
-> [!warning] Correction
-> An earlier version said the `default` pool always exists. On a fresh host,
-> `virsh pool-info default` fails until virt-manager or the commands above create it.
+> [!note] The `default` pool
+> On a fresh host, `virsh pool-info default` fails until virt-manager or the commands
+> above create it.
 
 Creating one on a different filesystem:
 

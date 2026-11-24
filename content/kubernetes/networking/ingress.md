@@ -107,9 +107,9 @@ options, see [[kubernetes/networking/ingress-setup]].)
 >   kubectl apply -f ~/container.training/k8s/traefik.yaml
 >   ```
 
-> [!note] Correction
+> [!note] `traefik.yaml`
 > The upstream slides say `traefik.yml`, but the file in the repository is
-> `traefik.yaml` — the slide command fails as written.
+> `traefik.yaml`: the slide command fails as written.
 
 Then run a web app and expose it. `jpetazzo/color` is a static HTTP server on
 port 80 that reports its pod name:

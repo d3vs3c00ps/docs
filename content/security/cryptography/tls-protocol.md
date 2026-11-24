@@ -132,12 +132,10 @@ Processing order:
 
 The receiver reverses it: check the header, decrypt, verify the MAC, reassemble.
 
-> [!warning] Correction — compression was not removed in SSL 3.0
-> The original note stated that "from SSL v3.0, there is no more compression". That
-> is wrong. TLS compression existed through TLS 1.2 and was **removed in TLS 1.3**.
-> In practice it has been disabled everywhere since 2012, when the **CRIME** attack
-> showed that compressing attacker-influenced data alongside secrets leaks those
-> secrets. Never enable TLS-level compression.
+> [!warning] Never enable TLS compression
+> TLS compression existed through TLS 1.2 and was **removed in TLS 1.3**. In practice
+> it has been disabled everywhere since 2012, when the **CRIME** attack showed that
+> compressing attacker-influenced data alongside secrets leaks those secrets.
 
 ## Change Cipher Spec protocol
 
@@ -188,11 +186,6 @@ P_hash(secret, seed) = HMAC_hash(secret, A(1) || seed) || HMAC_hash(secret, A(2)
    with A(0) = seed, A(i) = HMAC_hash(secret, A(i-1))
 ```
 
-> [!warning] Correction
-> An earlier version left `|| seed` out of each output block. RFC 5246 (section 5)
-> feeds the seed into every block, and the test of this note checks the formula
-> against OpenSSL's own TLS 1.2 PRF.
-
 The master secret is 48 bytes — two iterations with P_SHA-256. Session keys then come
 from:
 
@@ -233,14 +226,12 @@ Where the suite does not use an AEAD mode, integrity comes from HMAC:
 HMAC(K, m) = H( (K ⊕ opad) || H( (K ⊕ ipad) || m ) )
 ```
 
-> [!warning] Correction — HMAC is not "twice as secure" as its hash
-> The original claimed the security of HMAC is "equivalent to twice that guaranteed
-> by a hash function". That is not a meaningful statement. HMAC's value is that it
-> remains a secure MAC even when the underlying hash is not collision-resistant, and
-> that its nested construction is immune to the **length-extension** attacks that
-> break naive `H(key || message)` constructions. HMAC-SHA-1 is still considered
-> sound for authentication despite SHA-1 being broken for signatures — that is the
-> property being described, not a doubling of strength.
+> [!note] What HMAC gives you
+> HMAC remains a secure MAC even when the underlying hash is not collision-resistant,
+> and its nested construction is immune to the **length-extension** attacks that break
+> naive `H(key || message)` constructions. HMAC-SHA-1 is still considered sound for
+> authentication despite SHA-1 being broken for signatures. HMAC is not "twice as
+> strong" as its hash.
 
 ### Encryption modes
 
@@ -326,9 +317,8 @@ and the other two "SHOULD" be implemented. OpenSSL enables all three by default:
 - `TLS_CHACHA20_POLY1305_SHA256` — notably faster on mobile and ARM without AES
   hardware acceleration
 
-> [!warning] Correction
-> An earlier version called all three mandatory to implement. Only
-> `TLS_AES_128_GCM_SHA256` is a MUST in RFC 8446.
+> [!note] Mandatory to implement
+> Only `TLS_AES_128_GCM_SHA256` is a MUST in RFC 8446.
 
 ### TLS 1.2, while you still need it
 
@@ -370,11 +360,9 @@ Because it is hybrid, it is no weaker than X25519 even if ML-KEM is later broken
 it defeats "harvest now, decrypt later" recording today. See
 [[security/cryptography/post-quantum]].
 
-> [!note] Correction — P-521 is not a security concern
-> The original listed P-521 alongside P-224 as one to avoid "for performance or
-> security concerns". P-224 is genuinely too small. P-521 is simply slower and less
-> widely deployed than P-384 with no practical benefit — it is over-provisioned, not
-> weak.
+> [!note] P-521 is not a security concern
+> P-224 is too small. P-521 is simply slower and less widely deployed than P-384, with
+> no practical benefit: it is over-provisioned, not weak.
 
 ### Certificates and hashes
 
@@ -386,11 +374,9 @@ it defeats "harvest now, decrypt later" recording today. See
 - Hashes — **SHA-256** minimum, **SHA-384** where you want margin. SHA-512 offers no
   practical advantage over SHA-384 here.
 
-> [!note] Correction — the "RSA 4096" advice was inconsistent
-> The original recommended 4096-bit RSA in one section and "2048 minimum, 3072 or
-> 4096 recommended" in another. 4096 costs meaningfully more CPU per handshake for
-> a margin nobody can currently exploit at 3072. Use 3072, or move to ECDSA P-256,
-> which beats both.
+> [!note] 3072, not 4096
+> 4096-bit RSA costs noticeably more CPU per handshake, for a margin nobody can
+> currently exploit at 3072. Use 3072, or move to ECDSA P-256, which beats both.
 
 ### Server checklist
 

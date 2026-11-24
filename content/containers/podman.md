@@ -12,11 +12,6 @@ Podman runs containers without a daemon and, more importantly, without root. It
 implements the same CLI as Docker, so `alias docker=podman` covers most day-to-day
 use.
 
-> [!note] Written to fill a gap
-> The original documentation had no Podman page, but used Podman in
-> vaultwarden-podman and zabbix. This note collects what
-> those assume.
-
 ## How it differs from Docker
 
 | | Docker | Podman |
@@ -85,10 +80,9 @@ files back:
 podman unshare chown -R 0:0 ./data
 ```
 
-> [!warning] Correction
-> An earlier version said that files written as `root` in the container get a subuid
-> owner. It is the other way round: root's files are yours, and the other users' files
-> get subuids.
+> [!note] Who owns the files
+> Files written as `root` in the container belong to you on the host; files written
+> by the container's other users get subuid owners.
 
 ## Pods
 
