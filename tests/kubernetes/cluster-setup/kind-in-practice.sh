@@ -116,8 +116,9 @@ check_output "curl through the Ingress IP" 'Welcome to nginx' curl -s --retry 10
 kubectl delete service web-lb >/dev/null
 kubectl delete ingress web >/dev/null
 if [[ -n $CPK ]]; then kill "$CPK" 2>/dev/null || true; else docker rm -f cloud-provider-kind >/dev/null; fi
-check_output "Ingress NGINX repository is archived (as the note says)" '"archived": true' \
-  curl -fsSL https://api.github.com/repos/kubernetes/ingress-nginx
+# The web page, not api.github.com: CI runners share IPs and hit the anonymous API limit (403).
+check_output "Ingress NGINX repository is archived (as the note says)" 'This repository was archived by the owner' \
+  curl -fsSL https://github.com/kubernetes/ingress-nginx
 
 section "NetworkPolicy works out of the box"
 kubectl run client --image=busybox:1.37 --restart=Never -- sleep 3600 >/dev/null

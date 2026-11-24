@@ -24,6 +24,8 @@ section "Ollama on Kubernetes: kubectl run"
 assert_match "the note pins the tested image" "ollama/ollama:$OLLAMA_VERSION" "$(note_block "$NOTE" 8)"
 check "kubectl run ollama (from the note)" run "$(note_block "$NOTE" 8)"
 check "wait for the pod (from the note)" run "$(note_block "$NOTE" 9)"
+# The pod is Ready before ollama serve listens: the image has no readiness probe.
+check "the server answers" retry 60 kubectl exec ollama -- ollama list
 check_output "ollama run pulls the model, and answers (from the note)" '[A-Za-z]{3,}' run "$(note_block "$NOTE" 10)"
 section "Other useful commands, in the pod"
 check_output "ollama show (from the note)" 'architecture +qwen2' run "kubectl exec ollama -- $(note_block "$NOTE" 4)"

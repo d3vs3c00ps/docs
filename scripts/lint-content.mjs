@@ -120,9 +120,18 @@ function parseFrontmatter(text) {
 
 const files = walk(ROOT)
 const markdown = files.filter((f) => f.endsWith(".md"))
-const notePaths = new Set(
-  markdown.map((f) => relative(ROOT, f).replace(/\.md$/, "").split("\\").join("/")),
-)
+// Notes already published and removed from this workshop: links to them still resolve
+// on the public site. The file exists only in the workshop.
+const PUBLISHED = "published-notes.txt"
+const published = existsSync(PUBLISHED)
+  ? readFileSync(PUBLISHED, "utf8")
+      .split("\n")
+      .filter((l) => l && !l.startsWith("#"))
+  : []
+const notePaths = new Set([
+  ...markdown.map((f) => relative(ROOT, f).replace(/\.md$/, "").split("\\").join("/")),
+  ...published,
+])
 const noteBasenames = new Set([...notePaths].map((p) => p.split("/").pop()))
 
 // --- secrets, across every file including binaries and SVGs -----------------

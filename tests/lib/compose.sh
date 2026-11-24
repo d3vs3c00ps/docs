@@ -21,3 +21,16 @@ wait_http() {
 
 # compose_logs SERVICE: the service's logs, to print when a check fails.
 compose_logs() { docker compose logs --no-color "$1" 2>&1 | tail -50; }
+
+# pull IMAGE...: pull mirror.gcr.io images with retries. The mirror forwards images it
+# has not cached to Docker Hub and can answer 429; Docker Hub itself is the fallback.
+pull() {
+  local img i
+  for img in "$@"; do
+    for i in 1 2 3; do
+      docker pull -q "$img" >/dev/null 2>&1 && continue 2
+      sleep $((i * 10))
+    done
+    docker pull -q "docker.io/${img#mirror.gcr.io/}" >/dev/null && docker tag "docker.io/${img#mirror.gcr.io/}" "$img" || return 1
+  done
+}
