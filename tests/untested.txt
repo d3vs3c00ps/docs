@@ -1,6 +1,7 @@
 # Notes that cannot be tested in a local container or kind cluster.
 # One per line: <note path relative to content/>  <reason>
 # Each note listed here must also carry a `> [!note] Not tested locally` callout.
+windows/administration  needs a Windows host; the harness runs Linux containers only
 attribution  licence and credit notice; no commands to run
 dev/vfkit  runs only on macOS (Apple Virtualization); the harness runs Linux containers
 networking/sztp  concept note, no commands or configuration to run

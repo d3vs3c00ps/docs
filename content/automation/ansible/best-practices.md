@@ -722,7 +722,7 @@ variables needed to run it:
 - optional variables
 - a usage example
 
-The README format is Markdown — see markdown.
+The README format is Markdown — see [[dev/markdown]].
 
 ### Code review
 

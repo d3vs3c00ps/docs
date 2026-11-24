@@ -324,7 +324,7 @@ stow -nv --no-folding -R bash git nvim
 
 ## See also
 
-- git — the repository that holds the packages
+- [[dev/git]] — the repository that holds the packages
 - [[linux/shell/zsh]] and [[linux/shell/tmux]] — typical packages
 
 <!-- uplink -->

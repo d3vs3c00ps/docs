@@ -289,7 +289,7 @@ Nix store. See [[linux/distributions/nixos/server]].
 - [[linux/distributions/nixos/hardening]] — the module CI should be enforcing
 - [[linux/distributions/nixos/testing]] — VM tests to run in that CI
 - [[linux/distributions/nixos/automated-install]] — bringing a new host into the fleet
-- git-conventions — commit conventions for the repository
+- [[dev/git-conventions]] — commit conventions for the repository
 - [[kubernetes/cicd-gitops/argocd]] — the same idea, for clusters
 
 <!-- uplink -->

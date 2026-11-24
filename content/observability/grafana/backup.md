@@ -9,7 +9,7 @@ status: complete
 # Grafana backup and restore
 
 This note uses the lab of [[observability/grafana/quickstart]] (Grafana 13.3.0 in Docker
-Compose, SQLite database). For a general view of backups, see backup.
+Compose, SQLite database).
 
 ## What to back up
 

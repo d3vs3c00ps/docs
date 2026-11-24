@@ -214,7 +214,7 @@ problem every fresh worktree has.
 
 - [[ai/llama-swap]] — serving several models cleanly
 - [[ai/zed-local-llm]] — connecting Zed in the first place
-- git — worktrees and branching
+- [[dev/git]] — worktrees and branching
 
 <!-- uplink -->
 Part of [[ai/index|Local LLMs]].

@@ -95,7 +95,7 @@ keeps it safe to run from a mapping or a script.
 ## Where to go next
 
 - [[linux/shell/shell-tips]] — the shell around the editor
-- markdown — where trailing whitespace is actually significant
+- [[dev/markdown]] — where trailing whitespace is actually significant
 
 <!-- uplink -->
 Part of [[linux/cli/index|Command line tools]].

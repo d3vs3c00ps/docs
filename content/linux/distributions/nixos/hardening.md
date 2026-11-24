@@ -141,7 +141,7 @@ systemd-analyze security myapp.service
 
 `systemd-analyze security` scores every unit from 0 to 10 and lists exactly which
 directives would improve it. It is the most actionable hardening tool on a modern
-Linux system, and it works the same here as anywhere — see systemd.
+Linux system, and it works the same here as anywhere — see [[linux/boot/systemd]].
 
 ## Kernel and network
 
@@ -197,7 +197,7 @@ Linux system, and it works the same here as anywhere — see systemd.
 ```
 
 SELinux support exists but is not well maintained on NixOS; AppArmor is the
-practical choice here. On other distributions, see selinux.
+practical choice here. On other distributions, see [[security/selinux]].
 
 ## Auditing
 
@@ -295,8 +295,8 @@ anything.
 
 - [[linux/distributions/nixos/disk-encryption]] — encryption at rest
 - [[linux/distributions/nixos/server]] — secrets handling in detail
-- systemd — the sandboxing directives above
-- auditd — reading what the audit rules produce
+- [[linux/boot/systemd]] — the sandboxing directives above
+- [[security/auditd]] — reading what the audit rules produce
 
 <!-- uplink -->
 Part of [[linux/distributions/nixos/index|NixOS]].

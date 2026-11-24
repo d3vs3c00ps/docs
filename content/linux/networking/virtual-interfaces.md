@@ -259,7 +259,7 @@ PING 10.240.1.20 (10.240.1.20) 56(84) bytes of data.
 
 Going further is outside the scope of this page: to genuinely reach beyond the
 host you must either publish return routes into your infrastructure, or enable IP
-masquerading on the host — see iptables. But you should now have a
+masquerading on the host — see [[networking/iptables]]. But you should now have a
 much better feel for how bridge mode works.
 
 > [!tip] Cleaning up

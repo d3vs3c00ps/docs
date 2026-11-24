@@ -212,7 +212,7 @@ Following one LUN upwards through the stack:
   rather than of the array below
 - [[linux/storage/disk-io-performance]] — measuring it, and why `%util` lies on
   anything with a queue depth above one
-- vmware-powershell — driving vSphere from PowerCLI
+- [[virtualization/vmware-powershell]] — driving vSphere from PowerCLI
 
 <!-- uplink -->
 Part of [[storage/index|Storage]].

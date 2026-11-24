@@ -198,7 +198,7 @@ where node egress is not. See [[kubernetes/networking/netpol]].
 - [[security/offensive/nuclei]] — the scanner that consumes this
 - [[kubernetes/networking/netpol]] — restricting egress properly
 - [[security/mitre-attack-and-d3fend]] — exfiltration as a tactic
-- iptables — egress filtering at the host
+- [[networking/iptables]] — egress filtering at the host
 
 <!-- uplink -->
 Part of [[security/offensive/index|Offensive tooling]].

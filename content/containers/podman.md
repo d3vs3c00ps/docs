@@ -205,8 +205,8 @@ problems but are not. `ausearch -m avc -ts recent` shows the actual denial.
 ## Where to go next
 
 - [[containers/docker]] — the differences that matter when translating a command
-- selinux — what the `:Z` above is actually doing
-- llama-cpp — a worked case of the awkward part of rootless containers: a GPU
+- [[security/selinux]] — what the `:Z` above is actually doing
+- [[ai/llama-cpp]] — a worked case of the awkward part of rootless containers: a GPU
   is not namespaced, so the device nodes and the driver have to be passed in, and
   rootless adds a further permissions problem on top
 

@@ -204,7 +204,7 @@ from an agent.
 - [[ai/mcp]] — writing the tools an agent consumes
 - [[ai/models]] — which local models handle tool calling adequately
 - [[ai/llama-swap]] — the endpoint to point it at
-- agent-skills — the other way to shape agent behaviour
+- [[dev/agent-skills]] — the other way to shape agent behaviour
 
 ## Sources
 

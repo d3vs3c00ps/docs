@@ -129,10 +129,10 @@ For nginx and Apache, `nginx -T`, `apachectl -S` and `grep` are faster.
 
 ## Where to go next
 
-- config-validation — per-daemon syntax checking
-- traffic-visualisation — the same idea for firewall rules
-- yaml — the format most likely to bite you
-- nginx · apache — the configurations in question
+- [[servers/config-validation]] — per-daemon syntax checking
+- [[networking/traffic-visualisation]] — the same idea for firewall rules
+- [[dev/yaml]] — the format most likely to bite you
+- [[servers/nginx]] · [[servers/apache]] — the configurations in question
 
 <!-- uplink -->
 Part of [[linux/cli/index|Command line tools]].

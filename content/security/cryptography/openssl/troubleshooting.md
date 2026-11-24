@@ -139,7 +139,7 @@ date -u
 ```
 
 "Not yet valid" is nearly always **clock skew** rather than a genuinely future
-certificate. Check NTP on both ends — see chrony. A container with a
+certificate. Check NTP on both ends — see [[servers/chrony]]. A container with a
 badly wrong clock produces this on certificates that are perfectly fine.
 
 ## `unsupported` on a PKCS#12 file

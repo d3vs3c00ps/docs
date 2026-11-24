@@ -408,7 +408,7 @@ Do not hand-write the cipher list. Use the
 - [[security/cryptography/post-quantum]] — what breaks, and the hybrid group to turn on now
 - [[security/cryptography/acme]] — getting and renewing the certificates automatically
 - [[security/cryptography/certificate-generation]] — a scripted CA and server certificate
-- nginx · apache — where the configuration actually goes
+- [[servers/nginx]] · [[servers/apache]] — where the configuration actually goes
 - [[kubernetes/security/cert-manager]] — automating issuance in a cluster
 
 <!-- uplink -->

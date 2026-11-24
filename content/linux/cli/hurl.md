@@ -248,7 +248,6 @@ real logic — there are no loops or conditionals, deliberately.
 
 ## Where to go next
 
-- http-client — the same requests, in code
 - [[security/cryptography/openssl/commands]] — deeper TLS inspection
 - [[security/offensive/hetty]] — when you need to see the exact bytes
 

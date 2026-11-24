@@ -299,7 +299,7 @@ also present — two managers on one interface produces behaviour that looks ran
 
 - [[linux/cli/ip]] — the lower-level view of the result
 - [[linux/networking/virtual-interfaces]] — bridges, VLANs and veth explained
-- iptables — filtering on the interfaces configured here
+- [[networking/iptables]] — filtering on the interfaces configured here
 
 ## Further reading
 

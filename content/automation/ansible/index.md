@@ -41,12 +41,6 @@ Notes on Ansible, from concepts through to project conventions.
 | [[automation/ansible/molecule]] | testing roles across distributions, scenarios, the test lifecycle |
 | [[automation/ansible/cheatsheet]] | recipes that are hard to remember — cross-host variables, per-distribution task files |
 
-## Running at scale
-
-| Note | What it covers |
-| --- | --- |
-| awx-tower | operating AWX / Tower / AAP: services, logs, cleanup, backup, execution environments |
-
 ## Suggested reading order
 
 For someone new to Ansible:
@@ -62,14 +56,13 @@ flowchart TD
     G --> H["vault<br/>handle secrets"]
     H --> I["molecule<br/>test it"]
     I --> J["best-practices<br/>make it maintainable"]
-    J --> K["awx-tower<br/>run it centrally"]
 ```
 
 ## Related
 
-- yaml — block scalars and the type-inference traps, which bite Ansible users
+- [[dev/yaml]] — block scalars and the type-inference traps, which bite Ansible users
   constantly
-- git — the projects these notes describe all live in Git
-- config-validation — pair with `validate:` on the `template` module
+- [[dev/git]] — the projects these notes describe all live in Git
+- [[servers/config-validation]] — pair with `validate:` on the `template` module
 
-Part of Automation.
+Part of [[automation/index|Automation]].

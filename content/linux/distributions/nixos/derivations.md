@@ -410,7 +410,7 @@ trusted by signature, which is what the public keys are for: a cache with no key
 
 - [[linux/distributions/nixos/language]] — the expressions that evaluate to these
 - [[linux/distributions/nixos/basics]] — garbage collection and closures in practice
-- sbom — the same problem, solved differently elsewhere
+- [[security/supply-chain/sbom]] — the same problem, solved differently elsewhere
 
 ## Further reading
 

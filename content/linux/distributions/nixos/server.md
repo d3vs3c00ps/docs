@@ -303,7 +303,7 @@ container than to Docker.
 - [[linux/distributions/nixos/automated-install]] — installing a new server from the flake
 - [[linux/distributions/nixos/testing]] — VM tests for your modules
 - [[linux/distributions/nixos/disk-encryption]] — encrypted root
-- systemd — the units being generated
+- [[linux/boot/systemd]] — the units being generated
 
 <!-- uplink -->
 Part of [[linux/distributions/nixos/index|NixOS]].
