@@ -114,8 +114,9 @@ assert_match "the release has thousands of templates (about 13,700)" '^ *1[3-4][
 # "Review, delete what you do not want": keep only the exposure templates.
 docker run --rm -v "$VOL:/w" -w /w/reviewed-templates --entrypoint sh "$GIT_IMAGE" -ec \
   'find . -mindepth 1 -maxdepth 1 ! -name http ! -name helpers -exec rm -rf {} +; find http -mindepth 1 -maxdepth 1 ! -name exposures -exec rm -rf {} +'
-check_output "nuclei -t on the reviewed set (from the note)" 'git-config.*http://web.test/\.git/config' \
-  bash -ec "$(note_block "$NOTE" 'Template trust' 1 | grep '^nuclei' | url | sed -e 's|\./reviewed-templates/|/w/reviewed-templates/|' -e 's|^nuclei|nuclei_vol|')"
+# The first scan can start before Docker DNS knows web.test: same retry as the scans below.
+out=$(five_tries 'git-config.*http://web.test/\.git/config' bash -ec "$(note_block "$NOTE" 'Template trust' 1 | grep '^nuclei' | url | sed -e 's|\./reviewed-templates/|/w/reviewed-templates/|' -e 's|^nuclei|nuclei_vol|')")
+assert_match "nuclei -t on the reviewed set (from the note)" 'git-config.*http://web.test/\.git/config' "$out"
 
 section "Installation (template count)"
 check_output "nuclei -tl | wc -l counts the installed templates (from the note)" '^ *[1-9][0-9]*$' \
