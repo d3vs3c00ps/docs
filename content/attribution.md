@@ -114,8 +114,8 @@ than tidying away:
 | [[linux/cli/lnav]] | [multitail — what it is and how it can make you a better sysadmin](https://idolinux.com/multitail-what-it-is-and-how-it-can-make-you-a-better-sysadmin/) | **no licence stated**; used as the basis for the multitail section |
 | [[kubernetes/networking/k8gb]] | [K8GB documentation](https://www.k8gb.io/latest/) (CNCF, Apache-2.0) | the `Gslb` example is reproduced from the project's documentation |
 | advanced | [CNCF — Benchmarking KubeVirt performance with virtbench](https://www.cncf.io/blog/2026/06/08/benchmarking-kubevirt-performance-with-virtbench/) | tool and metrics described and cited |
-| zero-trust-access | [Pangolin](https://pangolin.net) | described and cited |
-| sztp | [Linux.com — From DHCP to SZTP](https://www.linux.com/contributed/from-dhcp-to-sztp-the-trust-revolution/), and [RFC 8572](https://www.rfc-editor.org/rfc/rfc8572.html) | the article for framing; the RFC is the normative source |
+| [[networking/zero-trust-access]] | [Pangolin](https://pangolin.net) | described and cited |
+| [[networking/sztp]] | [Linux.com — From DHCP to SZTP](https://www.linux.com/contributed/from-dhcp-to-sztp-the-trust-revolution/), and [RFC 8572](https://www.rfc-editor.org/rfc/rfc8572.html) | the article for framing; the RFC is the normative source |
 | [[security/mitre-attack-and-d3fend]] | [MITRE ATT&CK](https://attack.mitre.org/) and [D3FEND](https://d3fend.mitre.org/) | MITRE's own material, used under the terms on their sites. Technique identifiers and tactic names are quoted; the framework itself is not reproduced |
 
 Quotations from RFCs, vendor documentation and manual pages are short excerpts used
