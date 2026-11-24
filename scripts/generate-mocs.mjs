@@ -138,56 +138,10 @@ const INTROS = {
     blurb:
       "Version control, markup formats, specification-by-example, and the languages I actually write tooling in.",
   },
-  "dev/go": {
-    title: "Go for sysadmins",
-    blurb:
-      'A course from "I run servers" to shipping idiomatic Go, with every concept anchored to something you already do on a machine.',
-  },
   "dev/taskfile": {
     title: "Task (Taskfile)",
     blurb:
       "Task, a single-binary task runner configured in YAML, as a replacement for Make: from the first Taskfile to includes, caching and backup tasks.",
-  },
-  "dev/go/foundations": {
-    title: "Foundations",
-    blurb: "Installing Go, a first program, how projects are laid out, and the toolchain.",
-  },
-  "dev/go/core-language": {
-    title: "Core language",
-    blurb:
-      "Variables, control flow, functions, and the four data structures everything else is built from.",
-  },
-  "dev/go/go-isms": {
-    title: "Go-isms",
-    blurb:
-      "The parts that are unlike other languages: errors as values, defer, and the concurrency model.",
-  },
-  "dev/go/packages-and-modules": {
-    title: "Packages and modules",
-    blurb:
-      "Dependency management, visibility, package boundaries, and what the standard library already gives you.",
-  },
-  "dev/go/sysadmin": {
-    title: "Sysadmin use cases",
-    blurb:
-      "Where Go starts replacing shell scripts: files, processes, configuration, logging, HTTP, SSH and sockets.",
-  },
-  "dev/go/web-and-apis": {
-    title: "Web and APIs",
-    blurb: "HTTP servers, routing, a layered REST API, and command-line tools.",
-  },
-  "dev/go/projects": {
-    title: "Mini projects",
-    blurb:
-      "Real tools built end to end. The fleet health checker is the capstone that ties every layer together.",
-  },
-  "dev/go/testing": {
-    title: "Testing",
-    blurb: "Unit tests, benchmarks, and the table-driven pattern that is the Go idiom.",
-  },
-  "dev/go/appendix": {
-    title: "Appendix",
-    blurb: "Gotchas, conventions, vocabulary and further reading.",
   },
   storage: {
     title: "Storage",
@@ -352,7 +306,7 @@ function walk(dir) {
 /**
  * The display title of a folder's MOC. Prefers INTROS so that renaming a section
  * here propagates in one run rather than two; falls back to the index.md on disk,
- * which is how the four hand-written MOCs (the root, ai, dev/go, automation/ansible)
+ * which is how the three hand-written MOCs (the root, ai, automation/ansible)
  * are picked up.
  */
 function mocTitle(rel) {

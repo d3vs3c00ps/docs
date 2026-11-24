@@ -1,8 +1,8 @@
 # Notes that cannot be tested in a local container or kind cluster.
 # One per line: <note path relative to content/>  <reason>
 # Each note listed here must also carry a `> [!note] Not tested locally` callout.
-dev/vfkit  runs only on macOS (Apple Virtualization); the harness runs Linux containers
 attribution  licence and credit notice; no commands to run
+dev/vfkit  runs only on macOS (Apple Virtualization); the harness runs Linux containers
 networking/sztp  concept note, no commands or configuration to run
 networking/zero-trust-access  concept note, no commands or configuration to run
 storage/raid-and-alua  concept note on SAN arrays and ALUA on VMware; needs storage hardware and vSphere
