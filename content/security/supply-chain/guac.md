@@ -86,11 +86,10 @@ guacone query known package "pkg:golang/github.com/some/library@v1.2.3"
 guacone query vuln purl "pkg:oci/myapp@sha256:abc123..."
 ```
 
-> [!warning] Correction
-> An earlier version showed `guacone query dependents`, which does not exist, and
-> `guacone query vuln` with no input type. In GUAC 1.1 the query commands are `known`,
-> `vuln`, `patch` and `bad`, and `known` and `vuln` take a type first (`package`,
-> `source`, `artifact`; `purl`, `uri`, `artifact`).
+> [!note] Query commands
+> In GUAC 1.1 the query commands are `known`, `vuln`, `patch` and `bad`, and `known`
+> and `vuln` take a type first (`package`, `source`, `artifact`; `purl`, `uri`,
+> `artifact`). There is no `guacone query dependents`.
 
 The [GraphQL documentation](https://docs.guac.sh/guac/guac-graphql/) covers the schema
 properly; the CLI wraps the handful of queries people actually run.

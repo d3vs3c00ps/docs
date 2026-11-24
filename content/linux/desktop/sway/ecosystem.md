@@ -177,10 +177,9 @@ variable itself: the session launcher does. On openSUSE, the login manager start
 copies Sway's environment into systemd. If screen sharing shows an empty list, this
 is the first thing to check — see [[linux/desktop/sway/best-practices]].
 
-> [!warning] Correction
-> The original note said the `/etc/sway/config.d` snippet sets
-> `XDG_CURRENT_DESKTOP`. It only copies the environment: when you run `sway` by
-> hand, the variable is missing unless you export it first, as in
+> [!note] The snippet only copies the environment
+> The `/etc/sway/config.d` snippet does not set `XDG_CURRENT_DESKTOP`: when you run
+> `sway` by hand, the variable is missing unless you export it first, as in
 > [[#Login]].
 
 ## Display profiles: kanshi

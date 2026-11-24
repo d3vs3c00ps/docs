@@ -29,10 +29,10 @@ sizes in human units.
 kernel reclaims memory by swapping out anonymous pages, *relative to* dropping
 page cache. The default on most distributions is `60`.
 
-> [!warning] Correction
-> The original note gave the range as `0` to `100`. Since Linux 5.8 the maximum
-> is `200`. Values above `100` make the kernel prefer swapping over dropping page
-> cache, which helps when swap is fast (zram, a fast NVMe drive).
+> [!note] Up to 200
+> Since Linux 5.8 the maximum is `200`. Values above `100` make the kernel prefer
+> swapping over dropping page cache, which helps when swap is fast (zram, a fast NVMe
+> drive).
 
 > [!warning] It is not a usage threshold
 > A swappiness of `60` does **not** mean "start swapping once 60% of RAM is
@@ -88,10 +88,6 @@ The names are `/dev/mapper/<VG>-<LV>`: here the logical volumes `swap1` and `swa
 in the volume group `rhel`. A hyphen inside a name is doubled in this path, so an
 LV called `swap-1` would be `/dev/mapper/rhel-swap--1`. `/dev/rhel/swap-1` avoids
 the problem.
-
-> [!note]
-> The original example used `/dev/mapper/rhel-swap-1`, which is the LV `1` in a VG
-> called `rhel-swap`. The names were changed so that they match the text.
 
 > [!important] Higher number means higher priority
 > The kernel fills the highest-priority swap area first. Devices sharing the same

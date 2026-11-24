@@ -36,13 +36,13 @@ upstream_sync: manual
 
   (Kibana, Filebeat, Cerebro ...)
 
-> [!warning] Updated for current ECK
-> The original used the files `k8s/eck-*.yaml` from the upstream repository: ECK 1.0.0,
-> Elasticsearch 7.5.1, Filebeat 7.5.1. They no longer work: the operator file defines its
-> CRDs with `apiextensions.k8s.io/v1beta1` (removed in Kubernetes 1.22), and 7.5.1
-> images are amd64 only. This page now installs ECK 3.5.0 from Elastic, and writes the
-> Elasticsearch and Kibana resources inline, for version 9.5.5. Tested on kind 1.37
-> (arm64). The Filebeat and Cerebro steps were not updated or tested.
+> [!warning] ECK 3.5.0, not the upstream files
+> This page installs ECK 3.5.0 from Elastic, and writes the Elasticsearch and Kibana
+> resources inline, for version 9.5.5. Tested on kind 1.37 (arm64). Do not use the
+> files `k8s/eck-*.yaml` from the upstream repository (ECK 1.0.0, Elasticsearch and
+> Filebeat 7.5.1): the operator file defines its CRDs with
+> `apiextensions.k8s.io/v1beta1` (removed in Kubernetes 1.22), and the 7.5.1 images
+> are amd64 only. The Filebeat and Cerebro steps are not tested.
 
 ## Installing a Persistent Volume provisioner
 

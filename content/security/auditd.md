@@ -36,9 +36,8 @@ auditctl -l          # show the rules currently loaded in the kernel
 Rules given directly to `auditctl` apply immediately but do not survive a reboot.
 Use that for testing, and `rules.d/` for anything permanent.
 
-> [!warning] Correction
-> An earlier version said the sample rule sets live in `/usr/share/audit/` and include
-> CIS baselines. Since audit 4.0 (RHEL 10, openSUSE Leap 16) they are in
+> [!note] Where the sample rules are
+> Since audit 4.0 (RHEL 10, openSUSE Leap 16) the sample rule sets are in
 > `/usr/share/audit-rules/`. RHEL 9 (audit 3.x) has them in
 > `/usr/share/audit/sample-rules/`. The upstream sets cover STIG, PCI DSS, OSPP and
 > NISPOM, not CIS. CIS benchmarks publish their own rules.

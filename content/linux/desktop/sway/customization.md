@@ -31,10 +31,9 @@ smart_borders on
 - `smart_gaps on`: no gaps when a workspace has only one window.
 - `smart_borders on`: no border either in that case.
 
-> [!warning] Correction
-> The comments in this block were at the end of the lines. Sway does not allow that,
-> and `sway -C` reports errors for these lines. See
-> [[linux/desktop/sway/configuration#Variables]].
+> [!note] Comments on their own line
+> Sway does not allow comments at the end of a line, and `sway -C` reports errors for
+> them. See [[linux/desktop/sway/configuration#Variables]].
 
 With `pixel` borders, tabbed and stacking containers still show their tab titles.
 That is the only place titles remain, which is usually what you want.

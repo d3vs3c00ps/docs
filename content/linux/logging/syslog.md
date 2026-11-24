@@ -223,9 +223,8 @@ ones you supply.
 
 ## Transport
 
-> [!warning] Correction
-> The original note said syslog over TCP has no flow control. TCP itself has flow
-> control: a slow collector makes the sender wait. What TCP syslog lacks is an
+> [!note] TCP has flow control
+> A slow collector makes a TCP sender wait. What TCP syslog lacks is an
 > application-level acknowledgement, which RELP adds.
 
 | Transport | Delivery guarantee | Notes |

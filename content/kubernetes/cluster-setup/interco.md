@@ -114,11 +114,11 @@ upstream_sync: manual
 Note: the other `updateStrategy` for a DaemonSet is RollingUpdate.
 For critical services, we might want to precisely control the update process.
 
-> [!warning] Correction
-> `OnDelete` was the default only in the old `extensions/v1beta1` API. In `apps/v1`
-> (the only DaemonSet API since Kubernetes 1.16), the default is `RollingUpdate`:
-> pods are replaced on their own after `kubectl apply`. Deleting them is needed only
-> if the manifest sets `updateStrategy: {type: OnDelete}`.
+> [!note] The default is `RollingUpdate`
+> In `apps/v1` (the only DaemonSet API since Kubernetes 1.16), pods are replaced on
+> their own after `kubectl apply`. Deleting them is needed only if the manifest sets
+> `updateStrategy: {type: OnDelete}`. `OnDelete` was the default only in the old
+> `extensions/v1beta1` API.
 
 ## Checking peering status
 

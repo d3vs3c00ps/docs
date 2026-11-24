@@ -37,9 +37,7 @@ belongs to Luke, and one from Han attesting that the signing key belongs to
 Chewbacca. Without knowing Chewbacca directly, Leia can verify Chewbacca's key via
 Han, and if her trust in Han is transitive she can then trust Luke.
 
-> [!note] Correction from the original notes
-> The original said Han's certificate attested "that the key belongs to Leia". It
-> has to be Chewbacca's key — that is the whole point of the intermediate link.
+> [!note] Transitive
 > A *transitive* relation is one where, if it holds for `a` and `b`, and for `b` and
 > `c`, then it also holds for `a` and `c`.
 
@@ -55,10 +53,9 @@ It is an ITU-T standard. The IETF profile that the internet uses is
 | 2 | 1993 | Issuer and subject unique identifiers (almost never used) |
 | 3 | 1996 | Extensions — SAN, key usage, basic constraints. Every certificate you meet today |
 
-> [!warning] Correction
-> An earlier version mapped the versions to RFC 1422, RFC 2459 and RFC 5280. Those
-> RFCs are not the versions: RFC 2459 (1999) and RFC 5280 (2008) both profile
-> version 3, and RFC 5280 replaced RFC 2459 through RFC 3280.
+> [!note] RFCs are not versions
+> RFC 2459 (1999) and RFC 5280 (2008) both profile version 3, and RFC 5280 replaced
+> RFC 2459 through RFC 3280.
 
 An X.509 v3 certificate has this structure:
 
@@ -158,9 +155,8 @@ Server Name Indication lets a client send the hostname it wants **during the TLS
 handshake**, before the certificate is chosen. That is what allows one IP address
 to serve many hostnames each with its own certificate.
 
-> [!note] Clarification from the original notes
-> The original described SNI as "sharing several certificates for the same IP
-> address or DNS name". It is per *hostname*, and the mechanism matters: without
+> [!note] SNI is per hostname
+> SNI picks the certificate per *hostname*, and the mechanism matters: without
 > SNI the server must pick a certificate before it knows which site was requested,
 > which is why one IP could historically host only one HTTPS site.
 

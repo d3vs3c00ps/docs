@@ -132,9 +132,8 @@ OpenSSL 3.0 was a significant rework, and its consequences show up in practice.
 **`openssl rsautl` is deprecated** in favour of `openssl pkeyutl`. It still runs, and
 prints a deprecation message first. See [[security/cryptography/openssl/signing]].
 
-> [!warning] Correction
-> An earlier version said `openssl dgst -sign` is deprecated too. It is not: it still
-> works on OpenSSL 3.5 with no warning. Only `rsautl` is deprecated.
+> [!note] Only `rsautl` is deprecated
+> `openssl dgst -sign` still works on OpenSSL 3.5, with no warning.
 
 **Default output changed.** `openssl x509 -text` prints slightly differently, which
 breaks scripts that grep its output — a good argument for `-noout` plus a specific
@@ -174,9 +173,8 @@ A long SAN list, several extension sections, or a CA that you keep (`openssl ca`
 still needs a config file. See [[security/cryptography/certificate-generation]] for
 worked ones.
 
-> [!warning] Correction
-> An earlier version said anything needing a SAN needs a config file. Since OpenSSL
-> 1.1.1, `-addext` adds a SAN from the command line.
+> [!tip] A SAN without a config file
+> Since OpenSSL 1.1.1, `-addext` adds a SAN from the command line.
 
 ## LibreSSL is not OpenSSL
 

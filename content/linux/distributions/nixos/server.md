@@ -180,11 +180,11 @@ systemd.services.myapp.serviceConfig.LoadCredential =
   "db-password:${config.sops.secrets."db/password".path}";
 ```
 
-> [!warning] Correction
-> The original example passed the secret as `EnvironmentFile`. That file must hold
-> `NAME=value` lines; a bare password is not one, so systemd sets no variable. Use
-> `LoadCredential`, as above, and read the file from `$CREDENTIALS_DIRECTORY`. For
-> `EnvironmentFile`, store the secret as `DB_PASSWORD=...` in sops.
+> [!warning] `EnvironmentFile` needs `NAME=value` lines
+> A bare password in an `EnvironmentFile` is not a `NAME=value` line, so systemd sets
+> no variable. Use `LoadCredential`, as above, and read the file from
+> `$CREDENTIALS_DIRECTORY`. For `EnvironmentFile`, store the secret as
+> `DB_PASSWORD=...` in sops.
 
 Using the host's SSH key as the decryption key is elegant — a machine can decrypt
 exactly the secrets encrypted to it, with nothing extra to distribute.
@@ -207,11 +207,6 @@ nixos-rebuild switch --flake .#web-01 --target-host root@web-01
 
 With only `--target-host`, the build runs on your machine and the closure is copied
 to the server, so the server needs no compiler and no build resources.
-
-> [!warning] Correction
-> The original command also had `--build-host localhost`. In the current
-> `nixos-rebuild`, any `--build-host` is reached over SSH, even `localhost`. Leave it
-> out to build locally. See [[linux/distributions/nixos/basics]].
 
 > [!important] `deploy-rs` gives you the network equivalent of `nixos-rebuild test`
 > It activates the new configuration, runs a health check, and **automatically rolls
@@ -253,10 +248,9 @@ That qcow2 drops straight into basics as a golden image, built
 from the same configuration as everything else. The full list of variants is in
 [[linux/distributions/nixos/testing#Building images]].
 
-> [!note] Correction
-> An earlier version used the separate `nixos-generators` tool
-> (`nixos-generate -f qcow2`). It was merged into nixpkgs in 25.05 as
-> `nixos-rebuild build-image` and is now archived. The variant names differ: there is
+> [!note] `nixos-generators` is archived
+> The separate `nixos-generators` tool (`nixos-generate -f qcow2`) was merged into
+> nixpkgs in 25.05 as `nixos-rebuild build-image`. The variant names differ: there is
 > no `qcow2` (use `qemu-efi` or `qemu`) and no `docker` — build OCI images with
 > `dockerTools`, below.
 

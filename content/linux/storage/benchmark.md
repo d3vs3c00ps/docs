@@ -38,9 +38,9 @@ bonnie++ -u 0 -n 256 -d /mnt/bench
 > results`. Lower `-r` as well only for a quick trial, since the numbers then show
 > the cache.
 
-> [!warning] Correction
-> The original command had `-s 1024`. On any machine with more than 512 MB of RAM,
-> bonnie++ refuses it and prints its usage. The command now leaves `-s` out.
+> [!note] No `-s` here
+> On a machine with more than 512 MB of RAM, bonnie++ refuses `-s 1024` and prints its
+> usage. Without `-s`, it picks a size of twice the RAM.
 
 The `-n 256` test creates 262,144 files, so the filesystem needs that many free
 inodes. A small test disk can run out of them.
@@ -49,8 +49,7 @@ With a much smaller `-n`, the file-creation phase finishes too fast to produce
 usable numbers.
 
 > [!warning] reiserfs is gone
-> The original version of this note benchmarked `reiserfs`. It was removed from
-> the Linux kernel in 6.13, so use `ext4`, `xfs` or `btrfs` instead. See
+> `reiserfs` was removed from the Linux kernel in 6.13, so use `ext4`, `xfs` or `btrfs` instead. See
 > [[linux/storage/partitioning]] for a worked btrfs layout.
 
 <!-- uplink -->

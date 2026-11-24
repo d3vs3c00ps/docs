@@ -67,9 +67,8 @@ upstream_sync: manual
 >       condition: redis.enabled
 >   ```
 
-> [!warning] Correction
-> The original used version `11.0.5`. Bitnami keeps only recent versions in its
-> chart index, and there is no 11.x left. Use a version that
+> [!note] Pick a listed version
+> Bitnami keeps only recent versions in its chart index. Use a version that
 > `helm search repo bitnami/redis --versions` shows (this page was tested with
 > 28.3.12). The chart's default image is `bitnami/redis:latest`.
 
@@ -218,9 +217,9 @@ use Bitnami's Redis chart.
       enabled: false
   ```
 
-> [!warning] Correction
-> The original set `cluster.enabled: false`, the 11.x name for "no replicas".
-> Current versions use `architecture: standalone`. They also enable a password by
+> [!note] `architecture: standalone`
+> Current versions of the chart use `architecture: standalone` for "no replicas"
+> (`cluster.enabled: false` is the 11.x name). They also enable a password by
 > default; DockerCoins' worker connects without one, hence `auth.enabled: false`.
 
 - User can also set variables with `--set=` or with `--values=`
@@ -259,8 +258,8 @@ use Bitnami's Redis chart.
 >   cd ..
 >   ```
 >
->   > [!warning] Correction
->   > The original kept the archive. Then `charts/` holds two charts named `redis`
+>   > [!warning] Remove the archive
+>   > If you keep it, `charts/` holds two charts named `redis`
 >   > (the archive and the folder), and Helm may install the unedited archive: in our
 >   > tests, `helm template` used the edited folder but `helm install` did not.
 >

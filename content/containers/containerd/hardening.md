@@ -20,7 +20,7 @@ ls -l /run/containerd/containerd.sock
 
 > [!warning] The Kyverno policy below needs Kyverno 1.19 or older
 > It is a `kyverno.io/v1` `ClusterPolicy`, which Kyverno 1.20 no longer accepts. See
-> the correction at the top of [[kubernetes/security/kyverno]]. Tested on Kyverno
+> the warning at the top of [[kubernetes/security/kyverno]]. Tested on Kyverno
 > 1.19: it denies Pods that mount either socket.
 
 > [!danger] Access to the socket is equivalent to root on the node

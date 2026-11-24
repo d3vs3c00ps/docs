@@ -78,11 +78,10 @@ module(load="imtcp" maxSessions="500")
 > In the basic format a single `@` means UDP and a double `@@` means TCP. It is
 > the kind of detail that makes the advanced format worth the extra typing.
 
-> [!warning] Correction
-> Earlier versions of these examples had two errors that rsyslog rejects: the
-> `omfwd` actions had no `target` ("either target or targetSrv must be specified";
-> releases before 8.2608 said "parameter 'target' required"), and the legacy
-> directive was spelled `$InputTCPMaxSession`. It is `$InputTCPMaxSessions`.
+> [!warning] Two errors rsyslog rejects
+> An `omfwd` action needs a `target` ("either target or targetSrv must be specified";
+> releases before 8.2608 say "parameter 'target' required"). The legacy directive is
+> `$InputTCPMaxSessions`, with an `s`.
 
 ## Queues
 
@@ -215,9 +214,9 @@ a 40-character tag is kept.
 `$programname` is the start of the TAG, up to the first `[`, `/` or `:`. For the
 three tags above: `named`, `systemd-journald` and `my.app`.
 
-> [!warning] Correction
-> An earlier version said that any non-alphanumeric character ends the TAG. That is
-> the RFC's wording, not what rsyslog does: `-`, `.` and `/` stay in the TAG.
+> [!note] What ends the TAG
+> The RFC says any non-alphanumeric character ends the TAG, but rsyslog keeps `-`, `.`
+> and `/` in it.
 
 ## Rulesets
 
@@ -272,8 +271,7 @@ input(type="imptcp" port="10516" ruleset="remote10516")
 ```
 
 An input module must be loaded before its first `input()`, or rsyslog stops with
-"input module name 'imptcp' is unknown". The earlier version of these two examples
-left the `module()` line out.
+"input module name 'imptcp' is unknown".
 
 This gives you more rules but fewer filters, which is both more readable and more
 performant: messages are pushed straight to the right ruleset and processed
@@ -515,10 +513,9 @@ Or in the legacy format:
 $EscapeControlCharactersOnReceive off
 ```
 
-> [!warning] Correction from the original notes
-> The source showed `$EscapeControlCharactersOnReceive on` as the way to change
-> the behaviour, but `on` *is* the default — that setting changes nothing. `off`
-> is what allows multi-line messages through.
+> [!note] `on` is the default
+> `$EscapeControlCharactersOnReceive on` changes nothing: it is the default. `off` is
+> what allows multi-line messages through.
 
 ## Configuring a simple collector
 
@@ -617,8 +614,8 @@ module(load="omrelp")
 ```
 
 > [!note] `omrelp` has no `protocol` parameter
-> RELP always runs over TCP, so there is nothing to select. The original notes
-> passed `protocol="tcp"` here, which rsyslog does not accept for `omrelp`.
+> RELP always runs over TCP, so there is nothing to select: rsyslog rejects
+> `protocol="tcp"` for `omrelp`.
 
 ## Failover
 
@@ -636,8 +633,8 @@ if ($msg contains "error") then {
 }
 ```
 
-`omfile` has no `tag` parameter. An earlier version set `tag="failover"` on the last
-action, which makes rsyslog reject the whole block.
+`omfile` has no `tag` parameter: a `tag=` on the last action makes rsyslog reject the
+whole block.
 
 > [!important] Failover and queues are mutually exclusive per action
 > Failover does not work if you attach queues to the individual actions. The
@@ -669,10 +666,10 @@ ruleset(name="forwarding" queue.type="linkedList" queue.filename="fwd") {
 *.* call forwarding
 ```
 
-> [!warning] Correction from the original notes
-> The last-resort `omfile` action pointed at `/var/spool/rsyslog`, which is the
-> spool *directory* used by `queue.spoolDirectory`. `omfile` needs a file path —
-> writing to the directory fails, so the final failover tier silently did nothing.
+> [!warning] `omfile` needs a file path
+> `/var/spool/rsyslog` is the spool *directory* used by `queue.spoolDirectory`. An
+> `omfile` action pointed at it fails, so a last-resort tier written that way silently
+> does nothing.
 
 ## Relays
 
@@ -699,9 +696,9 @@ ruleset(name="remote"){
 input(type="imrelp" port="2514" maxDataSize="10k" keepAlive="on" ruleset="remote")
 ```
 
-> [!warning] Correction: do not load `omfwd`
-> `omfwd` is built into rsyslog. An earlier version of the collector blocks started
-> with `module(load="omfwd")`, which fails: "could not load module 'omfwd'".
+> [!warning] Do not load `omfwd`
+> `omfwd` is built into rsyslog. `module(load="omfwd")` fails: "could not load module
+> 'omfwd'".
 
 ## A reliability-oriented worked example
 

@@ -126,11 +126,10 @@ upstream_sync: manual
 
 - The login is `admin`; the password is in `admin-password`
 
-> [!warning] Correction
-> The original said the login/password is hardcoded to `admin`/`prom-operator`. That
-> was true for old chart versions. Chart 92.18.0 generates a random password at
-> install time, and `admin`/`prom-operator` is refused. Read it from the Secret, or
-> set your own with `--set grafana.adminPassword=...`.
+> [!note] The Grafana password
+> Chart 92.18.0 generates a random password at install time; `admin`/`prom-operator`
+> is refused. Read it from the Secret, or set your own with
+> `--set grafana.adminPassword=...`.
 
 ## Grafana dashboards
 

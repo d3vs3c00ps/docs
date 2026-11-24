@@ -50,13 +50,12 @@ logappend = yes
 >   fork: true
 > ```
 
-> [!warning] Correction: `bind_ip_all`
-> The original configs had no bind setting. Since MongoDB 3.6, `mongod` and
-> `mongos` listen on `localhost` only by default, so the members could not reach
-> each other and `rs.add()` failed. `bind_ip_all = true` listens on every
-> interface; `bind_ip = localhost,<this host's address>` is narrower. Either way,
-> firewall port 27017 and turn on access control (a `keyFile` shared by the
-> members) before the set holds real data.
+> [!warning] `bind_ip_all`
+> Since MongoDB 3.6, `mongod` and `mongos` listen on `localhost` only by default, so
+> without a bind setting the members cannot reach each other and `rs.add()` fails.
+> `bind_ip_all = true` listens on every interface; `bind_ip = localhost,<this host's
+> address>` is narrower. Either way, firewall port 27017 and turn on access control (a
+> `keyFile` shared by the members) before the set holds real data.
 
 On the first node of the cluster:
 
@@ -71,15 +70,9 @@ rs.add("mongo-02:27017")
 rs.add("mongo-03:27017")
 ```
 
-> [!warning] Corrections from the original notes
-> Two problems, both of which would stop this working:
->
-> 1. The original said to run `rs.add()` "on all nodes", and included the node's own
->    address. Membership is replicated — you run `rs.add()` **only on the primary**,
->    and only for the *other* members. `rs.initiate()` already added the first node.
-> 2. The arguments were written with typographic quotes
->    (`rs.add(“mongo-01:27017”)`). The shell only accepts straight ASCII quotes;
->    the smart-quoted form is a syntax error.
+> [!note] Only on the primary
+> Membership is replicated: run `rs.add()` **only on the primary**, and only for the
+> *other* members. `rs.initiate()` already added the first node.
 
 Check the state:
 
@@ -101,11 +94,9 @@ A sharded cluster adds two more roles:
 | **config servers** (`mongod --configsvr`) | hold the cluster metadata: the chunk map that says which range lives on which shard |
 | **shards** (`mongod --shardsvr`) | hold the actual data, each shard normally being its own replica set |
 
-> [!warning] Correction from the original notes
-> The original described `mongod` as the component that "holds the cluster
-> metadata". That is only true of the config servers, which are `mongod` processes
-> started with `--configsvr`. A plain `mongod` shard server holds data, not
-> metadata.
+> [!note] Metadata
+> Only the config servers, `mongod` processes started with `--configsvr`, hold the
+> cluster metadata. A plain `mongod` shard server holds data.
 
 `mongos` must listen on a different port from the shard `mongod` processes, since
 it is what clients connect to.
@@ -124,8 +115,8 @@ logpath = /var/log/mongodb_config.log
 logappend = yes
 ```
 
-> [!warning] Correction
-> The original had no `replSet` line. Current versions refuse to start it:
+> [!note] `replSet` is required
+> Current versions refuse to start a config server without it:
 > `Cannot start a configsvr as a standalone server`.
 
 Start it on the three config hosts, then initiate the config server replica set
@@ -157,8 +148,8 @@ logappend = yes
 
 > [!note] Config servers must be a replica set
 > From MongoDB 3.4 the config servers must be deployed as a replica set (CSRS), and
-> `configdb` must be given in `<replSetName>/<host:port>,...` form. The bare
-> host list in the original notes is only valid for the removed SCCC mode.
+> `configdb` must be given in `<replSetName>/<host:port>,...` form. A bare host list
+> is only valid for the removed SCCC mode.
 
 ### Shard
 
@@ -208,7 +199,7 @@ sh.shardCollection("database_name.collection_name", { userId: "hashed" })
 ```
 
 > [!warning] Do not edit `local.system.replset` directly
-> The original notes reconfigured member hosts by reading, mutating and writing
+> Some guides reconfigure member hosts by reading, mutating and writing
 > `db.system.replset` in the `local` database:
 >
 > ```javascript
@@ -279,8 +270,8 @@ db.settings.updateOne(
 ```
 
 > [!warning] `save()` is gone
-> The original used `db.settings.save({_id:"chunksize", value: <sizeInMB>})`.
-> `save()` belonged to the legacy `mongo` shell. `mongosh` does not have it
+> `db.settings.save({_id:"chunksize", value: <sizeInMB>})` does not work: `save()`
+> belonged to the legacy `mongo` shell. `mongosh` does not have it
 > (`TypeError: db.settings.save is not a function`): use `updateOne` with
 > `upsert: true` as above.
 
@@ -296,9 +287,6 @@ Two caveats:
 > cluster-wide value; one collection can have its own with
 > `db.adminCommand({configureCollectionBalancing: "db.coll", chunkSize: 64})`.
 > On 6.0+ prefer leaving it alone unless you have measured a reason.
->
-> An earlier version said the setting had moved to "the balancer configuration".
-> It has not: it is still the `chunksize` document in `config.settings`.
 
 <!-- uplink -->
 Part of [[servers/index|Servers]].

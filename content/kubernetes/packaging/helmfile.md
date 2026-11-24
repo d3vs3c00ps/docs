@@ -143,10 +143,9 @@ https://github.com/helmfile/helmfile
 
 - Once it is gone, we can delete it from the file
 
-> [!warning] Correction
-> The original listed partial removals as a feature without this detail. In our
-> test, a release deleted from the file stayed installed through `apply`, `sync`
-> and even `destroy`.
+> [!warning] Removing a release from the file does not uninstall it
+> In our test, a release deleted from the file stayed installed through `apply`,
+> `sync` and even `destroy`.
 
 ## Helmfile tips
 

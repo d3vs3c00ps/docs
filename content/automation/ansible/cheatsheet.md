@@ -49,7 +49,7 @@ specific to least. A matching `tasks` layout:
 ```
 
 > [!note] `include` is deprecated
-> The original used the bare `ansible.builtin.include` module, which was deprecated
+> The bare `ansible.builtin.include` module was deprecated
 > in 2.4 and removed in 2.16 because it was ambiguous between static and dynamic
 > behaviour. Use `include_tasks` (dynamic) or `import_tasks` (static) — see
 > [[automation/ansible/variables#Inclusion]].
@@ -97,13 +97,10 @@ Playing with filters — an extract from a `chrony` installation role:
   # So take the first entry (0), which holds the data wanted
 ```
 
-> [!warning] Correction: the original filter fails in ansible-core 2.22
-> The original used `groups['all'] | map('extract', hostvars) |
-> selectattr('__generated_chrony_key', 'search', 'stdout')`. `groups['all']` also
-> holds hosts outside the play, which have no `__generated_chrony_key`, and the
-> task now stops with "object of type 'HostVarsVars' has no attribute". It also
-> searched a dictionary for the text `stdout`. `ansible_play_hosts` and
-> `selectattr('stdout', 'defined')` do the same job safely.
+> [!warning] Use `ansible_play_hosts`, not `groups['all']`
+> `groups['all']` also holds hosts outside the play. They have no
+> `__generated_chrony_key`, and `map('extract', hostvars)` then stops with "object of
+> type 'HostVarsVars' has no attribute".
 
 Another approach — loop over all hosts and keep only the correct result:
 
@@ -186,15 +183,6 @@ Then read it from another play:
         msg: "{{ resolv.stdout }}"
 ```
 
-> [!note] Correction from the original notes
-> The `add_host` value was `" {{ resolv.stdout }}"`, with a leading space. The space
-> stays in the variable. It does not break this `cat`, because the shell ignores
-> it, but it would break a module that takes the value as a path. It is removed
-> here.
->
-> An earlier version of this note said the space breaks the `cat`. A test showed it
-> does not.
-
 `add_host` hosts are in-memory only and vanish at the end of the run, which is
 exactly what makes this work as a scratch namespace.
 
@@ -223,11 +211,10 @@ Useful when you cannot work out where a value is coming from:
       delegate_to: localhost
 ```
 
-> [!note] Two corrections
-> The original set `gather_facts: false` and then dumped `ansible_facts`, which
-> would be empty. It also set `owner: root` / `group: root` on a task
-> `delegate_to: localhost` without `become`, which fails unless you happen to be
-> running as root locally — both removed.
+> [!note] Two traps
+> With `gather_facts: false`, `ansible_facts` is empty, so there is nothing to dump.
+> And `owner: root` / `group: root` on a task with `delegate_to: localhost` and no
+> `become` fails, unless you run as root locally.
 
 ## Determining a variable's type
 
@@ -316,9 +303,6 @@ ok: [localhost] =>
 ## Dictionaries
 
 ### Adding entries to a dictionary
-
-> [!note] This section was empty in the original
-> The heading existed with no content beneath it. Filled in below.
 
 `combine` merges dictionaries, returning a new one:
 

@@ -42,10 +42,9 @@ A new cluster usually has these four Namespaces:
 Over time, we will almost certainly create more Namespaces. Some installers add their
 own, too: kind adds `local-path-storage`, for its storage provisioner.
 
-> [!warning] Correction
-> The original page said that `kube-public` contains one ConfigMap. Since Kubernetes
-> 1.21, every Namespace also gets a `kube-root-ca.crt` ConfigMap, with the cluster's
-> CA (certificate authority) certificate. So `kube-public` has two ConfigMaps.
+> [!note] Two ConfigMaps in `kube-public`
+> Since Kubernetes 1.21, every Namespace also gets a `kube-root-ca.crt` ConfigMap, with
+> the cluster's CA (certificate authority) certificate.
 
 ## Creating a Namespace
 

@@ -121,8 +121,10 @@ An env Dockerfile gets every `tests/versions.env` value as a build argument: dec
   than a copy. When the note changes, the test follows or fails.
 - **Test what the note claims,** including warnings: if a note says "this fails", use
   `check_fails`.
-- **When a test shows the note is wrong, fix the note,** with a
-  `> [!warning] Correction` callout if the original claim changes.
+- **When a test shows the note is wrong, fix the note** in place. Do not add a
+  "Correction" callout or "an earlier version said" text: a note states only what is
+  true now. If the old mistake is a trap readers may still fall into, warn about the
+  trap itself, with no mention of the note's past.
 - **Never mark a claim as tested if it did not run.** Use `skip` with the real reason,
   or list the note in `untested.txt`.
 - Tests must pass on amd64 (Linux, the manual CI run) and arm64 (Apple Silicon). Use

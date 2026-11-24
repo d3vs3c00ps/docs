@@ -28,11 +28,11 @@ brew tap interlynk-io/interlynk && brew install sbomqs
 Since version 2 the Go module path ends in `/v2`. Without it, `go install` fetches
 the last 1.x release.
 
-> [!warning] Correction
-> This note was written for sbomqs 1.x. Version 2 (current: 2.1) changed the
-> categories, the feature names, the output and the JSON fields. The old
-> `--category NTIA-minimum-elements` now fails with "invalid category". The commands
-> below are for 2.x. `--legacy` (`-e`) still gives the 1.x scoring.
+> [!note] sbomqs 2.x
+> Version 2 (current: 2.1) changed the categories, the feature names, the output and
+> the JSON fields. `--category NTIA-minimum-elements` from 1.x fails with "invalid
+> category". The commands below are for 2.x. `--legacy` (`-e`) still gives the 1.x
+> scoring.
 
 ## Scoring
 

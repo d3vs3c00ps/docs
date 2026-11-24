@@ -133,10 +133,9 @@ A token is not optional — an open server is a free OOB service for anyone who 
 it. `-token` sets one and turns authentication on; `-auth` alone generates a random
 one.
 
-> [!warning] Correction
-> The note passed `-token "$(openssl rand -hex 32)"` to the server and then used
-> `$TOKEN` in the client, which was never set. Set `TOKEN` first. It also added
-> `-auth`, which is not needed with `-token`.
+> [!note] Set `TOKEN` first
+> The client uses `$TOKEN`, so set it before you start the server. `-auth` is not
+> needed with `-token`.
 
 ## With nuclei
 

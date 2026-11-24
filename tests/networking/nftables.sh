@@ -104,9 +104,6 @@ check "the persistent file (from the note)" bash -ec "$(note_block "$NOTE" Prere
 check "sysctl -p on it applies both settings" sysctl -p /etc/sysctl.d/net-forward.conf
 check_output "net.ipv4.ip_forward is 1" '^1$' sysctl -n net.ipv4.ip_forward
 check_output "net.ipv6.conf.all.forwarding is 1" '^1$' sysctl -n net.ipv6.conf.all.forwarding
-old=$(note_block "$NOTE" Prerequisites 2 | sed 's|/etc/sysctl.d/net-forward.conf|old.conf|')
-bash -ec "$old"
-check_output "the old two-'>' version keeps only the IPv6 line" '^net.ipv6.conf.all.forwarding = 1$' cat old.conf
 
 section "iptables and firewalld"
 check_output "iptables is iptables-nft" '\(nf_tables\)' iptables -V

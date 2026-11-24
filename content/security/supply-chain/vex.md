@@ -115,11 +115,10 @@ jq -e '[.matches[] | select(.vulnerability.severity == "High" or .vulnerability.
 grype reads the VEX itself and moves the matches it rules out to `ignoredMatches`, so
 the gate only sees what is left. Trivy does the same with `--vex`.
 
-> [!warning] Correction
-> The pipeline used to run `grype -o json`, then `vexctl filter` on that JSON.
-> `vexctl filter` only reads SARIF: on grype's JSON it prints a SARIF document with no
-> `.matches`, and the `jq` gate fails. Use the scanner's `--vex` flag, or give
-> `vexctl filter` the SARIF output (`grype -o sarif`).
+> [!warning] `vexctl filter` reads SARIF only
+> On grype's JSON (`grype -o json`) it prints a SARIF document with no `.matches`, and
+> a `jq` gate fails. Use the scanner's `--vex` flag, or give `vexctl filter` the SARIF
+> output (`grype -o sarif`).
 
 ## Formats
 

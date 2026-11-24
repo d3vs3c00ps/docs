@@ -149,11 +149,11 @@ grep -in changeme .env      # what is left: SMTP and IMAP, set by hand
 docker compose up -d
 ```
 
-> [!warning] Correction
-> The note used `sed -i "s/ChangeMe/$(openssl rand -hex 16)/g" .env`. That misses the
-> lowercase `changeme` values (the OpenCTI admin password among them), gives every
-> secret the same value, and turns `ChangeMe_UUIDv4` into a token that is not a UUID.
-> `OPENAEV_ADMIN_TOKEN` is all zeros in the sample and was not replaced at all.
+> [!warning] Not one `sed` for every secret
+> `sed -i "s/ChangeMe/$(openssl rand -hex 16)/g" .env` misses the lowercase
+> `changeme` values (the OpenCTI admin password among them), gives every secret the
+> same value, and turns `ChangeMe_UUIDv4` into a token that is not a UUID.
+> `OPENAEV_ADMIN_TOKEN` is all zeros in the sample and needs its own value.
 
 > [!danger] Change every default in `.env` before the first start
 > The sample environment contains placeholder passwords and admin tokens. Bringing the

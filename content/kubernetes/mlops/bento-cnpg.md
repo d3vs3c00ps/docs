@@ -140,11 +140,11 @@ spec:
 
   - automatically, with the `init_statement` of Bento's `sql_insert` output
 
-> [!warning] Correction
-> The original suggested `kubectl exec -it db-1 -- psql app` (or `kubectl cnpg psql db`).
-> Both connect as the `postgres` superuser, so the table belongs to `postgres`, and
-> Bento, which connects as `app`, then fails with `permission denied for table cities`.
-> Create the table as `app`, or let `init_statement` create it.
+> [!warning] Create the table as `app`
+> `kubectl exec -it db-1 -- psql app` and `kubectl cnpg psql db` both connect as the
+> `postgres` superuser, so a table created there belongs to `postgres`. Bento, which
+> connects as `app`, then fails with `permission denied for table cities`. Create the
+> table as `app`, or let `init_statement` create it.
 
 ## 4️⃣ Viewing the table in Grafana
 

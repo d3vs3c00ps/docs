@@ -64,10 +64,10 @@ open-webui serve --port 3000
 
 Needs Python 3.11 or 3.12 (v0.13.4 does not install on 3.13).
 
-> [!warning] Correction
-> This note said to set `WEBUI_PORT=3000`. Open WebUI does not read that variable. The
-> native server takes `--port`. The Docker image reads `PORT` (default 8080), but with
-> Docker you change the host side of `-p` instead.
+> [!note] There is no `WEBUI_PORT`
+> Open WebUI does not read `WEBUI_PORT`. The native server takes `--port`. The Docker
+> image reads `PORT` (default 8080), but with Docker you change the host side of `-p`
+> instead.
 
 ## Connecting a local backend
 
@@ -135,11 +135,10 @@ Useful environment variables:
 | `OPENAI_API_BASE_URL` | An OpenAI-compatible backend such as llama-swap |
 | `DATA_DIR` | Where conversations and uploads are stored |
 
-> [!warning] Correction: sign-up
-> This note said to disable open sign-up with `ENABLE_SIGNUP=false` once your accounts
-> exist. Open WebUI already does it: the first sign-up stores "sign-up off" in its
-> database. From then on the stored setting wins, and a restart with
-> `ENABLE_SIGNUP=true` does not reopen it. Change it in the admin settings.
+> [!note] Sign-up closes by itself
+> The first sign-up stores "sign-up off" in Open WebUI's database. From then on the
+> stored setting wins: a restart with `ENABLE_SIGNUP=true` does not reopen it. Change
+> it in the admin settings.
 
 ## Running at login
 
@@ -151,10 +150,9 @@ docker update --restart unless-stopped open-webui
 On macOS, add the Open WebUI app to **System Settings → General → Login Items**.
 Remember `--port` on a native install if llama-swap already holds 8080.
 
-> [!warning] Correction
-> This note gave `brew services start open-webui` for macOS. That fails: Homebrew has
-> only an `open-webui` cask (the desktop app), no formula, and `brew services` works
-> with formulae only (`No available formula with the name "open-webui"`).
+> [!note] No `brew services` on macOS
+> Homebrew has only an `open-webui` cask (the desktop app), no formula, and
+> `brew services` works with formulae only.
 
 ## Troubleshooting
 

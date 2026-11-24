@@ -305,11 +305,10 @@ Use custom metrics. These metrics are "linked" to any arbitrary resource.
 `type:` can be `Value` (with `value:`) or `AverageValue` (with `averageValue:`), see
 below for details.
 
-> [!warning] Correction
-> The original example had `type: AverageValue` with a `value:` field. Each target
-> type takes its own field: `Value` → `value`, `AverageValue` → `averageValue`,
-> `Utilization` → `averageUtilization`. The API does not check this: the original is
-> accepted, but its `AverageValue` target has no `averageValue`.
+> [!warning] Each target type takes its own field
+> `Value` → `value`, `AverageValue` → `averageValue`, `Utilization` →
+> `averageUtilization`. The API does not check this: `type: AverageValue` with a
+> `value:` field is accepted, but the target has no `averageValue`.
 
 ## `Value` vs `AverageValue`
 
@@ -348,10 +347,9 @@ Use arbitrary metrics. The series to use is specified with a label selector.
 
 The `selector` will be passed along when querying the metrics API.
 
-> [!warning] Correction
-> The original wrote the selector as a string (`selector: "queue=worker_tasks"`). The
-> API refuses that: `selector` is a label selector object (`matchLabels` or
-> `matchExpressions`), like in a Deployment.
+> [!note] `selector` is an object
+> `selector` is a label selector object (`matchLabels` or `matchExpressions`), like in
+> a Deployment. The API refuses a string such as `selector: "queue=worker_tasks"`.
 
 Its meaning is implementation-dependent.
 

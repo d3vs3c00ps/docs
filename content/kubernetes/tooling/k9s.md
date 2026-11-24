@@ -54,10 +54,10 @@ upstream_sync: manual
 
   (once to exit the filter, once to enter the namespace)
 
-> [!warning] Correction
-> The original also suggested `/kub`. That filter matches three namespaces
-> (`kube-node-lease`, `kube-public`, `kube-system`), so `[ENTER]` does not
-> reliably open `kube-system`: in our test with k9s 0.51 it opened `default`.
+> [!note] Not `/kub`
+> `/kub` matches three namespaces (`kube-node-lease`, `kube-public`, `kube-system`),
+> so `[ENTER]` does not reliably open `kube-system`: in our test with k9s 0.51 it
+> opened `default`.
 
 - We now see the pods in `kube-system`!
 

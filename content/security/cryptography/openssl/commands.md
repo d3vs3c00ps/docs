@@ -54,10 +54,9 @@ openssl pkey -in key-enc.pem -out key.pem                # remove
 > chmod 600 key.pem
 > ```
 
-> [!warning] Correction
-> An earlier version said that `openssl` always creates key files with your umask.
-> Tested with OpenSSL 3.5: `genpkey`, `req -keyout` and `pkey` with a cipher create
-> a new key file with mode `600`. Only an existing file keeps its old mode.
+> [!note] Key file permissions
+> Tested with OpenSSL 3.5: `genpkey`, `req -keyout` and `pkey` with a cipher create a
+> new key file with mode `600`. Only an existing file keeps its old mode.
 
 ## Certificate signing requests
 
@@ -190,11 +189,11 @@ diff <(openssl x509 -in cert.pem -noout -pubkey) \
      <(openssl pkey -in key.pem -pubout)
 ```
 
-> [!warning] Correction
-> An earlier version hashed `x509 -modulus` against `pkey -noout -pubout`. Those two
-> hashes are never equal: `-modulus` prints `Modulus=...`, not a PEM key, and
-> `-noout` makes `pkey` print nothing at all. For RSA, the old form needs the same
-> command on both sides: `openssl rsa -in key.pem -noout -modulus`.
+> [!warning] Compare like with like
+> `x509 -modulus` and `pkey -noout -pubout` never give the same hash: `-modulus` prints
+> `Modulus=...`, not a PEM key, and `-noout` makes `pkey` print nothing at all. For
+> RSA, the modulus form needs the same command on both sides:
+> `openssl rsa -in key.pem -noout -modulus`.
 
 ## PKCS#12
 

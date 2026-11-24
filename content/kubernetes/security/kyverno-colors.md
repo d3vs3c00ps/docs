@@ -25,7 +25,7 @@ upstream_sync: manual
 > [!warning] Needs Kyverno 1.19 or older
 > These policies are `kyverno.io/v1` `ClusterPolicy` objects. Kyverno 1.20 no
 > longer accepts them; the lab is tested on Kyverno 1.19 (chart 3.9.2). See the
-> correction at the top of [[kubernetes/security/kyverno]].
+> warning at the top of [[kubernetes/security/kyverno]].
 
 ## Painting pods
 

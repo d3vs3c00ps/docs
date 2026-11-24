@@ -20,12 +20,10 @@ npm install
 npm run dev
 ```
 
-> [!warning] Correction — ConfMap is a browser tool for YAML and JSON only
-> The original note said `pip install confmap` and `confmap /etc/nginx/nginx.conf`,
-> and listed nginx and Apache among the formats. None of that is true. ConfMap has
-> no command-line tool and reads only YAML and JSON. The `confmap` package on PyPI
-> is an unrelated project (conformal mapping of images). For nginx and Apache, use
-> the daemons' own tools below.
+> [!warning] ConfMap is a browser tool for YAML and JSON only
+> ConfMap has no command-line tool and reads only YAML and JSON. The `confmap` package
+> on PyPI is an unrelated project (conformal mapping of images). For nginx and
+> Apache, use the daemons' own tools below.
 
 > [!warning] Do not upload secrets
 > The hosted version is a third-party site. Remove passwords, tokens and keys from

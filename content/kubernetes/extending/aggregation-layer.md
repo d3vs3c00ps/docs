@@ -180,10 +180,9 @@ upstream_sync: manual
 > command=echo&command=hello&command=world&container=kube-proxy&stderr=true&stdout=true
 > ```
 >
-> > [!warning] Correction
-> > - The original showed a `POST`. Current kubectl opens a WebSocket, so the request is a
-> >   `GET` with an upgrade.
-> > - The kube-proxy image is now distroless and has no `echo`: the command fails with
+> > [!note] What you see today
+> > - Current kubectl opens a WebSocket, so the request is a `GET` with an upgrade.
+> > - The kube-proxy image is distroless and has no `echo`: the command fails with
 > >   `executable file not found in $PATH`. The `-v6` output still shows the request,
 > >   which is the point here. To see `hello world`, use a pod with a shell.
 

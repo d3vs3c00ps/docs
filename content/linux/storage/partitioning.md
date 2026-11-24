@@ -15,12 +15,11 @@ filesystem, so runaway logging cannot fill the root filesystem. `/var/log` and
 `/var/log/audit` are subvolumes of it: they are left out of snapshots of `/var` and
 can have their own mount options.
 
-> [!warning] Correction
-> The original note said the `/var/log` and `/var/log/audit` subvolumes keep audit
-> data separate, as the CIS benchmark requires. A subvolume shares the free space of
-> its filesystem: full logs in `/var/log` also fill `/var/log/audit` and `/var/tmp`.
-> CIS asks for separate partitions. To get close to that with subvolumes, set a
-> quota group limit on each one (see below).
+> [!warning] A subvolume is not a partition
+> A subvolume shares the free space of its filesystem: full logs in `/var/log` also
+> fill `/var/log/audit` and `/var/tmp`. The CIS benchmark asks for separate
+> partitions. To get close to that with subvolumes, set a quota group limit on each
+> one (see below).
 
 | Mount point | Filesystem | Mount options | Size |
 | --- | --- | --- | --- |
@@ -47,11 +46,6 @@ can have their own mount options.
 > genuine partitions and volumes (`/`, `/var`, `/boot`, `/boot/efi`) and the tmpfs
 > mounts carry a size. Use btrfs quota groups if you need hard limits per
 > subvolume.
-
-> [!warning] Correction from the original layout
-> The source version of this table listed `/proc` as a btrfs subvolume. `/proc` is
-> always `procfs`, a kernel-provided virtual filesystem, and cannot be a
-> subvolume — that row has been removed.
 
 See [[linux/storage/swap]] for swap sizing and priorities, and
 [[linux/storage/lvm]] if you use LVM rather than plain partitions.

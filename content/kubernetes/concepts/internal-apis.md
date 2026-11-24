@@ -126,12 +126,11 @@ The API server uses port 10250 to get logs, and to run `kubectl exec`,
 > It runs `kube-proxy --version` in the Pod and prints, for example,
 > `Kubernetes v1.37.0`.
 >
-> > [!warning] Correction
-> > The original sent `-d cmd=ls` in the request body, and put the Pod name in
-> > backquotes. Current kubelets read `cmd` from the URL query only: with `-d`, the
-> > command is empty and the call fails. The backquotes made the shell run
-> > `kube-proxy-xy123` as a command. Also, the `kube-proxy` image has no `ls` any more,
-> > so the example runs `kube-proxy --version` instead.
+> > [!warning] In the URL, not the body
+> > Current kubelets read `cmd` from the URL query only: with `-d cmd=...` in the
+> > request body, the command is empty and the call fails. Do not put the Pod name in
+> > backquotes, or the shell runs it as a command. The `kube-proxy` image has no `ls`,
+> > so the example runs `kube-proxy --version`.
 
 ## kube-proxy
 

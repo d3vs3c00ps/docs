@@ -216,10 +216,6 @@ with a cloud provider
   gcloud auth login
   ```
 
-  > [!warning] Correction
-  > The original command was `gcloud auth init`, which does not exist. Use
-  > `gcloud auth login`, or `gcloud init` to log in and set defaults in one step.
-
 - Create a "project":
   ```bash
   gcloud projects create my-gke-project
@@ -307,7 +303,7 @@ with a cloud provider
       default-pool-config.node-type=DEV1-M default-pool-config.size=3
   ```
 
-  (the original used 1.18.3, long gone: pick a version from `scw k8s version list`)
+  (pick a current version from `scw k8s version list`)
 
 - After less than 5 minutes, cluster state will be `ready`
 
@@ -341,7 +337,7 @@ with a cloud provider
   scw k8s cluster delete $CLUSTERID
   ```
 
-  (the original `scw cluster delete cluster-id=...` is not a valid command)
+  (`scw cluster delete cluster-id=...` is not a valid command)
 
 - Warning: as of May 2020, load balancers have to be deleted separately!
 

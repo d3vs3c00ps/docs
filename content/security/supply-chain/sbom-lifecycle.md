@@ -148,9 +148,8 @@ so it shows the day your build tooling silently starts emitting SBOMs without th
 which would otherwise be discovered during an incident. It reports and does not fail
 the job; to block, use the threshold check in [[security/supply-chain/sbomqs]].
 
-> [!warning] Correction
-> The step was `sbomqs score sbom.json --category quality`. sbomqs 2.x has no
-> `quality` category and stops with "invalid category".
+> [!note] No `quality` category
+> sbomqs 2.x has no `quality` category and stops with "invalid category".
 
 ## Where to go next
 

@@ -31,11 +31,10 @@ image alone leaves them behind. Copy the referrers too:
 oras copy -r myregistry/myapp:1.2.3 internal-registry/myapp:1.2.3
 ```
 
-> [!warning] Correction
-> The note used `cosign triangulate` and `cosign copy`. Both are deprecated in
-> cosign v3 (`triangulate` is to be removed in v4). `cosign tree` shows what is
-> attached; `oras copy -r`, or `cosign save` then `cosign load`, copies an image with
-> its signatures.
+> [!note] `triangulate` and `copy` are deprecated
+> Both are deprecated in cosign v3 (`triangulate` is to be removed in v4). `cosign tree`
+> shows what is attached; `oras copy -r`, or `cosign save` then `cosign load`, copies
+> an image with its signatures.
 
 **Signed with no log, verified with the default.** A signature made with a signing
 config that has no transparency log has no Rekor entry. A plain `cosign verify`
@@ -122,9 +121,8 @@ COSIGN_DOCKER_MEDIA_TYPES=1 cosign sign --key cosign.key \
 This writes the v2 layout with Docker media types. Prefer upgrading the registry —
 the fallback is a compatibility shim, not a fix.
 
-> [!warning] Correction
-> The note showed `COSIGN_DOCKER_MEDIA_TYPES=1` alone. In cosign v3 it changes
-> nothing on its own: the default v3 layout is always an OCI index. It applies only
+> [!note] `COSIGN_DOCKER_MEDIA_TYPES` alone changes nothing
+> In cosign v3 the default layout is always an OCI index. The variable applies only
 > together with `--new-bundle-format=false --use-signing-config=false`.
 
 ## Kyverno admits an unsigned image
@@ -174,9 +172,8 @@ The tag list is quietly the most useful: seeing the `sha256-<digest>` tag (or
 directly. A registry with the OCI 1.1 referrers API has no such tag: use
 `cosign tree` or `oras discover`.
 
-> [!warning] Correction
-> The note used `COSIGN_VERBOSE=true`. cosign has no such variable; the flag is
-> `--verbose` (`-d`).
+> [!note] No `COSIGN_VERBOSE`
+> cosign has no such variable; the flag is `--verbose` (`-d`).
 
 ## Where to go next
 

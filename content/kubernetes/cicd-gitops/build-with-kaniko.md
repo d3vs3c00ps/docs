@@ -152,15 +152,12 @@ spec:
   - name: workspace
 ```
 
-> [!warning] Correction
-> The original cloned `git://github.com/...`. GitHub turned off the unencrypted `git://`
-> protocol in 2022, so that clone fails; use `https://`. The upstream
-> `k8s/kaniko-build.yaml` still has `git://`. The image is also pinned instead of
-> `latest`.
->
-> The original pod also had no `restartPolicy`, so it got the default `Always`: when
-> Kaniko exits after the push, the kubelet starts it again, and it builds and pushes
-> in a loop. `restartPolicy: OnFailure` lets the pod end as `Completed`.
+> [!note] `https://` and `restartPolicy`
+> GitHub turned off the unencrypted `git://` protocol in 2022: clone with `https://`.
+> The upstream `k8s/kaniko-build.yaml` still has `git://`. Without a `restartPolicy`
+> the pod gets `Always`: when Kaniko exits after the push, the kubelet starts it
+> again, and it builds and pushes in a loop. `restartPolicy: OnFailure` lets the pod
+> end as `Completed`.
 
 ## Explanations
 
@@ -203,8 +200,8 @@ spec:
 
 - However, it's slower (there is no caching at all)
 
-- The original pointed to [Jessica Frazelle](https://twitter.com/jessfraz)'s [img](https://github.com/genuinetools/img)
-  builder as the future; img is no longer maintained. Its ideas live on in BuildKit,
+- [Jessica Frazelle](https://twitter.com/jessfraz)'s [img](https://github.com/genuinetools/img)
+  builder is no longer maintained. Its ideas live on in BuildKit,
   which can run rootless in a pod
 
 But ... is it all about [speed](https://github.com/AkihiroSuda/buildbench/issues/1)? (No!)

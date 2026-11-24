@@ -63,10 +63,10 @@ The build runs on your machine, then the closure is copied to `web-01` over SSH 
 activated there. `--sudo` runs the activation with `sudo` when you log in as a normal
 user. `--build-host` moves the build to another machine.
 
-> [!warning] Correction
-> An earlier version added `--build-host localhost`. That is not "build here": in
-> the current `nixos-rebuild`, any `--build-host` is reached over SSH, so it opened an
-> SSH session to your own machine. Leave it out to build locally.
+> [!warning] No `--build-host localhost`
+> In the current `nixos-rebuild`, any `--build-host` is reached over SSH, so
+> `--build-host localhost` opens an SSH session to your own machine. Leave it out to
+> build locally.
 
 ## Generations
 
@@ -195,10 +195,9 @@ The first run downloads `nixpkgs` and writes `flake.lock`. While the flake is in
 elsewhere, **always** pass `--flake`: without it, and with no `/etc/nixos/flake.nix`,
 `nixos-rebuild` silently builds from the old channel.
 
-> [!warning] Correction
-> An earlier version said a plain `nixos-rebuild switch` always builds from the
-> channel. It does not when `/etc/nixos/flake.nix` exists; `--no-flake` forces the
-> channel.
+> [!note] Flakes win
+> A plain `nixos-rebuild switch` builds from the flake when `/etc/nixos/flake.nix`
+> exists. `--no-flake` forces the channel.
 
 > [!warning] The output name must match the hostname
 > Without `#name`, `nixos-rebuild` looks for `nixosConfigurations.<hostname>`. The
@@ -254,9 +253,9 @@ Flakes also fix the **shape** of the outputs: `nixosConfigurations.<host>`,
 `nixos-rebuild --flake`, `nix develop`, `nix flake check`, deploy-rs, nixos-anywhere.
 With channels, each repository invents its own layout.
 
-> [!note] Correction
-> An earlier version of this note used `nix flake lock --update-input nixpkgs`. That
-> form is deprecated; since Nix 2.19 it is `nix flake update nixpkgs`.
+> [!note] `nix flake update nixpkgs`
+> `nix flake lock --update-input nixpkgs` is deprecated; since Nix 2.19 it is
+> `nix flake update nixpkgs`.
 
 > [!warning] A flake only sees files tracked by Git
 > When the flake is in a Git repository, Nix copies only the files Git knows about.
@@ -296,11 +295,11 @@ nixos-option -r services.openssh.settings
 
 `nixos-option` reads `/etc/nixos/flake.nix` when it exists, like `nixos-rebuild`.
 
-> [!warning] Correction
-> An earlier version showed `nixos-option -r services.nginx`. On NixOS 26.05 it
-> stops with `Renaming error: option services.nginx.proxyCachePath."".enable does
-> not exist`: `-r` reads every option under the path, including old renamed ones.
-> Use `-r` on a smaller part, or look the option up on search.nixos.org.
+> [!warning] `-r` on a large path fails
+> On NixOS 26.05, `nixos-option -r services.nginx` stops with `Renaming error: option
+> services.nginx.proxyCachePath."".enable does not exist`: `-r` reads every option
+> under the path, including old renamed ones. Use `-r` on a smaller part, or look the
+> option up on search.nixos.org.
 
 > [!important] Search options before writing anything by hand
 > The commonest beginner mistake is writing `environment.etc."foo.conf".text = ...`

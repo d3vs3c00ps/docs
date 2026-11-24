@@ -66,7 +66,7 @@ spec:
       path: /var/run/docker.sock
 ```
 
-> [!warning] Correction: most nodes have no Docker Engine
+> [!warning] Most nodes have no Docker Engine
 > This pod needs a Docker Engine on the node. Since Kubernetes 1.24 removed dockershim,
 > most clusters run containerd or CRI-O, and `/var/run/docker.sock` does not exist on
 > the nodes. On such a node (kind, for example) the build fails with

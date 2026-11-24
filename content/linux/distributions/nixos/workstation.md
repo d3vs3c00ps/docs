@@ -37,9 +37,9 @@ Or KDE Plasma 6, instead of GNOME:
 }
 ```
 
-> [!warning] Correction
-> An earlier version put GNOME and Plasma in one block, with "or" in a comment.
-> Copied as is, that enables two display managers, and the build stops. Pick one.
+> [!warning] Pick one desktop
+> GNOME and Plasma in one configuration enable two display managers, and the build
+> stops.
 
 Wayland is the default in current GNOME and Plasma.
 

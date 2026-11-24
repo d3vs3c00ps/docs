@@ -64,10 +64,6 @@ python main.py -i capture.pcap -o topology.png --layer4         # TCP and UDP
 `--layer2` needs a capture from one Ethernet interface. A capture with `-i any`
 has no MAC header, and PcapViz stops with a Python traceback.
 
-> [!warning] Correction
-> The original wrote `--layer 3` and `--layer 2`. PcapViz has no `--layer`
-> option: the flags are `--layer2`, `--layer3` (the default) and `--layer4`.
-
 | Layer | Shows |
 | --- | --- |
 | 2 | MAC addresses — the physical topology, switches, unexpected devices |
@@ -131,12 +127,6 @@ blockdiag iptables.dia -T svg -o iptables.svg
 chains, pass a regular expression:
 `awk -f iptable_vis/iptables-vis.awk -v 'chain_selector=INPUT|mychain'`.
 
-> [!warning] Correction
-> The original showed `python iptable_vis.py rules.txt | dot -Tpng`. The project
-> has no Python script and does not read `iptables-save` output: it is the `awk`
-> script above, its input is `iptables -v -L`, and its output is for `blockdiag`,
-> not Graphviz.
-
 The output shows the built-in chains, the user-defined ones, and every `-j` between
 them — so an orphaned chain nothing jumps to, or an unreachable rule after a
 terminating target, becomes apparent.
@@ -177,11 +167,10 @@ rule afterwards — it is expensive and verbose:
 sudo iptables -t raw -D PREROUTING -p tcp --dport 8080 -j TRACE
 ```
 
-> [!warning] Correction
-> The original loaded `nf_log_ipv4` and read the trace with `dmesg`. That is how
-> the legacy iptables backend logs. Current distributions use `iptables-nft`,
-> where `TRACE` sets the nftables trace flag and the events go to
-> `xtables-monitor --trace` (or `nft monitor trace`), not to the kernel log.
+> [!note] Not in the kernel log
+> With the legacy iptables backend, `TRACE` logged to the kernel log (`nf_log_ipv4`,
+> `dmesg`). Current distributions use `iptables-nft`, where `TRACE` sets the nftables
+> trace flag and the events go to `xtables-monitor --trace` (or `nft monitor trace`).
 
 ## Where to go next
 

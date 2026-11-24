@@ -283,10 +283,10 @@ Don't hesitate to hire help before going to production with your first K8S app!
 
 - Check the [prepare VMs README](https://github.com/jpetazzo/container.training/blob/master/prepare-vms/README.md) for more details
 
-> [!warning] Correction
-> The original step 1 was "Install Docker". Kubernetes 1.24 removed dockershim, so
-> the kubelet cannot use Docker Engine directly any more (only through cri-dockerd).
-> kubeadm clusters use a CRI runtime such as containerd or CRI-O.
+> [!note] No Docker Engine
+> Kubernetes 1.24 removed dockershim, so the kubelet cannot use Docker Engine directly
+> (only through cri-dockerd). kubeadm clusters use a CRI runtime such as containerd or
+> CRI-O.
 
 ## `kubeadm` "drawbacks"
 

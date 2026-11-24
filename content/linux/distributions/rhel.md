@@ -35,14 +35,12 @@ subscription-manager repos --list
 subscription-manager repos --enable <repo-id>
 ```
 
-> [!warning] Correction: no more `attach` and `remove`
-> The original note also ran `subscription-manager remove --all` and
-> `subscription-manager attach --auto`. They belong to the old entitlement mode.
+> [!note] No `attach` and `remove`
 > With Simple Content Access, a registered host can use every repository of the
-> account, so there is nothing to attach. RHEL 10's `subscription-manager` no
-> longer has the `attach` and `remove` commands: they fail and print the list of
-> commands. On RHEL 8 and 9 they still exist, and do nothing under Simple Content
-> Access. `subscription-manager repos` remains the way to toggle repositories.
+> account, so there is nothing to attach. RHEL 10's `subscription-manager` no longer
+> has the `attach` and `remove` commands: they fail and print the list of commands. On
+> RHEL 8 and 9 they still exist, and do nothing under Simple Content Access.
+> `subscription-manager repos` remains the way to toggle repositories.
 
 > [!note] Registration is not tested
 > `register`, `refresh` and `repos` need a Red Hat account. The test checks that

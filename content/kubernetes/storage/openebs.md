@@ -38,11 +38,11 @@ upstream_sync: manual
 
    - [Mayastor]: newer, even more powerful engine with NVMe and vhost-user support
 
-> [!warning] OpenEBS 4: the engines changed
-> This page was written for OpenEBS 2. In OpenEBS 4, the engines are **Local PV
+> [!warning] OpenEBS 4 engines
+> In OpenEBS 4, the engines are **Local PV
 > Hostpath**, **Local PV LVM**, **Local PV ZFS** and **Replicated PV Mayastor**.
 > Jiva, cStor and the device manager (NDM) are not part of OpenEBS 4 any more, and
-> Jiva has had no change since 2024. This page now installs OpenEBS 4.6 and uses
+> Jiva has had no change since 2024. This page installs OpenEBS 4.6 and uses
 > Local PV Hostpath, which works as described. The Jiva parts are kept for context
 > but cannot be followed with a current OpenEBS.
 
@@ -90,13 +90,13 @@ upstream_sync: manual
 >     --set loki.enabled=false --set alloy.enabled=false
 >   ```
 
-> [!warning] Correction
-> The original installed OpenEBS 2.12.9 from `https://openebs.github.io/charts`.
-> That chart still installs on Kubernetes 1.37, but its device manager pods never
-> start on kind, and its Jiva class needs iSCSI on every node. The current chart is in
-> `https://openebs.github.io/openebs`. Mayastor needs hugepages and NVMe-TCP on the
-> nodes, LVM and ZFS need a volume group or a pool, and Loki and Alloy are the
-> logging add-ons: we turn them off to keep only Local PV Hostpath.
+> [!note] Which chart, and which engines
+> The current chart is in `https://openebs.github.io/openebs`. The old
+> `https://openebs.github.io/charts` (OpenEBS 2.x) still installs, but its device
+> manager pods never start on kind, and its Jiva class needs iSCSI on every node.
+> Mayastor needs hugepages and NVMe-TCP on the nodes, LVM and ZFS need a volume group
+> or a pool, and Loki and Alloy are the logging add-ons: we turn them off to keep only
+> Local PV Hostpath.
 
 ## Checking what was installed
 
@@ -171,8 +171,8 @@ upstream_sync: manual
 > - `volumeBindingMode: WaitForFirstConsumer` is required: a local volume is made on
 >   the node of the first Pod that uses it
 >
-> > [!warning] Correction
-> > The original had no `volumeBindingMode`, so the class was `Immediate`. The
+> > [!warning] Without it
+> > Without `volumeBindingMode`, the class is `Immediate`. The
 > > provisioner then fails with `configuration error, no node was specified`, and
 > > the PVC stays `Pending` (tested with OpenEBS 4.6).
 > - Storage engine is chosen by specifying the annotation `openebs.io/cas-type`
@@ -318,7 +318,7 @@ upstream_sync: manual
 
 - Let's set the default StorageClass to use `openebs-hostpath`
 
-  (the original used `openebs-jiva-default`, which OpenEBS 4 does not have)
+  (OpenEBS 4 has no `openebs-jiva-default`)
 
 > [!example] Hands-on
 > - Remove the annotation (just in case we already have a default class):

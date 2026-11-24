@@ -134,9 +134,8 @@ not "decrypt and hope". That property is what kills padding oracles.
 > Keep `-binary`: without it, `cms` treats the input as text and changes every line
 > ending to CRLF.
 
-> [!warning] Correction
-> An earlier version said `openssl enc -aes-256-gcm` works but drops the tag. On
-> OpenSSL 3 it refuses to run at all.
+> [!note] No GCM in `openssl enc`
+> On OpenSSL 3, `openssl enc -aes-256-gcm` refuses to run.
 
 ### The problem symmetric cryptography cannot solve
 

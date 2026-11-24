@@ -63,8 +63,7 @@ For POSIX/bash equivalents see [[linux/shell/shell-tips]].
 | Check if an array is not empty | `if [[ ! -z $VARNAME ]]` |
 | Remove an element from an array | `VARNAME[index]=()` |
 
-> [!warning] Correction
-> This table used `(ie)` for "`0` if not found" and for the "is contained" test.
+> [!warning] `(Ie)`, not `(ie)`
 > `(ie)` searches from the start and returns the array length + 1 when there is no
 > match, so `(( $VARNAME[(ie)value] ))` is always true. `(Ie)` searches from the end
 > and returns `0` when there is no match.
@@ -119,10 +118,9 @@ guaranteed order.
 | Delete a function | `unset -f func_name` |
 | Get the arguments, with escaped spaces | `${@:q}` |
 
-> [!warning] Correction
-> This table said `$0` is "the original executable name". In zsh, inside a function,
-> `$0` is the function name (option `FUNCTION_ARGZERO`, on by default). Use
-> `$ZSH_ARGZERO` for the script name.
+> [!note] `$0` in a function
+> In zsh, inside a function, `$0` is the function name (option `FUNCTION_ARGZERO`, on
+> by default). Use `$ZSH_ARGZERO` for the script name.
 
 ## Aliases
 

@@ -211,11 +211,10 @@ For a user named `jean.doe`, we will have:
 >   kubectl --namespace=users create token jean.doe
 >   ```
 
-> [!warning] Correction: ServiceAccounts no longer come with a token Secret
-> The original listed the ServiceAccount's secrets and read
-> `jean.doe-token-xxxxx`. Since Kubernetes 1.24, no such Secret is created.
-> `kubectl create token` asks the TokenRequest API for a short-lived token
-> instead (one hour by default; `--duration` changes it).
+> [!note] No token Secret
+> Since Kubernetes 1.24, a ServiceAccount gets no `<name>-token-xxxxx` Secret.
+> `kubectl create token` asks the TokenRequest API for a short-lived token instead
+> (one hour by default; `--duration` changes it).
 
 ## Configure `kubectl` to use the token
 
@@ -318,12 +317,10 @@ The command above generates:
 - The signer may give less than requested, never more than its own maximum
   (`--cluster-signing-duration` on the controller manager, 1 year by default)
 
-> [!warning] Correction: the experimental flag is gone
-> The original lowered the duration for every certificate with
-> `--experimental-cluster-signing-duration=1h` on the controller manager. That
-> flag was replaced by `--cluster-signing-duration` and later removed.
-> `spec.expirationSeconds` (GA since Kubernetes 1.22) sets it per request, with
-> no control plane change.
+> [!note] Per-request duration
+> `spec.expirationSeconds` (GA since Kubernetes 1.22) sets the duration per request,
+> with no control plane change. The controller manager flag
+> `--experimental-cluster-signing-duration` is gone.
 
 ## Verifying and approving the CSR
 

@@ -79,11 +79,10 @@ upstream_sync: manual
 
   (i.e. the pods whose usage exceeds their requests the most are evicted first)
 
-> [!warning] Correction
-> The original put all BestEffort pods first, then Burstable pods above their
-> requests. Current kubelets do not rank by QoS class: BestEffort pods and Burstable
-> pods above their requests form one group, ordered by priority, then by how much
-> they exceed their requests.
+> [!note] Eviction order
+> Current kubelets do not rank by QoS class: BestEffort pods and Burstable pods above
+> their requests form one group, ordered by priority, then by how much they exceed
+> their requests.
 
 > [!note]- Extra details
 > ## Eviction of Guaranteed pods

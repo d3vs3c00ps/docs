@@ -41,11 +41,10 @@ brew install hettysoft/tap/hetty
 docker run -v "$HOME/.hetty:/root/.hetty" -p 8080:8080 ghcr.io/dstotijn/hetty:latest
 ```
 
-> [!warning] Correction
-> The note used `go install .../cmd/hetty@latest`, and `docker run` with an extra port
-> 8081 and the current directory as `/root/.hetty`. The project documents package
-> managers, release binaries and the image above, on port 8080 only. The image was
-> built in 2022 for **arm64 only**: on an x86_64 host, use the release binary.
+> [!warning] The image is arm64 only
+> The project documents package managers, release binaries and the image above, on
+> port 8080 only. The image was built in 2022 for **arm64 only**: on an x86_64 host,
+> use the release binary.
 
 ```bash
 hetty
@@ -113,9 +112,9 @@ working correctly.
 Projects → New project → "staging api"
 ```
 
-> [!warning] Correction
-> The example name was `staging-api`. hetty 0.7 refuses it: a project name may only
-> contain letters, digits and spaces.
+> [!note] Project names
+> hetty 0.7 allows only letters, digits and spaces in a project name: `staging-api` is
+> refused.
 
 **Proxy logs** show every request and response, with search:
 
@@ -129,10 +128,9 @@ A bare string (`"error"`) searches the URL, bodies and status of every log entry
 `AND`, `OR` and `NOT` are case sensitive. See the
 [filter language](https://hetty.xyz/docs/appendix/filter-lang).
 
-> [!warning] Correction
-> The note showed `method:POST AND status_code:500` and `res.body:"error"`. That is
-> not hetty's syntax: identifiers are `req.method`, `req.url`, `res.statusCode`,
-> `res.body` and so on, with operators `=`, `!=`, `=~` (regex) and `!~`.
+> [!note] Filter syntax
+> Identifiers are `req.method`, `req.url`, `res.statusCode`, `res.body` and so on,
+> with operators `=`, `!=`, `=~` (regex) and `!~`.
 
 **Sender** replays a request with modifications — the core workflow. Find a request in
 the log, send it to Sender, change a header or parameter, and resend.

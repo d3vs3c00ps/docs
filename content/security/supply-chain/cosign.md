@@ -30,9 +30,9 @@ go install github.com/sigstore/cosign/v3/cmd/cosign@latest
 docker run --rm ghcr.io/sigstore/cosign/cosign:v3.1.4 version
 ```
 
-> [!warning] Correction
-> The note said `go install github.com/sigstore/cosign/v2/...`. That path installs the
-> old v2 line. Since v3.0 the Go module is `github.com/sigstore/cosign/v3`.
+> [!note] The v3 module path
+> Since v3.0 the Go module is `github.com/sigstore/cosign/v3`.
+> `go install github.com/sigstore/cosign/v2/...` installs the old v2 line.
 
 ## Key-based signing
 
@@ -99,11 +99,11 @@ cosign tree myregistry/myapp@sha256:abc123...
 # └── 🔗 https://sigstore.dev/cosign/sign/v1 artifacts via OCI referrer: myregistry/myapp@sha256:...
 ```
 
-> [!warning] Correction
-> The note said the signature lives under the tag `sha256-abc123....sig`, and showed
-> `cosign triangulate` to find it. That is the cosign v2 layout. cosign v3 still
-> reads it, and writes it only with `--new-bundle-format=false --use-signing-config=false`.
-> `cosign triangulate` is deprecated (removal planned in v4): use `cosign tree`, or
+> [!note] The v2 layout
+> A signature under the tag `sha256-<digest>.sig` is the cosign v2 layout. cosign v3
+> still reads it, and writes it only with
+> `--new-bundle-format=false --use-signing-config=false`. `cosign triangulate`, which
+> finds that tag, is deprecated (removal planned in v4): use `cosign tree`, or
 > `oras discover`.
 
 > [!note] Mirroring can silently drop signatures
@@ -188,13 +188,12 @@ For a private signature with no Rekor entry, add this under `cosign:`, next to `
           insecureIgnoreSCT: true
 ```
 
-> [!warning] Correction
-> The note used a `kyverno.io/v1` `ClusterPolicy` with a `verifyImages` rule.
-> Kyverno 1.19 prints that `ClusterPolicy` is deprecated, in favour of the CEL
-> (Common Expression Language) policy types such as `ImageValidatingPolicy`. In a
-> test with the Kyverno 1.19.2 CLI, the old `verifyImages` rule also found **no
-> signature** on an image signed with cosign v3 defaults. It only verified the v2
-> layout. The `ImageValidatingPolicy` above verified both.
+> [!warning] `verifyImages` misses cosign v3 signatures
+> Kyverno 1.19 prints that `ClusterPolicy` is deprecated, in favour of the CEL (Common
+> Expression Language) policy types such as `ImageValidatingPolicy`. In a test with
+> the Kyverno 1.19.2 CLI, a `kyverno.io/v1` `verifyImages` rule found **no signature**
+> on an image signed with cosign v3 defaults; it only verified the v2 layout. The
+> `ImageValidatingPolicy` above verified both.
 
 See [[kubernetes/security/kyverno]]. The Sigstore
 [Policy Controller](https://docs.sigstore.dev/policy-controller/overview/) does the
@@ -219,11 +218,10 @@ cosign verify \
   cgr.dev/chainguard/static
 ```
 
-> [!warning] Correction
-> The note used `--certificate-identity-regexp '.*'`. With the GitHub issuer, that
-> accepts a signature from **any** GitHub Actions workflow, in any repository. Pin the
-> exact workflow identity. To find it, run `verify` once with the regexp and read the
-> `Subject` field of the output.
+> [!warning] Never `--certificate-identity-regexp '.*'`
+> With the GitHub issuer, `'.*'` accepts a signature from **any** GitHub Actions
+> workflow, in any repository. Pin the exact workflow identity. To find it, run
+> `verify` once with the regexp and read the `Subject` field of the output.
 
 ## Signing other artifacts
 

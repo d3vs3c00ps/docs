@@ -96,10 +96,9 @@ diff <(openssl x509 -in cert.pem -noout -pubkey) \
      <(openssl pkey -in key.pem -pubout)
 ```
 
-> [!warning] Correction
-> An earlier version compared `x509 -modulus` with `pkey -noout -pubout`. Those hashes
-> never match, even for the right key: `-modulus` prints `Modulus=...`, and `-noout`
-> makes `pkey` print nothing.
+> [!warning] Compare like with like
+> `x509 -modulus` and `pkey -noout -pubout` never match, even for the right key:
+> `-modulus` prints `Modulus=...`, and `-noout` makes `pkey` print nothing.
 
 Usual cause: a new CSR was generated with a fresh key, and the certificate that came
 back was paired with the old one. Keep the key and CSR together.
@@ -121,10 +120,9 @@ openssl x509 -in cert.pem -noout -ext subjectAltName
 > This is worth checking on every certificate you issue, and is why
 > [[security/cryptography/certificate-generation]] had a genuine bug.
 
-> [!warning] Correction
-> An earlier version said a CN-only certificate fails in every current client. Tested
-> with curl 8.12, Python 3.12 and OpenSSL 3.5: all three accept it for the name in the
-> CN. Browsers and Go do not.
+> [!note] CN-only certificates
+> Tested with curl 8.12, Python 3.12 and OpenSSL 3.5: all three accept a CN-only
+> certificate for the name in the CN. Browsers and Go do not.
 
 Also check SNI — connecting without `-servername` to a virtual-hosted server returns
 the default certificate, which naturally will not match:
@@ -163,11 +161,6 @@ The other PKCS#12 errors mean something else:
 | `Mac verify error: invalid password?` | Wrong passphrase |
 | `asn1_d2i_read_bio:not enough data` | Truncated file. Check the size |
 
-> [!warning] Correction
-> An earlier version titled this section "`wrong final block length` / `unsupported`"
-> and said a wrong passphrase or a truncated file give the same error. Tested with
-> OpenSSL 3.5, they do not: see the table above.
-
 ## `PEM routines::no start line`
 
 A program that loads PEM files (a web server, a TLS library) was given a file with no
@@ -186,11 +179,10 @@ Convert DER to PEM for the program that needs PEM:
 openssl x509 -in cert.der -inform DER -out cert.pem
 ```
 
-> [!warning] Correction
-> An earlier version said CRLF line endings (a file that went through Windows) cause
-> this error. Tested with OpenSSL 3.5: a PEM file with CRLF line endings, or with a
-> UTF-8 byte order mark, loads fine. To normalise the file anyway, `dos2unix cert.pem`.
-> `file` does not help here: it reports `PEM certificate` with or without CRLF.
+> [!note] CRLF is not the cause
+> Tested with OpenSSL 3.5: a PEM file with CRLF line endings, or with a UTF-8 byte order
+> mark, loads fine. To normalise the file anyway, `dos2unix cert.pem`. `file` does not
+> help here: it reports `PEM certificate` with or without CRLF.
 
 ## `dh key too small` / `no shared cipher`
 
@@ -245,15 +237,15 @@ for v in tls1_2 tls1_3; do
 done
 ```
 
-> [!warning] Correction
-> The earlier loop tested `grep -q "Verify return code"`. `s_client` prints that line
-> even when the handshake fails, so every version showed `OK`. The exit code is the
-> right test: 0 when the handshake works, 1 when it fails.
+> [!warning] Test the exit code, and SSL 3.0 to TLS 1.1 need a lower level
+> `s_client` prints "Verify return code" even when the handshake fails, so grepping for
+> it shows every version as `OK`. The exit code is the right test: 0 when the handshake
+> works, 1 when it fails.
 >
-> It also tried `tls1` and `tls1_1`. OpenSSL 3 refuses them on the client side at the
-> default security level (`no protocols available`), so they always showed "not
-> supported", whatever the server does. To probe a server for them, add
-> `-cipher 'DEFAULT:@SECLEVEL=0'`, or use `nmap --script ssl-enum-ciphers`.
+> OpenSSL 3 refuses `tls1` and `tls1_1` on the client side at the default security
+> level (`no protocols available`), so they always show "not supported", whatever the
+> server does. To probe a server for them, add `-cipher 'DEFAULT:@SECLEVEL=0'`, or use
+> `nmap --script ssl-enum-ciphers`.
 
 The summary block at the end of `s_client` output is the fastest read: negotiated
 protocol, cipher, and `Verify return code: 0 (ok)` or the specific failure.

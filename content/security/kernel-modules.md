@@ -107,15 +107,13 @@ Rebuild the initramfs, so the file also applies in early boot:
 sudo dracut -f          # openSUSE Leap and the RHEL family
 ```
 
-> [!warning] Correction
-> An earlier version used `install <mod> /bin/true` and listed `decnet`, `econet`,
-> `ipx`, `p8023` and `af_802154`. Those five are gone: Econet was removed in Linux
-> 3.5, IPX (and `p8023`, used only by IPX) in 4.18, DECnet in 6.1, and the 802.15.4
-> socket module is now `ieee802154_socket`. DCCP was removed in 6.16, but 6.12
-> kernels (openSUSE Leap 16, RHEL 10) still have it. Current DISA STIG rules for
-> RHEL 9 ask for `install <mod> /bin/false` plus `blacklist <mod>`. With `/bin/false`,
-> a blocked load fails loudly; with `/bin/true`, `modprobe` reports success and the
-> caller believes the module is there.
+> [!note] Which modules exist, and `/bin/false`
+> Econet was removed in Linux 3.5, IPX (and `p8023`, used only by IPX) in 4.18, DECnet
+> in 6.1, and the 802.15.4 socket module is now `ieee802154_socket`. DCCP was removed
+> in 6.16, but 6.12 kernels (openSUSE Leap 16, RHEL 10) still have it. Current DISA
+> STIG rules for RHEL 9 ask for `install <mod> /bin/false` plus `blacklist <mod>`. With
+> `/bin/false`, a blocked load fails loudly; with `/bin/true`, `modprobe` reports
+> success and the caller believes the module is there.
 
 > [!important] `install` is stronger than `blacklist`, and you want both
 > `blacklist` only prevents *automatic* loading by alias — a direct

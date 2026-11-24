@@ -174,10 +174,6 @@ Once a node joins, kube-router writes its CNI configuration into
 >   curl X.X.X.X:8888
 >   ```
 
-> [!note] Correction
-> The original read `kubectl get svc web`, but the service created above is
-> named `blue`.
-
 Repeated requests are load-balanced **round robin** — visible proof that IPVS is
 doing the service routing, where iptables picks random endpoints.
 

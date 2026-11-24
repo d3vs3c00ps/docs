@@ -153,8 +153,8 @@ The curl command should now output:
 >   docker compose -f dockercoins.yml push
 >   ```
 >
->   (the original used `docker-compose`, the Compose v1 binary; Compose v1 is gone,
->   and v2 is the `docker compose` plugin)
+>   (not `docker-compose`: that is the Compose v1 binary, which is gone; v2 is the
+>   `docker compose` plugin)
 
 Let's have a look at the `dockercoins.yml` file while this is building and pushing.
 

@@ -55,12 +55,11 @@ Put LUKS on the **lowest device that aggregates the others**, and LVM inside it:
 | An mdraid device (`/dev/md/pv00`) | The md device | The member partitions — breaks the mirror, double-encrypts |
 | A multipath SAN LUN | The multipath device | An individual path — one header per path, corrupt on failover |
 
-> [!warning] Correction — `/boot` is not inside the PV
-> An earlier version encrypted each LV (`/dev/mapper/<vg>-<lv>`), reasoning that the PV
-> contained `/boot`. It does not: `/boot` and `/boot/efi` are separate partitions
-> *outside* the volume group. Verified on a stock Rocky 9.8 install, where Anaconda's
-> own `autopart --type=lvm --encrypted` produces `sda3 → LUKS → LVM → root/swap` with
-> both boot partitions outside the container.
+> [!warning] `/boot` is not inside the PV
+> `/boot` and `/boot/efi` are separate partitions *outside* the volume group.
+> Verified on a stock Rocky 9.8 install, where Anaconda's own
+> `autopart --type=lvm --encrypted` produces `sda3 → LUKS → LVM → root/swap` with both
+> boot partitions outside the container.
 >
 > Per-LV encryption costs one LUKS header, one TPM binding and one reseal **per volume**,
 > and any LV added later silently ships unencrypted. The only reason to do it is a
@@ -113,15 +112,12 @@ dnf install -y clevis clevis-luks clevis-dracut \
 
 The `tpm2` pin used below is part of the `clevis` package itself.
 
-> [!warning] Correction — no extra repository, and no `clevis-pin-tpm2`
-> Earlier versions enabled a `resilient-storage` repository first (with
-> `subscription-manager` on RHEL, then `dnf config-manager` on Rocky 8). Checked on
-> 5 November 2026 with `dnf repoquery`: `clevis`, `clevis-luks`, `clevis-dracut` and
-> `clevis-systemd` come from AppStream on Rocky 8.10, 9.8 and 10.
+> [!note] No extra repository, and no `clevis-pin-tpm2`
+> Checked on 5 November 2026 with `dnf repoquery`: `clevis`, `clevis-luks`,
+> `clevis-dracut` and `clevis-systemd` come from AppStream on Rocky 8.10, 9.8 and 10.
 >
-> The package list also had `clevis-pin-tpm2`. That package is a separate pin written
-> in Rust, named `tpm2plus`, not the `tpm2` pin. It does not exist on Rocky 8, so the
-> `dnf install` line failed there. On Rocky 10 it is pulled in as a dependency of
+> `clevis-pin-tpm2` is a separate pin written in Rust, named `tpm2plus`, not the `tpm2`
+> pin. It does not exist on Rocky 8. On Rocky 10 it is pulled in as a dependency of
 > `clevis` anyway, and the `tpm2` pin then hands its work to it.
 
 ### LUKS2 format
@@ -139,7 +135,7 @@ cryptsetup luksFormat \
   /dev/disk/by-id/<stable-path>
 ```
 
-> [!danger] Correction — Argon2id and FIPS are mutually exclusive
+> [!danger] Argon2id and FIPS are mutually exclusive
 > `fips-mode-setup` **aborts with exit 76** if any LUKS device uses Argon2, pointing at
 > `cryptsetup-luksConvertKey(8)`. The guard is in the shipped script:
 >
@@ -180,21 +176,20 @@ EOF
 dracut --regenerate-all -f
 ```
 
-> [!warning] Correction — `keep_dracutmodules` does not exist
-> The drop-in had a second line, `keep_dracutmodules+=" systemd cryptsetup "`. dracut
-> has no such setting (its options are `dracutmodules`, `add_dracutmodules`,
-> `force_add_dracutmodules` and `omit_dracutmodules`), and a `.conf` file is plain
-> shell, so the line was silently ignored. The `clevis` module already pulls in
+> [!note] There is no `keep_dracutmodules`
+> dracut's options are `dracutmodules`, `add_dracutmodules`,
+> `force_add_dracutmodules` and `omit_dracutmodules`. A `.conf` file is plain shell,
+> so an unknown setting is silently ignored. The `clevis` module already pulls in
 > `crypt`, and `systemd` when the initramfs uses it.
 
-> [!warning] Correction — do not parse `ls /lib/modules`
-> The earlier `for kver in $(ls -1 /lib/modules/)` loop parses `ls` and trips over stale
-> directories left behind by removed kernels, where `dracut -f --kver` fails.
-> `--regenerate-all` is the supported form; verified to cover every installed kernel.
+> [!warning] Do not parse `ls /lib/modules`
+> A `for kver in $(ls -1 /lib/modules/)` loop trips over stale directories left behind
+> by removed kernels, where `dracut -f --kver` fails. `--regenerate-all` is the
+> supported form; verified to cover every installed kernel.
 >
-> The premise was also overstated: a drop-in in `/etc/dracut.conf.d/` **is** honoured
-> automatically when new kernels are installed. The rebuild is a one-time retrofit, not
-> a per-upgrade ritual. What matters after an upgrade is the *check*:
+> A drop-in in `/etc/dracut.conf.d/` **is** honoured automatically when new kernels are
+> installed. The rebuild is a one-time retrofit, not a per-upgrade ritual. What
+> matters after an upgrade is the *check*:
 >
 > ```bash
 > lsinitrd "/boot/initramfs-$(uname -r).img" | grep -qE 'clevis|tpm2' || echo MISSING
@@ -223,9 +218,6 @@ clevis luks bind -d "/dev/disk/by-uuid/$UUID" tpm2 \
 > requires it; optional on Rocky 9), `clevis-encrypt-tpm2` hands the work to it, and
 > that pin defaults to `sha256`. `"key":"ecc"` is already the default (checked in the pin's script on Rocky 8,
 > 9 and 10), so writing it only documents the choice.
->
-> Correction: an earlier version said RSA is the default and that ECC is about 12×
-> faster. ECC is the default; the speed figure could not be checked and was removed.
 
 > [!tip] The systemd-native alternative
 > On Rocky 9 and 10, `systemd-cryptenroll --tpm2-device=auto --tpm2-pcrs=7 /dev/...`
@@ -271,25 +263,25 @@ cryptsetup luksDump "$DEV" | grep -c '^  [0-9]*: luks2'   # assert expected slot
 dracut --regenerate-all -f
 ```
 
-> [!danger] Correction — the build passphrase was never removed
+> [!danger] Remove the build passphrase
 > `cryptsetup luksAddKey` authenticates with `$TEMP_PASS` and *adds* a key; it does not
-> remove the one it authenticated with. Since a kickstart passphrase is identical on
-> every machine built from that image, the original script shipped **a factory-known key
-> slot on every unit**. Anyone who read the kickstart could unlock the fleet.
+> remove the one it authenticated with. A kickstart passphrase is identical on every
+> machine built from that image, so without `luksRemoveKey` every unit ships with **a
+> factory-known key slot**: anyone who read the kickstart could unlock the fleet.
 > `luksRemoveKey` is mandatory, and the slot count should be asserted in QA.
 
-> [!warning] Correction — order of operations, and secrets on `argv`
-> The original escrowed *after* binding and never verified the upload, so a silent
-> failure shipped a machine whose only recovery key existed nowhere. Escrow and
-> **read back** before removing anything. `set -euo pipefail` is not optional here.
+> [!warning] Order of operations, and secrets on `argv`
+> Escrow and **read back** before removing anything: a silent upload failure would
+> ship a machine whose only recovery key exists nowhere. `set -euo pipefail` is not
+> optional here.
 >
 > A bearer token passed as `-H "Authorization: Bearer $TOK"` is visible in `ps` to every
 > local user; read it from a file with `-H @file` instead.
 
-> [!warning] Correction — `openssl rsautl` is deprecated
-> The original used `openssl rsautl -encrypt`, which defaults to PKCS#1 v1.5 padding
-> and is deprecated as of OpenSSL 3.0. The replacement is `openssl pkeyutl` with
-> OAEP padding specified explicitly, as above. See [[security/cryptography/pki-and-x509]].
+> [!note] `pkeyutl`, not `rsautl`
+> `openssl rsautl -encrypt` defaults to PKCS#1 v1.5 padding and is deprecated as of
+> OpenSSL 3.0. Use `openssl pkeyutl` with OAEP padding set explicitly, as above. See
+> [[security/cryptography/pki-and-x509]].
 
 ### Secondary data partitions
 
@@ -309,7 +301,7 @@ luks-data   UUID=<luks-uuid>   none   discard
 systemctl enable clevis-luks-askpass.path    # required for crypttab automation
 ```
 
-> [!warning] Correction — `_netdev` is the Tang idiom, not a sequencing trick
+> [!warning] `_netdev` is the Tang idiom, not a sequencing trick
 > It orders the unlock into `remote-cryptsetup.target`, after `network-online`. It does
 > **not** "sequence the unlock after root pivots". On a TPM-only volume it adds a network
 > dependency to a purely local operation and risks a boot hang on an isolated host.
@@ -483,10 +475,10 @@ SLOT=$(clevis luks list -d "$DEV" | awk -F: '/tpm2/{print $1; exit}')
 clevis luks regen -d "$DEV" -s "$SLOT"
 ```
 
-> [!warning] Correction — do not unbind before rebooting
-> "Unbind the TPM, or have the recovery key to hand" is backwards: unbinding removes the
-> working unlock path *before* proving the fallback works. If the passphrase turns out to
-> be wrong, the volume is gone. **Test the passphrase, do not remove anything.**
+> [!warning] Do not unbind before rebooting
+> Unbinding the TPM removes the working unlock path *before* proving the fallback works.
+> If the passphrase turns out to be wrong, the volume is gone. **Test the passphrase, do
+> not remove anything.**
 >
 > Resealing early does not help either: `clevis luks bind` seals against PCR 7 **as read
 > at bind time**, and a firmware `db` capsule is only applied during the next boot — so a
@@ -558,13 +550,11 @@ mokutil --set-sbat-policy latest
 > objcopy -O binary --only-section=.sbatlevel /boot/efi/EFI/*/shimx64.efi /tmp/shim.sbatlevel && strings /tmp/shim.sbatlevel
 > ```
 
-> [!warning] Correction
-> The two `objcopy` lines wrote to `/dev/stdout` through a pipe, which objcopy refuses
-> (`Illegal seek`); they now write to a file first.
->
-> An earlier version said that reverting the SBAT floor means clearing the firmware's
-> EFI NVRAM. shim's own code (`sbat.c`, shim 16.1) resets `SbatLevel` when it boots
-> with Secure Boot disabled, so disabling Secure Boot for one boot is enough.
+> [!note] objcopy and SBAT
+> objcopy refuses to write to `/dev/stdout` through a pipe (`Illegal seek`), so the
+> commands write to a file first. To revert the SBAT floor, you do not need to clear the
+> firmware's EFI NVRAM: shim's own code (`sbat.c`, shim 16.1) resets `SbatLevel` when it
+> boots with Secure Boot disabled, so disabling Secure Boot for one boot is enough.
 
 ## Recovery and maintenance
 
@@ -608,10 +598,9 @@ lsinitrd "/boot/initramfs-$(uname -r).img" | grep -qE 'clevis|tpm2' \
   auditctl -w /usr/bin/clevis -p x -k clevis_policy_change
   ```
 
-  > [!warning] Correction — this is an `auditctl` rule, not `auditd`
-  > The original wrote `auditd -w ...`, which is not a valid invocation — `auditd` is
-  > the daemon and takes no watch arguments. Use `auditctl` for a runtime rule, or
-  > put the same line in `/etc/audit/rules.d/` to persist it. See
+  > [!note] `auditctl`, not `auditd`
+  > `auditd` is the daemon and takes no watch arguments. Use `auditctl` for a runtime
+  > rule, or put the same line in `/etc/audit/rules.d/` to persist it. See
   > [[security/auditd]].
 
 ## Where to go next

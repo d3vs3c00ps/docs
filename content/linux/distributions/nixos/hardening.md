@@ -91,9 +91,8 @@ paths and files that do not exist here, and CIS-style tooling checks for
 > Set `users.users.alice.hashedPasswordFile` rather than `hashedPassword`, to keep the
 > hash out of the store.
 
-> [!warning] Correction
-> An earlier version said that `useradd` and `passwd` "stop working". They do not:
-> both succeed, and the change lasts until the next activation.
+> [!note] `useradd` and `passwd` still run
+> Both succeed, and the change lasts until the next activation.
 
 ## systemd sandboxing
 
@@ -174,11 +173,11 @@ Linux system, and it works the same here as anywhere — see systemd.
 }
 ```
 
-> [!warning] Correction: `linuxPackages_hardened` is gone
-> This note used to set `boot.kernelPackages = pkgs.linuxPackages_hardened`. NixOS 26.05
-> removed the hardened kernel packages "due to lack of maintenance", and the line now
-> stops the build with that error. The sysctls and module settings above do most of
-> what is still practical. Stay on the default kernel, which gets security fixes first.
+> [!warning] `linuxPackages_hardened` is gone
+> NixOS 26.05 removed the hardened kernel packages "due to lack of maintenance", and
+> `boot.kernelPackages = pkgs.linuxPackages_hardened` stops the build with that error.
+> The sysctls and module settings above do most of what is still practical. Stay on
+> the default kernel, which gets security fixes first.
 
 > [!warning] `lockKernelModules` has a real cost
 > `security.lockKernelModules = true` blocks all module loading after boot. That breaks
@@ -239,12 +238,12 @@ the audit log shows when the system's definition changed. See auditd.
 }
 ```
 
-> [!warning] Correction: `extraCommands` is for the iptables backend only
-> An earlier version of this block used `extraCommands` with an `iptables` rule next to
-> `networking.nftables.enable = true`. NixOS refuses that combination: "extraCommands
-> is incompatible with the nftables based firewall". With nftables, use
-> `extraInputRules` (and `extraForwardRules`), in nftables syntax. `extraCommands`
-> works only with the iptables backend (`networking.nftables.enable = false`).
+> [!warning] `extraCommands` is for the iptables backend only
+> With `networking.nftables.enable = true`, NixOS refuses `extraCommands`:
+> "extraCommands is incompatible with the nftables based firewall". With nftables,
+> use `extraInputRules` (and `extraForwardRules`), in nftables syntax.
+> `extraCommands` works only with the iptables backend
+> (`networking.nftables.enable = false`).
 
 See nftables.
 
@@ -268,12 +267,11 @@ See nftables.
 }
 ```
 
-> [!note] Correction
-> An earlier version passed `flags = [ "--update-input" "nixpkgs" "--no-write-lock-file" ]`,
-> so each machine updated `nixpkgs` on its own and ran a lockfile nobody had built
-> or reviewed. `--update-input` is also deprecated since Nix 2.19. Update
-> `flake.lock` in CI instead, where every host is built first — see
-> [[linux/distributions/nixos/gitops#Updating dependencies]].
+> [!warning] Do not update inputs on each machine
+> With `flags = [ "--update-input" "nixpkgs" ... ]`, each machine updates `nixpkgs` on
+> its own and runs a lockfile nobody built or reviewed. `--update-input` is also
+> deprecated since Nix 2.19. Update `flake.lock` in CI instead, where every host is
+> built first — see [[linux/distributions/nixos/gitops#Updating dependencies]].
 
 `allowReboot = false` means kernel updates are staged but not activated until you
 reboot deliberately. Setting it to `true` with a `rebootWindow` is reasonable for a

@@ -32,9 +32,8 @@ This note covers the measurement machinery. Its two neighbours cover the ends:
 > `systemd-cryptenroll`. The TPM holds a sealed copy and refuses to hand it back unless
 > the machine is in the state you sealed against.
 >
-> Correction: an earlier version said the TPM does not generate keys at all. It can:
-> it has its own random number generator, and `tpm2_create` makes keys inside it. It
-> just does not make the LUKS key.
+> The TPM can make keys (it has its own random number generator, and `tpm2_create`
+> makes keys inside it), but it does not make the LUKS key.
 
 ## PCRs are append-only
 

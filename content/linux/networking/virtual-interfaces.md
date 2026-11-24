@@ -30,10 +30,6 @@ Limit **what a process can see**. Linux has these namespace types:
 | **cgroup** | isolates the view of the cgroup hierarchy (Linux 4.6+) |
 | **time** | isolates the system clock offsets (Linux 5.6+) |
 
-> [!note] The original notes said "6 types"
-> That was accurate when written. `cgroup` and `time` namespaces were added later,
-> bringing it to eight.
-
 ### Why this matters
 
 Thanks to namespaces a guest system — container or machine — can be given a
@@ -234,9 +230,8 @@ A first victory: the host can now reach the namespaces via the bridge. The host 
 has an address on the namespaces' network, so it is one more machine on that switch.
 The bridge itself still only switches frames; no routing is involved.
 
-> [!warning] Correction
-> The original note said the address makes the bridge a router. It does not: the
-> host's IP stack answers on the bridge, and this works with `net.ipv4.ip_forward`
+> [!note] The address does not make the bridge a router
+> The host's IP stack answers on the bridge, and this works with `net.ipv4.ip_forward`
 > set to `0`. The host routes only when it forwards packets between interfaces, for
 > example to the outside with masquerading.
 
@@ -285,12 +280,10 @@ ip link add veth-demo1 netns lab1 type veth peer name veth-demo2 netns lab2
 
 Teaming groups network interfaces into one logical interface at L2, like a bond.
 
-> [!warning] Correction: use a bond, not a team
-> The original note said bonding was declining in favour of teaming. The opposite
-> happened. Red Hat deprecated teaming in RHEL 9 and removed it in RHEL 10, and the
-> kernel's bonding driver is the maintained option. See
-> [[linux/networking/nmcli#Bonds]] for bonds with `nmcli`. This section stays for
-> existing systems.
+> [!warning] Use a bond, not a team
+> Red Hat deprecated teaming in RHEL 9 and removed it in RHEL 10, and the kernel's
+> bonding driver is the maintained option. See [[linux/networking/nmcli#Bonds]] for
+> bonds with `nmcli`. This section stays for existing systems.
 
 ```mermaid
 flowchart TB

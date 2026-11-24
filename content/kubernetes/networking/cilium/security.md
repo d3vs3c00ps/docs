@@ -147,10 +147,9 @@ policies when rolling out a restrictive posture.
 cilium-dbg endpoint config <endpoint-id> PolicyAuditMode=Enabled
 ```
 
-> [!warning] Correction
-> An earlier version showed a per-policy annotation (`io.cilium.policy.audit-mode`).
-> No such annotation exists. Audit mode is set for the whole daemon or per
-> endpoint, as above — not per policy.
+> [!note] No per-policy audit mode
+> There is no `io.cilium.policy.audit-mode` annotation. Audit mode is set for the
+> whole daemon or per endpoint, as above, not per policy.
 
 In audit mode the policy is evaluated and violations are **reported but allowed**.
 Flows appear in Hubble with verdict `AUDIT`:

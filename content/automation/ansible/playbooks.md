@@ -46,11 +46,6 @@ Or writing the tasks directly:
         state: present
 ```
 
-> [!warning] Correction: `ansible.builtin.yum` is gone
-> The original tasks used `ansible.builtin.yum`. ansible-core 2.17 removed that
-> module. The name still works, but only as a redirect to `ansible.builtin.dnf`, so
-> write `dnf`, as here.
-
 Either way it runs the same:
 
 ```console
@@ -102,12 +97,6 @@ there is no error, a playbook run a second time should report **zero** changes.
 >   failed_when: "'DEGRADED' in health.stdout"
 > ```
 
-> [!note] Two screenshots were dropped
-> The original illustrated idempotence with two images comparing `changed=1` and
-> `changed=0` output. Both pointed at a `media/` directory that never existed in the
-> repository, so the links were already broken. The `console` blocks above carry the
-> same point.
-
 ### Task ordering
 
 Tasks run in these phases:
@@ -135,9 +124,8 @@ Tasks run in these phases:
 Handlers notified in a phase run at the end of that phase: after `pre_tasks`,
 after `roles` and `tasks` together, and after `post_tasks`.
 
-> [!warning] Correction: handlers run per phase
-> The original said handlers notified in any phase run at the end of the play.
-> Ansible flushes them at the end of each phase, so a handler notified in
+> [!note] Handlers run per phase
+> Ansible flushes handlers at the end of each phase, so a handler notified in
 > `pre_tasks` runs before the roles start.
 
 ### Task execution
@@ -221,11 +209,9 @@ Here the play runs server by server. More precise pacing is possible:
 | `serial: [1, 10]` | the first host, then batches of 10 |
 | `serial: [1, 100%]` | the first host, then all the rest |
 
-> [!warning] Correction: `serial` is a play keyword, not a task keyword
-> The original examples placed `serial: 1` indented under a task, alongside
-> `run_once`. It does not work there — `serial` controls how the **play** batches its
-> hosts and must sit at play level, as above. `run_once` genuinely is a task keyword,
-> which is probably where the confusion came from.
+> [!note] `serial` is a play keyword
+> `serial` controls how the **play** batches its hosts and must sit at play level.
+> Under a task it does not work. `run_once` is a task keyword.
 
 ### Delegation
 
@@ -345,10 +331,6 @@ Start partway through:
 ```bash
 ansible-playbook site.yml --start-at-task="Config repos"
 ```
-
-> [!note] Correction from the original notes
-> One copy of this wrote `--start-at-tasks=` (plural). The option is
-> `--start-at-task`.
 
 Step through interactively, confirming each task:
 

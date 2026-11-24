@@ -201,12 +201,11 @@ This can also be set with `--cpu-percent=`.
 - Scaling down waits: the HPA uses the highest recommendation of the last 5 minutes
   (the *stabilization window*), so short dips do not remove pods
 
-> [!warning] Correction
-> The original said the HPA runs every 30 seconds, and waits 3 minutes after a scale
-> up and 5 minutes after a scale down. Those were the rules before Kubernetes 1.18.
-> Today the sync period is 15 seconds, scale up has no delay by default, and scale
-> down uses a 300-second stabilization window. Both can be tuned per HPA in
-> `spec.behavior` (see [[kubernetes/observability/hpa-v2]]).
+> [!note] Timings
+> The sync period is 15 seconds, scale up has no delay by default, and scale down uses
+> a 300-second stabilization window. Both can be tuned per HPA in `spec.behavior` (see
+> [[kubernetes/observability/hpa-v2]]). The 30-second period and the 3- and 5-minute
+> waits found in older guides are the rules from before Kubernetes 1.18.
 
 ## What about other metrics?
 
@@ -214,7 +213,7 @@ This can also be set with `--cpu-percent=`.
 
 - The HPA in API group `autoscaling/v2` supports metrics from various API groups
 
-  (`autoscaling/v2beta2`, named in the original, was removed in Kubernetes 1.26):
+  (`autoscaling/v2beta2` was removed in Kubernetes 1.26):
 
   - metrics.k8s.io, aka metrics server (per-Pod CPU and RAM)
 

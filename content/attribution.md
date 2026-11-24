@@ -121,12 +121,11 @@ than tidying away:
 Quotations from RFCs, vendor documentation and manual pages are short excerpts used
 for reference, attributed inline where they appear.
 
-## Corrections
+## Differences from the sources
 
-Where a migrated note corrected an error in its source — a command that could not
-run, a description that contradicted the tool's behaviour, a deprecated API — the
-correction is marked in place with a callout explaining what changed and why. The
-intent is that no correction is silent, so you can judge it for yourself.
+A note can differ from its source where the source had a command that could not run,
+a description that contradicted the tool's behaviour, or a deprecated API. The note
+states the current, tested behaviour. The source link in each note lets you compare.
 
 ## Reporting a problem
 

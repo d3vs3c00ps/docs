@@ -295,10 +295,9 @@ ok: [localhost] =>
 
 Ansible 2.5 added `loop`, and the documentation now recommends it over `with_*`.
 
-> [!warning] Correction: `with_*` still works
-> The original said `loop` replaced the `with_*` loops. `with_items` and the others
-> still run in ansible-core 2.22, with no deprecation warning. Prefer `loop` in new
-> code.
+> [!note] `with_*` still works
+> `with_items` and the other `with_*` loops still run in ansible-core 2.22, with no
+> deprecation warning. Prefer `loop` in new code.
 
 Installing Apache and PHP from a simple list:
 
@@ -362,8 +361,8 @@ Conditioning a task, here on a fact:
 ```
 
 > [!note] Comparing versions
-> The original compared these to the *strings* `'3'` and `'2'`. Version components
-> are integers, and string comparison gives wrong answers anyway — `'10' < '9'`. For
+> Compare these to integers, not to the *strings* `'3'` and `'2'`. Version components
+> are integers, and string comparison gives wrong answers — `'10' < '9'`. For
 > full version comparison use the `version` test:
 > `when: ansible_distribution_version is version('8.0', '>=')`
 >
@@ -431,7 +430,7 @@ Available tests: `directory`, `file`, `link`, `exists`, `mount`.
 >   when: nfs.stat.exists
 > ```
 >
-> Note also the original wrote `exist`; the test is `exists`.
+> The test is `exists`, not `exist`.
 
 ## Filters
 
@@ -508,15 +507,14 @@ Use one in a playbook:
 `validate:` runs a check on the rendered file *before* installing it, so a broken
 template cannot take the service down.
 
-> [!warning] Correction: `apachectl -t -f` needs a whole config
-> `apachectl -t -f %s` reads the file as the full server configuration. A file
-> with only a `<VirtualHost>` block fails that check, so this `validate:` rejects
-> the vhost above. Use `validate: 'apachectl -t -f %s'` for the main `httpd.conf`.
-> For a vhost file, run `apachectl -t` in a task after the copy, or in the handler
-> before the restart. On openSUSE, `apachectl` is in the `apache2-utils` package.
+> [!warning] `apachectl -t -f` needs a whole config
+> `apachectl -t -f %s` reads the file as the full server configuration. A file with
+> only a `<VirtualHost>` block fails that check, so this `validate:` rejects the vhost
+> above. Use `validate: 'apachectl -t -f %s'` for the main `httpd.conf`. For a vhost
+> file, run `apachectl -t` in a task after the copy, or in the handler before the
+> restart. On openSUSE, `apachectl` is in the `apache2-utils` package.
 > `${APACHE_LOG_DIR}` and `sites-available/` are Debian conventions; Red Hat uses
-> `/var/log/httpd` and `/etc/httpd/conf.d/`. See
-config-validation.
+> `/var/log/httpd` and `/etc/httpd/conf.d/`. See [[servers/config-validation]].
 
 ### Loops in templates
 
@@ -542,21 +540,15 @@ The template:
 
 The `VirtualHost` block is repeated for each entry in the list.
 
-> [!warning] Correction from the original notes
-> The original closed the loop with `{% endfor % }` — a space between `%` and `}`.
-> Jinja2 does not recognise that as a tag delimiter, so the template fails to
-> render.
-
 > [!tip] Control whitespace
 > The `template` module turns on Jinja's `trim_blocks`, so the newline after a
 > `{% %}` tag is removed and no blank line is left. Spaces *before* an indented tag
 > stay. `{%- for ... -%}` strips the whitespace around the tag, newlines included,
 > which matters for config file formats that care.
 
-> [!warning] Correction: no blank lines in Ansible templates
-> The original said Jinja leaves a blank line where a tag stood. That is plain
-> Jinja's default, but Ansible's `template` module sets `trim_blocks`, so it does
-> not happen there.
+> [!note] No blank lines in Ansible templates
+> Plain Jinja leaves a blank line where a tag stood, but Ansible's `template` module
+> sets `trim_blocks`, so it does not happen there.
 
 <!-- uplink -->
 Part of [[automation/ansible/index|Ansible]].

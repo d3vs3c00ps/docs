@@ -156,11 +156,6 @@ models per GPU. Set it only to cap the number, in a `systemctl edit ollama` over
 Environment="OLLAMA_MAX_LOADED_MODELS=2"
 ```
 
-> [!warning] Correction
-> This note said the override was needed to keep two models loaded, and the block had
-> no `[Service]` line. Current Ollama already allows several models (see
-> [[ai/ollama#Environment variables]]), and a drop-in without `[Service]` is ignored.
-
 ### Mixed: llama-server plus Ollama
 
 Keep `llama-server` for a model needing custom flags, and Ollama for the rest. Both

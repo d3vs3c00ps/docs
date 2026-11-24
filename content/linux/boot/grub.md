@@ -66,24 +66,21 @@ Found initrd image: /boot/initrd-6.12.0-160000.40-default
 done
 ```
 
-> [!warning] Correction — one `Found background` line, not two
-> The original output also showed `Found background image:`. That line comes
-> from a Debian-only script. openSUSE prints `Found background:` only. With a
-> theme set, it prints `Found theme:` instead.
+> [!note] `Found background:`
+> openSUSE prints `Found background:` only. `Found background image:` comes from a
+> Debian-only script. With a theme set, it prints `Found theme:` instead.
 
 If the `Found background` line is missing, check the path: a missing file is
 skipped with no error. The format must be PNG, JPEG or TGA, and the file name
 must end in `.png`, `.jpg`, `.jpeg` or `.tga`. Any other extension stops
 `grub2-mkconfig` with `Unsupported image format`.
 
-> [!warning] Correction — on UEFI, regenerate the same file
-> The original note said a UEFI install regenerates to
-> `/boot/efi/EFI/opensuse/grub.cfg`. It does not. On openSUSE, `shim-install`
-> writes that file as a small stub that loads `/boot/grub2/grub.cfg`. RHEL 9 and
-> later do the same. So the command above is right on UEFI too. Writing the full
-> configuration over the stub breaks it; RHEL's `grub2-mkconfig` warns when you
-> try. To inspect the output first, run `grub2-mkconfig` without `-o`: it prints
-> the configuration and changes nothing.
+> [!warning] On UEFI, regenerate the same file
+> On openSUSE, `shim-install` writes `/boot/efi/EFI/opensuse/grub.cfg` as a small stub
+> that loads `/boot/grub2/grub.cfg`. RHEL 9 and later do the same. So the command
+> above is right on UEFI too. Writing the full configuration over the stub breaks it;
+> RHEL's `grub2-mkconfig` warns when you try. To inspect the output first, run
+> `grub2-mkconfig` without `-o`: it prints the configuration and changes nothing.
 
 <!-- uplink -->
 Part of [[linux/boot/index|Boot and init]].

@@ -315,10 +315,9 @@ llama-cli -m /path/to/model.gguf -ngl 99 -c 4096 -st \
   -p "Write a Go function that reverses a string"
 ```
 
-> [!warning] Correction: `-cnv` is not a `llama-cli` option any more
-> The original used `llama-cli ... -cnv` for conversation mode. Conversation is now
-> the only `llama-cli` mode, and `-cnv` / `-no-cnv` moved to the `llama-completion`
-> tool.
+> [!note] No `-cnv` flag
+> Conversation is the only `llama-cli` mode. Older guides add `-cnv` or `-no-cnv`:
+> those flags belong to the `llama-completion` tool now.
 
 ## Downloading models
 
@@ -337,17 +336,17 @@ hf download unsloth/Qwen3.6-27B-GGUF Qwen3.6-27B-Q4_K_M.gguf --local-dir ~/model
 hf download unsloth/Qwen3.6-27B-GGUF Qwen3.6-27B-Q5_K_M.gguf --local-dir ~/models
 ```
 
-> [!warning] Correction: the command is `hf`
-> The original used `huggingface-cli download`. huggingface_hub 1.x removed
-> `huggingface-cli`; the same arguments work with `hf download`.
+> [!note] `hf`, not `huggingface-cli`
+> huggingface_hub 1.x removed `huggingface-cli`. Older guides use it; the same
+> arguments work with `hf download`.
 
 See [[ai/quantization-glossary]] and [[ai/hardware-requirements]] to pick the variant.
 
 > [!tip] Two repository traps
 > **Gated repos** — some repositories require a HuggingFace login and terms
-> acceptance before download. Community repos such as `unsloth/` are public. (The
-> original said the official `Qwen/…-GGUF` repositories are gated; `Qwen/Qwen3-8B-GGUF`
-> is not. Check the model page, or `HfApi().model_info(repo).gated`.)
+> acceptance before download. Community repos such as `unsloth/` are public, and so
+> are some official ones, such as `Qwen/Qwen3-8B-GGUF`. Check the model page, or
+> `HfApi().model_info(repo).gated`.
 >
 > **safetensors repos** — a repository *without* `-GGUF` in the name holds raw
 > PyTorch weights, often ~58 GB across 15 files, which llama.cpp cannot use. Always

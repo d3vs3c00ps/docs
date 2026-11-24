@@ -13,8 +13,7 @@ On openSUSE Leap 16 it is the default network stack, and it is equally standard 
 RHEL and its derivatives and on Fedora.
 
 > [!note]
-> The original note said `wicked` was removed from Leap 16. SUSE dropped it from
-> SLES 16, and new Leap 16 systems use NetworkManager. But Leap 16.0 still has a
+> SUSE dropped `wicked` from SLES 16, and new Leap 16 systems use NetworkManager. But Leap 16.0 still has a
 > community `wicked` package (from Backports) in its repository.
 
 The concept that makes it click:
@@ -98,9 +97,8 @@ nmcli connection add type ethernet con-name "static-eth0" ifname eth0 \
 > the interface gets two addresses, and the DHCP server's gateway and DNS. With no
 > DHCP server, the activation fails after the DHCP timeout.
 
-> [!warning] Correction
-> The original note said DHCP replaces the static address. It does not: both
-> addresses are set. The advice stays the same.
+> [!note] Both addresses are set
+> DHCP does not replace the static address: both are set. The advice stays the same.
 
 ## Modifying
 

@@ -200,10 +200,10 @@ spec:
 
   (rounded up!)
 
-> [!warning] Correction
-> The original said `messages / 100`, but the manifest above sets `listLength: "10"`:
-> the target is 10 messages per replica. Also, KEDA's `minReplicaCount` defaults to 0, so
-> with an empty list it scales the Deployment down to zero after the cooldown (5 minutes).
+> [!note] Scaling to zero
+> The manifest above sets `listLength: "10"`: the target is 10 messages per replica.
+> KEDA's `minReplicaCount` defaults to 0, so with an empty list it scales the
+> Deployment down to zero after the cooldown (5 minutes).
 
 ## Trying it out
 

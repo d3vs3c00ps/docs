@@ -72,15 +72,10 @@ setting (or the `SUPER` privilege) the server container stops at
 `ERROR 1419 ... You do not have the SUPER privilege and binary logging is enabled`
 and never starts.
 
-> [!warning] Correction: MySQL 8.4 and `mysql_native_password`
-> The original pinned `mysql:8.0` with `utf8` and
-> `--default-authentication-plugin=mysql_native_password`. MySQL 8.0 reached end
-> of life in April 2026. `mysql_native_password` is deprecated since 8.0.34,
-> disabled by default in 8.4 (not removed, as an earlier version of this note
-> said) and removed in 9.0. Zabbix 7.0 connects with the default
-> `caching_sha2_password`, and its schema wants `utf8mb4`. The original also
-> lacked `--log-bin-trust-function-creators=1`, so a current Zabbix server could
-> not create its schema.
+> [!note] MySQL 8.4
+> MySQL 8.0 reached end of life in April 2026. `mysql_native_password` is deprecated
+> since 8.0.34, disabled by default in 8.4 and removed in 9.0. Zabbix 7.0 connects with
+> the default `caching_sha2_password`, and its schema wants `utf8mb4`.
 
 ## Zabbix server container
 
@@ -135,11 +130,6 @@ pair, or a real one, see [[security/cryptography/pki-and-x509]].
 Apache in this image runs as user `zabbix` (UID 1997), and a private key is readable
 by its owner only. `U` makes Podman give both files to that user. On the host they
 then belong to a subordinate UID, so read them with `podman unshare cat` if needed.
-
-> [!warning] Correction
-> The original mounted the files with `:Z` only. In rootless Podman the key then
-> belongs to root inside the container, Apache stops with `Permission denied: Can't
-> open server private key file`, and the UI never answers.
 
 ## Agent container
 
@@ -197,9 +187,7 @@ active
 > [!warning] `podman generate systemd` is deprecated
 > It still works, but prints a `DEPRECATED` warning. **Quadlet**, added in Podman
 > 4.4, replaces it. For new deployments write `.pod`, `.container` and `.volume` files
-> in `~/.config/containers/systemd/` and let Quadlet generate the units. The
-> original notes also had `mkdir -p .conf/systemd/user/` — that path is a typo for
-> `.config`, and a relative one, so the units landed somewhere systemd never reads.
+> in `~/.config/containers/systemd/` and let Quadlet generate the units.
 
 <!-- uplink -->
 Part of [[servers/index|Servers]].

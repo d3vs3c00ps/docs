@@ -91,8 +91,7 @@ reach each other unless deliberately placed on a shared network:
 ```
 
 > [!note] Better still, use user-defined networks
-> The original notes suggested removing the default `docker0` bridge with
-> `icc=false`. Setting `icc: false` is right, but the modern approach is to leave the
+> Setting `icc: false` is right, but the modern approach is to leave the
 > default bridge unused entirely and put each application on its own user-defined
 > network. Containers are then isolated by default *and* get DNS resolution — see
 > [[containers/docker#Networks]].
@@ -195,10 +194,10 @@ docker scout cves myimage:latest
 
 Wire one into CI so a base image that has drifted out of date fails the build.
 
-> [!note] Two tools from the original notes have moved on
-> It referenced `docker-bench-security` and the `docker/labs` security tutorials.
-> Docker Bench still exists but has not kept pace; **Trivy** and **Docker Scout**
-> are the current tools, and `docker/labs` has been archived.
+> [!note] Docker Bench and `docker/labs`
+> `docker-bench-security` still exists but has not kept pace; **Trivy** and
+> **Docker Scout** are the current tools. The `docker/labs` security tutorials are
+> archived.
 
 ### Use a private registry
 

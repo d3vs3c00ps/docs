@@ -76,10 +76,9 @@ command prompt with `Ctrl+b :` then:
 | `-s 3.0` | source — window 3, pane 0 |
 | `-l 25%` | give the joined pane 25% of the available space |
 
-> [!warning] Correction
-> This note used `-p 25`. Since tmux 3.1, `-l` takes a percentage and `-p` is
-> deprecated. With tmux 3.5a (openSUSE Leap 16), `joinp -p 25` fails with
-> `size missing`. Use `-l 25%`.
+> [!note] `-l 25%`, not `-p 25`
+> Since tmux 3.1, `-l` takes a percentage and `-p` is deprecated. With tmux 3.5a
+> (openSUSE Leap 16), `joinp -p 25` fails with `size missing`.
 
 ## The command prompt
 

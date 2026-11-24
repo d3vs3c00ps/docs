@@ -128,11 +128,10 @@ ollama run go-assistant
 >
 > `curl http://localhost:11434/api/ps` shows the `context_length` in use.
 
-> [!warning] Correction: defaults in Ollama 0.40.6
-> The original said `num_ctx` defaults to 2048 and cannot be set per request. The
-> default now depends on VRAM, and `options.num_ctx` works per request. The
-> `repeat_penalty` default is 1.0, not 1.1. `OLLAMA_MAX_LOADED_MODELS` defaults to 3
-> per GPU, not 1.
+> [!note] Defaults in Ollama 0.40.6
+> The default `num_ctx` depends on the GPU memory, and `options.num_ctx` sets it per
+> request. `repeat_penalty` defaults to 1.0. `OLLAMA_MAX_LOADED_MODELS` defaults to 3
+> per GPU.
 
 ## Loading a custom GGUF
 

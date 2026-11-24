@@ -12,10 +12,10 @@ The Container Network Interface decouples networking from Kubernetes. It is
 implemented by *plugins*, which are executables invoked by the **container runtime**
 (containerd or CRI-O).
 
-> [!warning] Correction
-> The original notes said kubelet invokes the plugins. That was true with dockershim, which was
-> removed in Kubernetes 1.24. Today kubelet asks the runtime, through the Container
-> Runtime Interface (CRI), to create the pod sandbox, and the runtime calls the plugins.
+> [!note] Who calls the plugins
+> kubelet asks the runtime, through the Container Runtime Interface (CRI), to create
+> the pod sandbox, and the runtime calls the plugins. kubelet called them itself only
+> with dockershim, which was removed in Kubernetes 1.24.
 
 Plugins are responsible for:
 
@@ -105,10 +105,6 @@ echo '{"cniVersion":"1.0.0","name":"mynet","type":"ptp",
 
 Run the same command with `CNI_COMMAND=DEL` to remove the interface.
 
-> [!note] Correction from the original notes
-> The example variable was written `GS=IgnoreUnknown=1;...`, which is a truncation of
-> `CNI_ARGS=`.
-
 ## conf versus conflist
 
 Two configuration formats exist:
@@ -122,14 +118,10 @@ Two configuration formats exist:
 Plugins in a `.conflist` are invoked in file order for `ADD`, and in **reverse
 order** for `DEL` — teardown unwinds the chain.
 
-> [!warning] Correction from the original notes
-> The source stated that the *basic* configuration "has a `plugins` field of type
-> string". That is wrong, and it is what distinguishes the two formats, so it matters:
-> a `.conf` has a top-level **`type`** naming its single plugin and no `plugins` field
-> at all, while a `.conflist` has a **`plugins` array**. The original also left the
-> correct statement — "has a `type` string field in the top-most structure" —
-> untranslated on the following line, which is how the contradiction is visible in the
-> source.
+> [!note] `.conf` versus `.conflist`
+> A `.conf` has a top-level **`type`** naming its single plugin and no `plugins` field
+> at all. A `.conflist` has a **`plugins` array**. That is what tells the two formats
+> apart.
 
 A minimal `.conf`:
 

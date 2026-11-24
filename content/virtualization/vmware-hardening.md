@@ -46,8 +46,7 @@ Save the script below as `harden-vm.ps1` and run it:
 ```
 
 > [!note] It does not take pipeline input
-> The original notes invoked it as
-> `Get-Cluster cluster-name | Get-VM | .\hardenningVM51.ps1`, but the script finds
+> `Get-Cluster cluster-name | Get-VM | .\harden-vm.ps1` does not scope it: the script finds
 > its own targets with `Get-View` and ignores anything piped in — so that command
 > silently hardens *every* VM in vCenter, not just the named cluster. To scope it,
 > give `Get-View` a search root:
@@ -58,9 +57,9 @@ Save the script below as `harden-vm.ps1` and run it:
 >     -SearchRoot (Get-Cluster "cluster-name").ExtensionData.MoRef
 > ```
 
-> [!warning] Correction
-> An earlier version said to add a `-Location` filter to `Get-View`. `Get-View` has
-> no `-Location` parameter; the parameter that limits the search is `-SearchRoot`.
+> [!note] `-SearchRoot`
+> `Get-View` has no `-Location` parameter; the parameter that limits the search is
+> `-SearchRoot`.
 
 ## The script
 
@@ -127,14 +126,13 @@ foreach ($VM in $VMs2Update) {
 }
 ```
 
-> [!warning] Device placeholders in the original
-> The original hash table contained literal placeholders — `floppyX.present`,
-> `ideX:Y.present`, `parallelX.present`, `serialX.present`. Those are not valid keys:
-> `X` and `Y` stand for a device index you must substitute. They have been replaced
-> with `floppy0`, `parallel0` and `serial0` above. `ideX:Y.present` was dropped
-> entirely — disabling IDE controllers wholesale breaks VMs that boot from them; if
-> you want to prevent CD-ROM connection, `isolation.device.connectable.disable`
-> already covers it.
+> [!warning] Use real device indexes
+> Hardening guides often list `floppyX.present`, `ideX:Y.present`,
+> `parallelX.present` and `serialX.present`. Those are not valid keys: `X` and `Y`
+> stand for a device index you must substitute, as in `floppy0`, `parallel0` and
+> `serial0` above. The table has no `ide` key: disabling IDE controllers wholesale
+> breaks VMs that boot from them. To prevent CD-ROM connection,
+> `isolation.device.connectable.disable` already covers it.
 
 ## What the key settings do
 

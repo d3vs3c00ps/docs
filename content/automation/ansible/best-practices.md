@@ -174,10 +174,6 @@ w1337.example.com
 w1669.example.com
 ```
 
-> [!note] Correction from the original notes
-> The second host was written `192.168.42.256`. `256` is not a valid octet — the
-> maximum is 255.
-
 **A `group_vars` directory** holding files or directories named after host groups.
 Each holds variables defined for every host in that group:
 
@@ -283,10 +279,6 @@ $ ansible -i inv/default -i inv/qualif --list-hosts 'postgresql:!projectname'
     pg-server-01
 ```
 
-> [!note] Correction from the original notes
-> The second example's output listed `pg-projectname-01` alongside `pg-server-01`.
-> That host is by definition excluded by `:!projectname`, so it cannot appear.
-
 ### Aggregating inventories
 
 You can use [several inventories at once](https://docs.ansible.com/ansible/latest/inventory_guide/intro_dynamic_inventory.html)
@@ -312,7 +304,7 @@ winning.
 
 Create roles with `ansible-galaxy role init`, then add a Molecule scenario with
 `molecule init scenario` — see [[automation/ansible/molecule]]. Molecule 6 removed
-`molecule init role`, which the original used. At minimum this gives you `tasks`,
+`molecule init role`. At minimum this gives you `tasks`,
 `meta`, `defaults`, `vars` and `handlers`:
 
 ```text
@@ -397,10 +389,10 @@ Called from the playbook as:
 **Do not use tags to differentiate a role's actions**, and do not put URLs in
 `meta/main.yml`.
 
-> [!warning] Correction: `action` is a reserved name
-> With `action: "installation"` as the role parameter, Ansible warns "Found variable
-> using reserved name 'action'" (`action` is a task keyword). It still works today,
-> but use another name, such as `app_action`.
+> [!warning] `action` is a reserved name
+> With `action:` as a role parameter, Ansible warns "Found variable using reserved
+> name 'action'" (`action` is a task keyword). It still works, but use another name,
+> such as `app_action`.
 
 ## Playbooks
 
@@ -430,12 +422,6 @@ execution order within a play is:
       ansible.builtin.debug:
         msg: "task executed after the roles"
 ```
-
-> [!note] Correction from the original notes
-> The `post_tasks` debug read
-> `ansible.builtin.debug: msg=tache exécutée après les rôles"` — an unbalanced
-> quote, which is a YAML parse error. It has also been rewritten in the
-> block form, which is preferred over `key=value` shorthand.
 
 Prefer roles. You can call the same role several times with different variable
 values — think of roles as subroutines:
@@ -469,10 +455,6 @@ level you specify:
     msg: "This appears only when running ansible-playbook with -vv"
     verbosity: 2
 ```
-
-> [!note] Correction from the original notes
-> `verbosity` was indented at task level rather than as a module parameter, where it
-> would be rejected as an unknown task keyword. It belongs under `debug:`, as above.
 
 ## Projects
 
@@ -550,23 +532,19 @@ pipelining                  = True
 ssh_args                    = -o ForwardAgent=yes -o ServerAliveInterval=60 -o ControlMaster=auto -o ControlPersist=15m
 ```
 
-Notes on two of those: `interpreter_python = python3` was in the original, but
-`auto_silent` is the current recommendation — it discovers the right interpreter per
-distribution instead of assuming a path. And `ServerAliveInterval=60` is a number
-of seconds. OpenSSH 10.0 also accepts `60s`, as the original had it.
+Notes on two of those: `interpreter_python = auto_silent` discovers the right
+interpreter per distribution instead of assuming a path such as `python3`. And
+`ServerAliveInterval=60` is a number of seconds; OpenSSH 10.0 also accepts `60s`.
 
-> [!warning] Correction: four settings in the original did not work
+> [!warning] Settings that do not work
 > Tested with ansible-core 2.22:
 >
-> - `inventory = inventories/default:inventories/dev`: Ansible reads this as one
->   path and finds no inventory. Separate paths with a comma.
+> - `inventory = a:b`: Ansible reads this as one path and finds no inventory.
+>   Separate paths with a comma.
 > - `stdout_callback = yaml`: the play stops, because the `yaml` callback was
 >   removed from community.general. Use `callback_result_format = yaml` (see
 >   [[automation/ansible/installation#Configuring Ansible]]).
-> - `ssh_args` over several lines: only the first line, `-o ForwardAgent=yes`, is
->   kept. Write it on one line.
-> - An earlier version of this note said OpenSSH rejects `ServerAliveInterval=60s`.
->   OpenSSH 10.0 accepts it.
+> - `ssh_args` over several lines: only the first line is kept. Write it on one line.
 
 See [[automation/ansible/installation#Configuring Ansible]].
 
@@ -641,8 +619,8 @@ and with usage examples.
 ansible-doc -l community.vmware
 ```
 
-The original used `ansible-doc -l | grep vmware`. In Ansible 15.0.0, `ansible-doc -l`
-with no collection crashes (see [[automation/ansible/modules#Modules]]), so list one
+Not `ansible-doc -l | grep vmware`: in Ansible 15.0.0, `ansible-doc -l` with no
+collection crashes (see [[automation/ansible/modules#Modules]]), so list one
 collection.
 
 Rather than writing a script, write a **module**. It is not necessarily difficult,
@@ -663,11 +641,6 @@ and precisely as possible against a limited set of hosts.
 - separate inventories per environment, hosts organised into groups — see
   [[#Inventory]]
 - use tags — see [[automation/ansible/playbooks#Tags]]
-
-> [!note] Three broken cross-references were repaired
-> The original linked to `#ChapitreRoles`, `#ChapitreTags` and
-> `#ChapitreInventairesDynamiques`. None of those anchors corresponded to any heading
-> in the document, so all three were dead. They now point at the real sections.
 
 ### Copy and paste
 

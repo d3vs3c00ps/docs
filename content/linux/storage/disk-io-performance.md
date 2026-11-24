@@ -123,10 +123,9 @@ sar -d -p -f /var/log/sa/sa15    # the 15th of this month
 sar -b                           # overall I/O rates, today
 ```
 
-> [!warning] Correction
-> The original commands were `sar -d -p 1` and `sar -b 1`. With an interval, `sar`
-> does not read the history: it samples live, every second, until you stop it.
-> Without an interval it reads today's file.
+> [!note] Live or history
+> With an interval (`sar -d -p 1`), `sar` does not read the history: it samples live,
+> every second, until you stop it. Without an interval it reads today's file.
 
 Enabling `sysstat` collection on every server is cheap and repeatedly worth it — the
 question "was the disk saturated during last night's incident?" is unanswerable

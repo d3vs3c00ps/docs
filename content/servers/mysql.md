@@ -31,9 +31,8 @@ that is circular. Fortunately MySQL can be started with authentication bypassed.
 > [!warning] This makes the server wide open while it runs
 > During the window below, anyone who can reach the process has full access
 > without a password. Do it on a maintenance window, and keep `--skip-networking`
-> so only local sockets are accepted. The original note said this was "strongly
-> recommended on a production server" — the opposite is intended: on production,
-> avoid it if there is any other route in.
+> so only local sockets are accepted. On production, avoid it if there is any other
+> route in.
 
 ### Restart the server without authentication
 
@@ -54,8 +53,7 @@ runuser -u mysql -- /usr/libexec/mysqld --skip-grant-tables --skip-networking &
 most other systems. Since MySQL 8.0, `--skip-grant-tables` also turns on
 `--skip-networking` by itself, but saying it does no harm.
 
-> [!warning] Correction
-> The original used `mysqld_safe --skip-grant-tables --skip-networking &`.
+> [!note] No `mysqld_safe`
 > `mysqld_safe` is not installed with MySQL on systemd-based RPM systems such as
 > RHEL 10, where systemd supervises `mysqld` directly.
 
@@ -74,17 +72,11 @@ FLUSH PRIVILEGES;
 ALTER USER 'root'@'localhost' IDENTIFIED BY 'new-password';
 ```
 
-> [!warning] Modernised from the original notes
-> The original used
-> `UPDATE user SET password=PASSWORD('...') WHERE user="root";`. That no longer
-> works:
->
-> - the `password` column was renamed `authentication_string` in MySQL 5.7
-> - the `PASSWORD()` function was deprecated in 5.7 and **removed in 8.0**
->
-> `ALTER USER` is the supported form. Note that under `--skip-grant-tables` the
-> grant tables are not loaded, so `ALTER USER` fails until you run
-> `FLUSH PRIVILEGES` first — which is why the order above matters.
+> [!warning] `ALTER USER`, after `FLUSH PRIVILEGES`
+> `UPDATE user SET password=PASSWORD('...')` no longer works: the `password` column was
+> renamed `authentication_string` in MySQL 5.7, and `PASSWORD()` was **removed in
+> 8.0**. Under `--skip-grant-tables` the grant tables are not loaded, so `ALTER USER`
+> fails until you run `FLUSH PRIVILEGES` first, which is why the order above matters.
 
 Stop the server you started by hand, then start the service normally:
 
@@ -93,10 +85,9 @@ mysqladmin -u root -p shutdown
 systemctl start mysqld
 ```
 
-> [!warning] Correction
-> The original ran `systemctl restart mysqld` with the hand-started server still
-> running. systemd does not know that process, and the service then fails to start
-> because the socket is in use. Shut it down first.
+> [!warning] Shut it down first
+> systemd does not know the hand-started server. With it still running,
+> `systemctl restart mysqld` fails, because the socket is in use.
 
 ## Backing up without supplying a password
 

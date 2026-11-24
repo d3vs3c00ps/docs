@@ -237,11 +237,10 @@ This relies on the fact that in a `node` debug pod:
 >               snapshot save /host/tmp/snapshot
 >   ```
 
-> [!warning] Correction
-> The original wrote the endpoint as `https://[127.0.0.1]:2379`. Brackets are only
-> for IPv6 addresses: the client in etcd 3.7 rejects that form (`too many colons in
-> address`) and retries without end, so `snapshot save` hangs. Tested on Kubernetes
-> 1.37.
+> [!warning] No brackets around an IPv4 address
+> Brackets are only for IPv6 addresses. The client in etcd 3.7 rejects
+> `https://[127.0.0.1]:2379` (`too many colons in address`) and retries without end,
+> so `snapshot save` hangs. Tested on Kubernetes 1.37.
 
 ## Transfer the snapshot
 
@@ -249,7 +248,7 @@ We're going to use base64 encoding to ensure that the snapshot
 doesn't get corrupted in transit.
 
 > [!example] Hands-on
-> - Retrieve the snapshot (original version, see below):
+> - The obvious command, which fails silently (see below):
 >   ```bash
 >   kubectl debug --attach --profile=general --quiet \
 >     node/$NODE --image $IMAGE -- \
@@ -265,12 +264,12 @@ doesn't get corrupted in transit.
 >   kubectl delete pod $POD
 >   ```
 
-> [!warning] Correction
-> The etcd image is now distroless: it has `etcdctl` and `etcdutl`, but no `base64`
-> (nor a shell). The first command then fails, and `kubectl debug --attach` does not
-> even report it: it exits with status 0 and an empty output, so `snapshot` is an
-> empty file. `--attach` can also miss the output of a short command. Tested with
-> etcd 3.7 on Kubernetes 1.37.
+> [!warning] The etcd image has no shell
+> The etcd image is distroless: it has `etcdctl` and `etcdutl`, but no `base64` and no
+> shell. A command that needs them fails, and `kubectl debug --attach` does not report
+> it: it exits with status 0 and an empty output, so the snapshot is an empty file.
+> `--attach` can also miss the output of a short command. Tested with etcd 3.7 on
+> Kubernetes 1.37.
 
 We can now work with the `snapshot` file in the current directory!
 
@@ -301,12 +300,12 @@ We can now work with the `snapshot` file in the current directory!
           etcdutl snapshot restore /vol/snapshot --data-dir=/var/lib/etcd
    ```
 
-   > [!warning] Correction
-   > The original used `etcdctl snapshot restore`, which etcd 3.6 removed (it only
-   > prints its usage now). `etcdutl` is in the same image. Kubernetes nodes run
-   > containerd, not Docker, since 1.24: use any container tool, or the `etcdutl`
-   > binary from an [etcd release](https://github.com/etcd-io/etcd/releases). The
-   > restore itself was tested; the `kubeadm init` step was not.
+   > [!note] `etcdutl`, not `etcdctl`
+   > etcd 3.6 removed `etcdctl snapshot restore` (it only prints its usage). `etcdutl`
+   > is in the same image. Kubernetes nodes run containerd, not Docker, since 1.24: use
+   > any container tool, or the `etcdutl` binary from an
+   > [etcd release](https://github.com/etcd-io/etcd/releases). The restore itself was
+   > tested; the `kubeadm init` step was not.
 
 2. Provision the control plane, using that data directory:
    ```bash

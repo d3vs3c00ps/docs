@@ -32,11 +32,10 @@ Development, Initial Access, Execution, Persistence, Privilege Escalation, Steal
 Defense Impairment, Credential Access, Discovery, Lateral Movement, Collection,
 Command and Control, Exfiltration, Impact.
 
-> [!warning] Correction
-> An earlier version listed fourteen tactics, with Defense Evasion. ATT&CK v19
-> (April 2026) split Defense Evasion into **Stealth** (TA0005, the old ID) and
-> **Defense Impairment** (TA0112). Rules and tools that still use the name "Defense
-> Evasion" must be remapped.
+> [!note] Defense Evasion was split
+> ATT&CK v19 (April 2026) split Defense Evasion into **Stealth** (TA0005, the old ID)
+> and **Defense Impairment** (TA0112). Rules and tools that still use the name
+> "Defense Evasion" must be remapped.
 
 There are separate matrices for Enterprise (with Linux, Windows, macOS, cloud,
 containers and network sub-matrices), Mobile, and ICS. The **Containers** matrix is
@@ -117,9 +116,9 @@ Its tactics are Model, Harden, Detect, Isolate, Deceive, Evict and Restore. This
 a more useful split than "prevent and detect", because *Isolate*, *Evict* and
 *Restore* are where most organisations are weakest.
 
-> [!warning] Correction
-> An earlier version listed six tactics. D3FEND 1.x has seven. The missing one is
-> **Restore**: bring systems and data back after an incident.
+> [!note] Seven tactics
+> D3FEND 1.x has seven tactics. The last one is **Restore**: bring systems and data
+> back after an incident.
 
 The table maps D3FEND techniques to these notes. The mapping is ours, not D3FEND's.
 
@@ -131,12 +130,9 @@ The table maps D3FEND techniques to these notes. The mapping is ours, not D3FEND
 | Bootloader Authentication | [[security/boot-integrity/secure-boot]] |
 | Network Isolation | [[kubernetes/networking/netpol]] |
 
-> [!warning] Correction
-> An earlier version mapped SELinux to Executable Allowlisting, cosign to Message
-> Authentication and Secure Boot to Platform Hardening. In D3FEND, Message
-> Authentication covers messages (S/MIME, MACs), not artifact signing, and SELinux
-> confines processes rather than listing allowed executables. The rows now use the
-> closer techniques.
+> [!note] Choosing the technique
+> In D3FEND, Message Authentication covers messages (S/MIME, MACs), not artifact
+> signing, and SELinux confines processes rather than listing allowed executables.
 
 > [!tip] The digital artifact graph is what makes D3FEND different
 > D3FEND relates techniques to the **artifacts** they act on — a process, a file, a

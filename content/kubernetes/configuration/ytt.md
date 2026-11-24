@@ -35,11 +35,9 @@ how it compares with Helm and Kustomize.
 3. Run `ytt -f one.yaml -f two.yaml | kubectl apply -f-`,
    or `ytt -f. | kubectl apply -f-` for a whole directory.
 
-> [!warning] Correction
-> The original said the YAML files must have no comments: "no `#` allowed". Old ytt
-> versions failed on plain `#` comments. ytt v0.55 accepts them and removes them from
-> the output. Still, use `#!` for comments in templates (see below), so a comment is never
-> mistaken for code.
+> [!note] Comments
+> ytt v0.55 accepts plain `#` comments and removes them from the output. Still, use
+> `#!` for comments in templates (see below), so a comment is never mistaken for code.
 
 [download]: https://github.com/carvel-dev/ytt/releases/latest
 
@@ -536,10 +534,6 @@ Also, don't use YAML anchors (`*foo` and `&foo`): they don't mix well with ytt.
 
 Remember to use `template.replace(...)` when you generate several nodes from one, for
 example to add items to a list or array without replacing it.
-
-> [!warning] Correction
-> The original said `template.render(...)`. The `@ytt:template` module has no `render`
-> function: it is `template.replace(...)`, as in "Generating multiple documents, take 3".
 
 ## Next steps with ytt
 

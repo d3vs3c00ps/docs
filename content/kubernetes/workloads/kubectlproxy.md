@@ -19,10 +19,9 @@ including:
 - various token mechanisms (see the
   [documentation](https://kubernetes.io/docs/reference/access-authn-authz/authentication/#authentication-strategies)).
 
-> [!warning] Correction
-> The original also listed "HTTP basic password authentication, from a static file;
-> not recommended". It was removed in Kubernetes 1.19: the API server no longer has
-> the `--basic-auth-file` option.
+> [!note] No basic authentication
+> HTTP basic password authentication from a static file was removed in Kubernetes
+> 1.19: the API server no longer has the `--basic-auth-file` option.
 
 [^1]: OK, we lied. If you do not authenticate, you are the user `system:anonymous`.
     By default, that user can only read a few public paths: `/version`, `/healthz`,

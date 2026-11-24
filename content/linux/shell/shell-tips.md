@@ -205,12 +205,8 @@ GNU find can do the same with `-delete`, which implies `-depth`:
 find ./ -type d -empty -delete
 ```
 
-> [!warning] Corrections from the original notes
-> The source versions of these commands could not run: the patterns were quoted
-> with French guillemets (`« *.m4a »`) and curly quotes (`'{}'`) rather than
-> straight ASCII quotes, one had `2>/dev/null` misplaced inside the `-exec`
-> arguments, and one `-exec rmdir` was missing its `{} \;` terminator. Also prefer
-> `-print0 | xargs -0` over a bare pipe, so filenames containing spaces or
+> [!tip] Spaces in file names
+> Prefer `-print0 | xargs -0` over a bare pipe, so file names that contain spaces or
 > newlines are handled correctly.
 
 ## Quoting
@@ -280,12 +276,11 @@ while read -r line; do
 done < file.txt
 ```
 
-> [!warning] Correction from the original notes
-> The source had `< file.txt | while read line; do ... done`. Bash accepts it, but
-> the redirection alone is an empty command: nothing goes into the pipe, so the loop
-> reads nothing and prints nothing, with no error. The redirect belongs on the `done`.
-> Use `read -r` so backslashes are not swallowed, and quote `"$line"` so
-> whitespace is preserved.
+> [!warning] The redirect belongs on `done`
+> `< file.txt | while read line; do ... done` runs, but the redirection alone is an
+> empty command: nothing goes into the pipe, so the loop reads nothing and prints
+> nothing, with no error. Use `read -r` so backslashes are not swallowed, and quote
+> `"$line"` so whitespace is preserved.
 
 ## Monitoring one-liners
 

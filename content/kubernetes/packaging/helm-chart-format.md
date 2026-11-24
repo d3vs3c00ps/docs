@@ -48,11 +48,10 @@ upstream_sync: manual
 
   - a `values.yaml` file, containing (tunable) parameters for the chart
 
-> [!warning] Correction
-> The original said all three are required. Only `Chart.yaml` is: `helm lint`
-> passes on a chart with no `values.yaml` and no `templates/` (it gives an
-> INFO and a WARNING), and `helm template` renders it as empty. Without
-> `Chart.yaml`, it is not a chart.
+> [!note] Only `Chart.yaml` is required
+> `helm lint` passes on a chart with no `values.yaml` and no `templates/` (it gives an
+> INFO and a WARNING), and `helm template` renders it as empty. Without `Chart.yaml`,
+> it is not a chart.
 
 - Let's look at a simple chart for a basic demo app
 
@@ -62,11 +61,6 @@ upstream_sync: manual
   `oci://ghcr.io/securecodebox/helm/juice-shop`
 
 - An `oci://` reference needs no `helm repo add`
-
-> [!warning] Correction
-> The original added the repository `https://charts.securecodebox.io` here and
-> used `juice/juice-shop`. That host no longer exists; the chart moved to the OCI
-> registry above.
 
 ## Downloading a chart
 

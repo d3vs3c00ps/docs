@@ -22,8 +22,8 @@ upstream_sync: manual
 
 [^useful]: And by *useful*, we mean *strongly recommended or else...*
 
-The source links below point to the Kubernetes 1.19 code, as in the original slides
-(one points to 1.32). The code has moved since; the ideas have not.
+The source links below point to the Kubernetes 1.19 code (one points to 1.32). The
+code has moved since; the ideas have not.
 
 ## The main handler
 

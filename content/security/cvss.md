@@ -68,10 +68,10 @@ or on its state at that moment?
   between the victim and the resource, a debug flag enabled, a specific kernel module
   loaded.
 
-> [!warning] Correction
-> An earlier version put race conditions and machine-in-the-middle positions under
-> `AC:H`. In CVSS 4.0 they are `AT:P` (specification, section 2.1.3). `AC:H` is only
-> for defeating security measures (ASLR, DEP) or obtaining target-specific secrets.
+> [!note] `AT:P`, not `AC:H`
+> In CVSS 4.0, race conditions and machine-in-the-middle positions are `AT:P`
+> (specification, section 2.1.3). `AC:H` is only for defeating security measures
+> (ASLR, DEP) or obtaining target-specific secrets.
 
 **Privileges Required (PR)** — what does the attacker need *before* exploiting?
 
@@ -239,9 +239,9 @@ CVSS:4.0/AV:P/AC:L/AT:N/PR:H/UI:N/VC:H/VI:N/VA:N/SC:N/SI:N/SA:N
 
 Base score **5.1**, Medium.
 
-> [!warning] Correction
-> An earlier version rated this example Low. The 4.0 calculator gives 5.1, Medium:
-> `VC:H` keeps the score up even with physical access and high privileges.
+> [!note] Why Medium
+> The 4.0 calculator gives 5.1, Medium: `VC:H` keeps the score up even with physical
+> access and high privileges.
 
 ## Picking values — decision order
 

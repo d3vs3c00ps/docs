@@ -137,10 +137,9 @@ KubeVirt refuses a migration it knows cannot work, when you create it. The VMI's
 kubectl get vmi <name> -o jsonpath='{.status.conditions[?(@.type=="LiveMigratable")]}' | jq
 ```
 
-> [!warning] Correction
-> An earlier version said that a migration with `ReadWriteOnce` storage stays pending
-> forever, and quoted a `Migration is not supported` message. KubeVirt refuses the
-> migration at once, with `Cannot migrate VMI, Reason: DisksNotLiveMigratable`.
+> [!note] Refused at once
+> With `ReadWriteOnce` storage, KubeVirt refuses the migration at once, with
+> `Cannot migrate VMI, Reason: DisksNotLiveMigratable`. It does not stay pending.
 
 See [[virtualization/kubevirt/advanced]] for each of these.
 
@@ -189,9 +188,9 @@ Causes worth checking, in order:
   [[virtualization/kubevirt/gitops]].
 - **Liveness probe** on the VMI failing.
 
-> [!warning] Correction
-> An earlier version said that you must add about 200 MB of QEMU overhead yourself,
-> or the pod gets killed. KubeVirt adds its overhead estimate to the pod for you.
+> [!note] The overhead is added for you
+> KubeVirt adds its QEMU overhead estimate to the pod. You do not need to add it
+> yourself.
 
 ## Guest agent not connected
 

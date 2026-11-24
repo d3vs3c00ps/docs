@@ -295,9 +295,8 @@ example:
 > The path of this object in the API is
 > `/api/v1/namespaces/kube-public/configmaps/cluster-info`. We can use that!
 >
-> > [!warning] Correction
-> > The original said to note the `selfLink` URI in the output. The `selfLink` field
-> > is no longer filled since Kubernetes 1.20, so it does not appear. The path above
+> > [!note] No `selfLink`
+> > The `selfLink` field is not filled since Kubernetes 1.20, so it does not appear. The path above
 > > follows the usual pattern `/api/v1/namespaces/NAMESPACE/RESOURCE/NAME`.
 
 > [!note]- Extra details

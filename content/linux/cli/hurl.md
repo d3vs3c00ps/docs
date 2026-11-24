@@ -141,12 +141,11 @@ export HURL_SECRET_token="$TOKEN"
 hurl api.hurl        # the file uses {{token}}
 ```
 
-> [!warning] Correction — there is no `getenv` function
-> The original note showed `{{getenv "API_TOKEN"}}`. Hurl has no such function and
-> rejects the file. Environment variables reach a file only through the
-> `HURL_VARIABLE_` and `HURL_SECRET_` prefixes. Before hurl 8 the prefix was
-> `HURL_` (`HURL_token`), which is what Leap's hurl 6.0 reads. `HURL_SECRET_`
-> needs hurl 7.1 or later.
+> [!warning] There is no `getenv` function
+> Hurl has no `{{getenv "..."}}` function and rejects a file that uses one.
+> Environment variables reach a file only through the `HURL_VARIABLE_` and
+> `HURL_SECRET_` prefixes. Before hurl 8 the prefix was `HURL_` (`HURL_token`), which
+> is what Leap's hurl 6.0 reads. `HURL_SECRET_` needs hurl 7.1 or later.
 
 ## Assertions
 

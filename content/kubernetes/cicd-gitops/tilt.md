@@ -211,9 +211,8 @@ Ah, right ...
   tilt up --host=0.0.0.0
   ```
 
-  > [!warning] Correction
-  > The original said `tilt --host=0.0.0.0`. `--host` is a flag of `tilt up`, so
-  > without `up` Tilt stops with `unknown flag: --host`.
+  > [!note] `--host` belongs to `tilt up`
+  > Without `up`, Tilt stops with `unknown flag: --host`.
 
 - Or by setting the `TILT_HOST` environment variable:
   ```bash

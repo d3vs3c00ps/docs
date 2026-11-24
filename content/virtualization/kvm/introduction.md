@@ -102,10 +102,9 @@ IOMMU, cgroups and the security driver, not only the CPU.
 > An emulated VM works, but many times slower. That is usually diagnosed as "the VM
 > is broken" rather than "acceleration is off".
 
-> [!warning] Correction
-> An earlier version said QEMU always falls back to TCG silently. Only `virt-install`
-> and a bare QEMU command fall back; a `type='kvm'` libvirt domain fails instead. The
-> example `ls -l /dev/kvm` output showed mode `0660`; the systemd default is `0666`.
+> [!note] Fallback to TCG
+> Only `virt-install` and a bare QEMU command fall back to TCG; a `type='kvm'` libvirt
+> domain fails instead. The systemd default mode of `/dev/kvm` is `0666`.
 
 ## Where it is used
 

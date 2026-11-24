@@ -135,11 +135,10 @@ Also worth adding to CI:
 unused bindings, and `vulnix` scans the built closure for known vulnerabilities — a
 security gate on the exact system that would be deployed.
 
-> [!warning] Correction
-> The original list ran `vulnix --system ./result`. `--system` scans the machine
-> that runs the command, here the CI runner, not the built host. `--closure` scans
-> everything `./result` depends on. It also used `nixpkgs-fmt`, which still works
-> but is replaced by `nixfmt`.
+> [!note] `--closure`, not `--system`
+> `vulnix --system` scans the machine that runs the command, here the CI runner, not
+> the built host. `--closure` scans everything `./result` depends on. `nixfmt`
+> replaces `nixpkgs-fmt`, which still works.
 
 ## A binary cache
 
@@ -207,11 +206,9 @@ A staged pipeline:
       - run: nix run github:serokell/deploy-rs -- --targets .#web-02 .#db-01
 ```
 
-> [!warning] Correction
-> The original pipeline passed two flakes as plain arguments
-> (`deploy-rs -- .#web-02 .#db-01`). `deploy` takes one target; use `--targets` for
-> several. The jobs also lacked `runs-on`, which GitHub Actions requires, and a
-> checkout. The SSH key the deployer needs is left out here.
+> [!note] One target per argument
+> `deploy` takes one target; use `--targets` for several. GitHub Actions jobs need
+> `runs-on` and a checkout. The SSH key the deployer needs is left out here.
 
 ## Pull-based updates
 
@@ -278,10 +275,10 @@ ssh-keyscan -t ed25519 web-01.example.com | nix run nixpkgs#ssh-to-age
 sops secrets/web-01.yaml
 ```
 
-> [!warning] Correction
-> The original command was `nix shell nixpkgs#ssh-to-age --command ssh-keyscan
-> web-01.example.com | ssh-to-age`. The pipe is outside `nix shell`, so the shell
-> looks for `ssh-to-age` on your own `PATH` and fails when it is not installed.
+> [!warning] Keep the pipe inside `nix shell`
+> In `nix shell nixpkgs#ssh-to-age --command ssh-keyscan host | ssh-to-age`, the pipe
+> is outside `nix shell`, so the shell looks for `ssh-to-age` on your own `PATH` and
+> fails when it is not installed.
 
 Each host can decrypt only what was encrypted to it, and nothing sensitive enters the
 Nix store. See [[linux/distributions/nixos/server]].

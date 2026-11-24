@@ -23,9 +23,8 @@ On openSUSE Leap 16, `apachectl` is in the `apache2-utils` package, which the
 `apache2` package does not pull in: `zypper install apache2-utils`. RHEL's
 `apachectl` refuses `-S` ("option is not supported"): run `httpd -S` there.
 
-> [!warning] Correction
-> The original used `apache2ctl` for the SUSE family. Leap 16 has no
-> `apache2ctl`: the script is `apachectl`, as on RHEL.
+> [!note] `apachectl` on Leap 16
+> Leap 16 has no `apache2ctl`: the script is `apachectl`, as on RHEL.
 
 `-S` finds the problems a syntax check cannot: overlapping `ServerName`s, and
 vhosts matching in an order you did not intend. See
@@ -92,13 +91,10 @@ a2enmod evasive24
 The package ships version 1.10 of the module, `mod_evasive24.so`, with a default
 configuration in `/etc/apache2/conf.d/mod_evasive.conf`.
 
-> [!warning] Correction
-> The original enabled it with `a2enmod evasive` and wrapped the settings in
-> `<IfModule mod_evasive20.c>`. The module is `evasive24` now. `a2enmod evasive`
-> adds a name that loads nothing, and an `IfModule` test for `mod_evasive20.c`
-> is false, so Apache skips every setting inside it without an error. An earlier
-> version of this note also said the package was only on the Open Build Service:
-> it is in the Leap 16 repositories.
+> [!warning] The module is `evasive24`
+> `a2enmod evasive` adds a name that loads nothing, and an `<IfModule mod_evasive20.c>`
+> test is false, so Apache skips every setting inside it without an error. The
+> package is in the Leap 16 repositories.
 
 Then put your settings in `/etc/apache2/conf.d/mod_evasive.conf`:
 
@@ -168,7 +164,7 @@ Deny everything by default and permit only what is needed:
 ```
 
 > [!warning] Apache 2.2 syntax is deprecated
-> The original notes used the 2.2 form:
+> Older guides use the 2.2 form:
 >
 > ```apache
 > <Directory />
@@ -212,9 +208,9 @@ takes groups of directives, not `Options` values: `All`, `None`, `AuthConfig`,
 `.htaccess` file may set). `None` also stops Apache looking for `.htaccess`
 files at all, which is a measurable performance win.
 
-> [!warning] Correction
-> The original said `AllowOverride` takes the same values as `Options`. It does
-> not: `AllowOverride SymLinksIfOwnerMatch` is a syntax error.
+> [!note] Different values
+> `AllowOverride` does not take the same values as `Options`:
+> `AllowOverride SymLinksIfOwnerMatch` is a syntax error.
 
 ### Testing the TLS configuration
 
@@ -255,8 +251,7 @@ httpd -V
 > in `/etc/sysconfig/apache2` and restart. On RHEL, uncomment the matching
 > `LoadModule` line in `/etc/httpd/conf.modules.d/00-mpm.conf`.
 >
-> An earlier version suggested `a2enmod -m event`. openSUSE's `a2enmod` has no
-> `-m` option.
+> openSUSE's `a2enmod` has no `-m` option: `a2enmod -m event` does not work.
 
 ### MPM directives
 
@@ -285,9 +280,6 @@ Raising it beyond reason is counterproductive — idle processes still cost memo
 The maximum number of idle processes; beyond this they are stopped. If
 `MaxSpareServers` is not greater than `MinSpareServers`, Apache silently raises
 it to `MinSpareServers + 1`.
-
-> [!warning] Correction
-> The original said Apache raises it to match `MinSpareServers`. It is one more.
 
 #### ServerLimit — prefork, worker, event
 
@@ -348,9 +340,8 @@ performance. Since Apache 2.3.6 it is `On` by default when `mod_status` is
 loaded, so set `ExtendedStatus Off` explicitly if you load `mod_status` and do
 not need the per-request details.
 
-> [!warning] Correction
-> The original said to set it `On` only for development or a benchmark, as if it
-> were off by default. With `mod_status` loaded, it is already on.
+> [!note] Already on
+> With `mod_status` loaded, it is already on.
 
 <!-- uplink -->
 Part of [[servers/index|Servers]].

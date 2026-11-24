@@ -60,10 +60,9 @@ sysctl --system
 `net.ipv4.ip_unprivileged_port_start=443` lowers the privileged-port boundary so an
 unprivileged process may bind 443 and above.
 
-> [!warning] Correction
-> The original also set `vm.max_map_count=262144`, saying MariaDB needs it. It
-> does not: that is the Elasticsearch and OpenSearch requirement. MariaDB runs with
-> the default value.
+> [!note] No `vm.max_map_count`
+> MariaDB runs with the default value. `vm.max_map_count=262144` is the Elasticsearch
+> and OpenSearch requirement.
 
 Reboot to pick up the kernel command line:
 
@@ -185,7 +184,7 @@ podman run -d --name vaultwarden-server --pod vaultwarden \
 ```
 
 > [!warning] Never hardcode the admin token
-> The original notes had a short plaintext password inline here. That token grants
+> The admin token grants
 > full access to the admin panel. Generate an Argon2 hash instead —
 > `podman run --rm -it docker.io/vaultwarden/server /vaultwarden hash` — or omit the variable
 > entirely to disable the admin panel.
@@ -227,9 +226,8 @@ podman kube play --network vaultwarden vaultwarden.yml
 ```
 
 `podman kube play --replace` does the remove and the deploy in one step. The
-manifest does not record the pod's network, hence `--network`. The original
-commands, `podman generate kube` and `podman play kube`, are older names that
-still work.
+manifest does not record the pod's network, hence `--network`. `podman generate
+kube` and `podman play kube` are older names that still work.
 
 > [!note] Quadlet is the current answer
 > `podman generate kube` is useful for inspecting or moving a deployment, but for

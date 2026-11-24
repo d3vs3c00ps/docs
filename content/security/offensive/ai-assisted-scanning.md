@@ -35,10 +35,9 @@ MIT licence.
 docker run --rm j3ssie/vigolium:v0.5.6 scan -t https://staging.example.com
 ```
 
-> [!warning] Correction
-> An earlier version gave the licence as AGPL-3.0, the image as `vigolium/vigolium`,
-> the target as a bare argument, and about 323 modules. Checked against v0.5.6: MIT,
-> `j3ssie/vigolium`, `-t URL`, and 216 + 119 modules.
+> [!note] Checked facts
+> Checked against v0.5.6: MIT licence, image `j3ssie/vigolium`, target given with
+> `-t URL`, and 216 + 119 modules.
 
 > [!warning] Out-of-band checks use a public server by default
 > Like [[security/offensive/nuclei|nuclei]], Vigolium registers with the public
@@ -63,10 +62,9 @@ vigolium config set agent.olium.custom_provider.base_url http://localhost:8080/v
 vigolium config set agent.olium.custom_provider.model_id qwen-27b
 ```
 
-> [!warning] Correction
-> The note used `OPENAI_BASE_URL`, `OPENAI_API_KEY` and `OPENAI_MODEL` environment
-> variables. Vigolium's documentation does not list them; the settings above are the
-> ones `vigolium config ls` shows.
+> [!note] Settings, not environment variables
+> Vigolium's documentation lists no `OPENAI_*` environment variables. The settings
+> above are the ones `vigolium config ls` shows.
 
 > [!important] For this use case, local inference is not a preference — it is the point
 > An agentic scanner sends the target's responses to the model: URLs, parameter names,

@@ -75,10 +75,9 @@ upstream_sync: manual
 Error: INSTALLATION FAILED: unable to continue with install: Service "hasher" in namespace "default" exists and cannot be imported into the current release: invalid ownership metadata; label validation error: missing key "app.kubernetes.io/managed-by": must be set to "Helm"; annotation validation error: missing key "meta.helm.sh/release-name": must be set to "helmcoins"; annotation validation error: missing key "meta.helm.sh/release-namespace": must be set to "default"
 ```
 
-> [!note] Updated error message
-> The original showed Helm 3.0's message (`rendered manifests contain a resource
-> that already exists`). Current Helm (tested with 4.3) names the label and the two
-> annotations it is missing. If we add them to the existing resources, Helm
+> [!note] The error names what is missing
+> Current Helm (tested with 4.3) names the label and the two annotations it is
+> missing. If we add them to the existing resources, Helm
 > *adopts* those resources into the release instead of failing.
 
 ## Switching to another namespace

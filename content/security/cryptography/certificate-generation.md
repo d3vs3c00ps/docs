@@ -175,33 +175,32 @@ get a certificate no browser will accept, with no error at issuance time. OpenSS
 can copy them with `-copy_extensions copy`, but then the CSR decides what is
 certified. Giving the extensions again with `-extfile` keeps the CA in control.
 
-### Corrections made to the original
+### Traps the script avoids
 
-> [!warning] The original produced certificates no modern client accepts
-> It set the identity **only in the Subject CN**, with no `subjectAltName`. Chrome
-> stopped honouring the CN for hostname verification in version 58 (2017), and Go's
-> TLS stack has rejected CN-only certificates outright since Go 1.15. Firefox and
-> Safari behave the same way. The script above adds SAN to both the CSR and the
-> issued certificate, defaulting it to the CN so it can never be forgotten.
+> [!warning] A CN-only certificate is rejected
+> A certificate with the identity **only in the Subject CN**, and no
+> `subjectAltName`, is refused by modern clients. Chrome stopped honouring the CN for
+> hostname verification in version 58 (2017), and Go's TLS stack has rejected
+> CN-only certificates outright since Go 1.15. Firefox and Safari behave the same
+> way. The script above adds SAN to both the CSR and the issued certificate,
+> defaulting it to the CN so it can never be forgotten.
 >
-> Four further fixes:
+> Four more:
 >
-> - **The CA certificate did not declare itself a CA.** Without
+> - **A CA certificate must declare itself a CA.** Without
 >   `basicConstraints=CA:TRUE` and `keyUsage=keyCertSign`, strict verifiers reject
->   the chain. Added, with `pathlen:0` so it cannot issue intermediates.
-> - **`extendedKeyUsage=serverAuth` was missing**, and the key usage included
->   `nonRepudiation` and `dataEncipherment`, neither of which a TLS server
->   certificate uses.
-> - **The serial file was deleted** at the end (`rm ca/${CA_NAME}.srl`). Keep it:
->   it is the only record of the last serial this CA used.
-> - **`genrsa` replaced with `genpkey`.** The per-algorithm commands are the
->   deprecated interface; `genpkey` is the current one and handles every algorithm.
+>   the chain. The script sets both, with `pathlen:0` so it cannot issue
+>   intermediates.
+> - **A TLS server certificate needs `extendedKeyUsage=serverAuth`**, and has no use
+>   for `nonRepudiation` or `dataEncipherment` in its key usage.
+> - **Keep the serial file** (`ca/${CA_NAME}.srl`): it is the only record of the
+>   last serial this CA used.
+> - **`genpkey`, not `genrsa`.** The per-algorithm commands are the deprecated
+>   interface; `genpkey` is the current one and handles every algorithm.
 
-> [!warning] Correction
-> An earlier version said that deleting the `.srl` file makes the next run restart
-> the numbering, so two certificates can share a serial. On OpenSSL 3 that is not
-> true: when the file is missing, `-CAcreateserial` starts from a random 160-bit
-> number, so a repeat is practically impossible.
+> [!note] Serial numbers
+> On OpenSSL 3, when the `.srl` file is missing, `-CAcreateserial` starts from a random
+> 160-bit number, so two certificates practically never share a serial.
 
 ## Route 2 — a CA you keep
 
@@ -416,8 +415,8 @@ authorityKeyIdentifier  = keyid:always
 > - **`default_days = 3652`** is ten years, which only passes because this CA is
 >   internal. Public certificates are capped at 200 days as of March 2026, falling
 >   to 47 by 2029 — see [[security/cryptography/acme]].
-> - `nsCertType` and `nsComment` from the original have been dropped — they are
->   Netscape-era extensions that nothing has consulted for two decades.
+> - No `nsCertType` or `nsComment`: they are Netscape-era extensions that nothing
+>   has consulted for two decades.
 
 ### `san.cfg`
 
@@ -529,11 +528,10 @@ openssl ca -batch -config ca.cnf -out "$domain.crt" -infiles "$domain.csr"
 `-batch` skips the interactive confirmation. Drop it the first time so you can read
 what the CA is about to sign.
 
-> [!warning] Correction — the original CA certificate expired in 30 days
-> The script in the original notes called `openssl req -new -x509` **without
-> `-days`**. `default_days = 3652` in the `[ca]` section does not apply: it is read
-> by `openssl ca`, not by `openssl req`, which falls back to its own default of
-> **30 days**.
+> [!warning] Always pass `-days` to `openssl req -x509`
+> `default_days = 3652` in the `[ca]` section does not apply to `openssl req`: it is
+> read by `openssl ca`. Without `-days`, `openssl req -new -x509` falls back to its own
+> default of **30 days**.
 >
 > The result verifies perfectly on the day you build it, and then fails a month
 > later — with a leaf certificate still valid for another ten years, and an error
@@ -678,9 +676,9 @@ Look for `Verify return code: 0 (ok)`.
 > without it, a certificate for another name still gives `0 (ok)`. Finish with
 > `s_client -verify_hostname`, or with an actual client.
 
-> [!warning] Correction
-> An earlier version said that `s_client` checks the hostname. It does not:
-> `-servername` only sends the name (SNI). The command above adds `-verify_hostname`.
+> [!warning] `-servername` does not check the name
+> `-servername` only sends the name (SNI). The command above adds `-verify_hostname`,
+> which checks it.
 
 ## Where to go next
 

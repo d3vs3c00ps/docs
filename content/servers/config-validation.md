@@ -75,11 +75,10 @@ exits. A bad line stops it with `Fatal error : Invalid directive` and exit statu
 It reads `/etc/chrony.conf`. On openSUSE Leap 16 the package's file is elsewhere,
 so name it: `chronyd -p -f /usr/etc/chrony.conf`. See [[servers/chrony]].
 
-> [!warning] Correction
-> The original used `chronyd -Q`. That is not a syntax check: it starts a real
-> measurement against the configured servers, waits for them, prints the offset
-> and exits. With no reachable server it fails after ten seconds even when the
-> configuration is valid.
+> [!warning] `chronyd -Q` is not a syntax check
+> It starts a real measurement against the configured servers, waits for them, prints
+> the offset and exits. With no reachable server it fails after ten seconds even when
+> the configuration is valid.
 
 ### DHCPd
 

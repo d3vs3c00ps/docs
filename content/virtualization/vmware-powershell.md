@@ -46,10 +46,9 @@ from it.
 booting. The snapshot is much larger. Pick one of the two: the vSphere Client lets
 you choose only one, because a memory snapshot does not need a quiesced file system.
 
-> [!warning] Correction
-> The original passed both `-Memory` and `-Quiesce`, and called a quiesced snapshot
-> "crash-consistent". A snapshot taken *without* quiescing is crash-consistent;
-> quiescing is what makes it file-system consistent.
+> [!note] Crash-consistent or file-system consistent
+> A snapshot taken *without* quiescing is crash-consistent; quiescing is what makes it
+> file-system consistent.
 
 ## Restoring them
 
@@ -59,11 +58,9 @@ foreach ($vm in $VMs) {
 }
 ```
 
-> [!warning] Correction from the original notes
-> The original looked the snapshot up by
-> `Get-Snapshot -VM $vm -Name "ready to install application"`. That string is the
-> snapshot's **Description**, not its Name — the name is `os ready`. As written the
-> lookup returns nothing and `Set-VM` fails.
+> [!note] Name, not description
+> `Get-Snapshot -Name` matches the snapshot's name (`os ready`), not its description.
+> Looking it up by the description returns nothing, and `Set-VM` fails.
 
 ## Removing them
 
@@ -86,14 +83,11 @@ do:
 Get-Snapshot -VM * | Remove-Snapshot -WhatIf
 ```
 
-> [!warning] Correction: the en-dash in the original
-> The original was `remove-snapshot –whatif`, with an en-dash (`–`) instead of a
-> hyphen. An earlier version of this note said PowerShell rejects it. That is wrong:
-> PowerShell reads an en-dash, an em-dash or a horizontal bar in front of a parameter
-> name as a normal dash, so `–whatif` works. Text copied from a word processor still
-> runs. Type a plain hyphen anyway, so that other tools (grep, linters) see the flag.
+> [!warning] Read the `-WhatIf` output first
 > Remove `-WhatIf` only when you have read its output: without it, this line deletes
-> every snapshot in the environment.
+> every snapshot in the environment. PowerShell reads an en-dash (`–`) in front of a
+> parameter name as a normal dash, so text copied from a word processor still runs,
+> but type a plain hyphen, so that other tools (grep, linters) see the flag.
 
 ## Inspecting snapshots
 

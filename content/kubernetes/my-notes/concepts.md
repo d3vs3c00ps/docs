@@ -63,9 +63,9 @@ The nodes that run our containers hold several services:
 > looks nothing like it does on a stock cluster. See
 > [[kubernetes/networking/cni]] and [[kubernetes/my-notes/cni]].
 
-> [!warning] Correction
-> The original said kubelet is built into the `rke2-server` binary. That is k3s. RKE2
-> extracts a `kubelet` binary from its runtime image and runs it as a separate process.
+> [!note] RKE2 and kubelet
+> RKE2 extracts a `kubelet` binary from its runtime image and runs it as a separate
+> process. k3s is the one that builds kubelet into its own binary.
 
 ### The control plane
 
@@ -91,10 +91,9 @@ The Kubernetes control plane is a collection of these services:
     to Pods
   - **Service account and token controllers** — create default accounts and API
     access tokens for new namespaces
-> [!warning] Correction
-> The original listed the Endpoints controller. The Endpoints API is deprecated since
-> Kubernetes 1.33, and `kubectl get endpoints` prints a warning. EndpointSlices replace
-> it.
+> [!note] Endpoints are deprecated
+> The Endpoints API is deprecated since Kubernetes 1.33, and `kubectl get endpoints`
+> prints a warning. EndpointSlices replace it.
 
 - **cloud-controller-manager** — runs the controllers that interact with the
   underlying cloud provider. See

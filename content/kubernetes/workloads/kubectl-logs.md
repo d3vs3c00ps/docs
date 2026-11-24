@@ -107,10 +107,9 @@ long.
 External tools address these shortcomings, for example
 [Stern](https://github.com/stern/stern).
 
-> [!warning] Correction
-> The original said that we cannot see which Pod sent which line. Since Kubernetes
-> 1.17, `kubectl logs --prefix` adds `[pod/<name>/<container>]` in front of each
-> line. `--all-pods` turns it on by default.
+> [!tip] Which Pod sent which line
+> Since Kubernetes 1.17, `kubectl logs --prefix` adds `[pod/<name>/<container>]` in
+> front of each line. `--all-pods` turns it on by default.
 
 > [!note]- Extra details
 > ## `kubectl logs -l ... --tail N`

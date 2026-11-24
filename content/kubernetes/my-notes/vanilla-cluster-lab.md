@@ -20,18 +20,12 @@ status: complete
 > rotation, upgrades and etcd backups right, and those are exactly the parts this lab
 > skips. See [[kubernetes/cluster-setup/setup-overview]].
 
-> [!important] Versions updated from the original run
-> This lab was originally captured against **Kubernetes 1.21** and has been updated
-> to current versions — Kubernetes 1.36.2, containerd 2.2.5, runc 1.3.6, etcd 3.6.6,
-> CNI plugins 1.9.1, crictl 1.35.0, cfssl 1.6.5, CoreDNS 1.14.6.
+> [!important] Versions
+> Kubernetes 1.36.2, containerd 2.2.5, runc 1.3.6, etcd 3.6.6, CNI plugins 1.9.1,
+> crictl 1.35.0, cfssl 1.6.5, CoreDNS 1.14.6.
 >
-> That was not only a change of numbers. Several steps had to change, and each one is
-> flagged in place with a correction: the containerd config format, four removed kubelet
-> flags, the scheduler configuration version, the CSI step, the pod CIDRs, and missing
-> binaries and packages.
->
-> Some command **outputs** are still from the original 1.21 run and are illustrative:
-> pod names, ages and hashes will differ.
+> Some command **outputs** come from a Kubernetes 1.21 run and are illustrative: pod
+> names, ages and hashes will differ.
 
 > [!note] Partly tested
 > The whole build was tested on Leap 16 with Kubernetes 1.36.2. Three containers with
@@ -155,11 +149,10 @@ systemctl daemon-reload
 systemctl enable --now containerd
 ```
 
-> [!warning] Correction
-> The original installed only `containerd` and `ctr`. Without `containerd-shim-runc-v2`,
-> every pod stays in `ContainerCreating`, with `failed to start shim: ... binary not
-> installed "containerd-shim-runc-v2"`. It also called `ctr` the CRI CLI. `ctr` talks
-> to containerd directly; the CRI CLI is `crictl`.
+> [!warning] Install `containerd-shim-runc-v2`
+> Without it, every pod stays in `ContainerCreating`, with `failed to start shim: ...
+> binary not installed "containerd-shim-runc-v2"`. `ctr` talks to containerd
+> directly; the CRI CLI is `crictl`.
 
 The latest stable **runc**:
 
@@ -195,11 +188,11 @@ install -o root -g root -m 0755 /tmp/kubernetes/server/bin/kube-proxy /usr/local
 install -o root -g root -m 0755 /tmp/kubernetes/server/bin/kubelet /usr/local/bin/kubelet
 ```
 
-> [!warning] Correction
-> The original set `DOWNLOAD_URL=https://dl.k8s.io/` with a trailing slash, so the URL
-> had `//` in it. `dl.k8s.io` answers 404 to that, and `curl -L` saved the error page as
-> the tarball: `tar` then failed with "not in gzip format". All `curl` commands now use
-> `-f`, so a failed download stops there.
+> [!warning] No trailing slash
+> With `DOWNLOAD_URL=https://dl.k8s.io/`, the URLs get a `//`. `dl.k8s.io` answers 404
+> to that, and `curl -L` without `-f` saves the error page as the tarball: `tar` then
+> fails with "not in gzip format". All `curl` commands here use `-f`, so a failed
+> download stops there.
 
 The latest stable **crictl**:
 
@@ -1161,10 +1154,9 @@ leaderElection:
 EOF
 ```
 
-> [!warning] Correction
-> The original used `kubescheduler.config.k8s.io/v1beta1`. That version is gone:
-> kube-scheduler 1.36 stops with `no kind "KubeSchedulerConfiguration" is registered for
-> version "kubescheduler.config.k8s.io/v1beta1"`. Use `v1`, stable since 1.25.
+> [!note] `v1`, not `v1beta1`
+> kube-scheduler 1.36 stops with `no kind "KubeSchedulerConfiguration" is registered
+> for version "kubescheduler.config.k8s.io/v1beta1"`. Use `v1`, stable since 1.25.
 
 Connect to each server to write the systemd unit:
 
@@ -1210,13 +1202,6 @@ Aug 18 14:14:37 k8s-01.internal.example.com kube-scheduler[13064]: E0818 14:14:3
 
 These errors are expected. The scheduler starts before the API server has created the
 default RBAC roles, and it retries. They stop by themselves after a few seconds.
-
-> [!warning] Correction
-> The original said the errors come from a missing CSI CRD, and installed
-> `csinodeinfo.yaml` from the `kubernetes/csi-api` repository. That is not the cause:
-> the errors are about permissions, and `CSINode` has been a built-in API since 1.17.
-> That CRD is also `apiextensions.k8s.io/v1beta1`, which was removed in 1.22, so
-> `kubectl create` fails today. The step is removed.
 
 #### Checking the control plane
 
@@ -1346,10 +1331,10 @@ ssh ${instance} 'printf "net.bridge.bridge-nf-call-iptables = 1\nnet.ipv4.ip_for
 done
 ```
 
-> [!warning] Correction
-> The original did not load `br_netfilter` or set these two sysctls. Without them, a pod
-> cannot reach a Service whose only backend runs on the same node: the reply skips
-> iptables and DNS lookups time out. kubeadm checks both before it installs a node.
+> [!warning] `br_netfilter` and these sysctls are needed
+> Without them, a pod cannot reach a Service whose only backend runs on the same node:
+> the reply skips iptables and DNS lookups time out. kubeadm checks both before it
+> installs a node.
 
 #### CNI
 
@@ -1383,11 +1368,9 @@ cat <<EOF | sudo tee /etc/cni/net.d/10-bridge.conf
 EOF
 ```
 
-> [!warning] Correction
-> The original used `POD_CIDR=10.240.1.192/27` on every node. That range is inside the
-> node network (10.240.1.0/24), and it was the same on all three nodes, although each
-> node's `host-local` IPAM needs its own range. Each node now gets one /24 from the
-> cluster CIDR, `10.42.0.0/16`.
+> [!note] One pod range per node
+> Each node's `host-local` IPAM needs its own range, outside the node network
+> (10.240.1.0/24). Each node gets one /24 from the cluster CIDR, `10.42.0.0/16`.
 
 Each node must also know where the other nodes' pods are. Without a real CNI, that is
 one static route per other node:
@@ -1446,9 +1429,8 @@ state = "/run/containerd"
 EOF
 ```
 
-> [!warning] Updated for containerd 2.x — the config format changed
-> This file was written for containerd 1.6 and would be rejected by 2.x as written.
-> Three things changed:
+> [!warning] containerd 2.x uses a new config format
+> containerd 2.x rejects a config file written for 1.6. Three things differ:
 >
 > - **`version = 2` → `version = 3`.**
 > - **The CRI plugin was split.** `io.containerd.grpc.v1.cri` became
@@ -1456,8 +1438,8 @@ EOF
 >   `io.containerd.cri.v1.images` (snapshotter, sandbox image). `sandbox_image`
 >   moved to `pinned_images.sandbox`.
 > - **`systemdCgroup` → `SystemdCgroup`.** TOML keys are case-sensitive and the
->   option is capitalised, so the original spelling was silently ignored — meaning
->   the cgroup driver did not actually match the `cgroupDriver: systemd` set for
+>   option is capitalised, so a lowercase key is silently ignored — meaning
+>   the cgroup driver does not actually match the `cgroupDriver: systemd` set for
 >   kubelet below. A mismatch there causes pods to fail under memory pressure in
 >   ways that are hard to attribute.
 >
@@ -1584,9 +1566,8 @@ EOF
 ```
 
 > [!warning] Four kubelet flags were removed, not deprecated
-> The original unit passed flags that no longer exist. kubelet **refuses to start**
-> on an unknown flag, so leaving them in place would fail immediately after the
-> version bump:
+> Older guides pass kubelet flags that no longer exist. kubelet **refuses to start**
+> on an unknown flag:
 >
 > | Flag | Gone since | Replacement |
 > | --- | --- | --- |
@@ -1988,8 +1969,7 @@ kubectl get services
   kubernetes   ClusterIP   10.43.0.1    <none>        443/TCP   52m
 ```
 
-Only CoreDNS runs so far. (The original showed `No resources found`, which was before
-DNS was deployed.)
+Only CoreDNS runs so far.
 
 **kube-apiserver** creates the `kubernetes` service automatically.
 

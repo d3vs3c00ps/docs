@@ -108,10 +108,9 @@ virsh setvcpus web-01 8 --maximum --config
 After that restart, the live commands above work. The guest must online the new
 vCPUs, which most modern guests do automatically.
 
-> [!warning] Correction
-> An earlier version said live memory increase needs `<maxMemory>`. `<maxMemory>` is
-> for memory hot-plug with DIMM devices. Ballooning up is limited by `<memory>`, set
-> with `virsh setmaxmem`.
+> [!note] `<memory>`, not `<maxMemory>`
+> `<maxMemory>` is for memory hot-plug with DIMM devices. Ballooning up is limited by
+> `<memory>`, set with `virsh setmaxmem`.
 
 ## Snapshots
 

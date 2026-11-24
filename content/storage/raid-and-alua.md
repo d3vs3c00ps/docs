@@ -29,11 +29,9 @@ Disks, in the 1988 Berkeley paper that named it. The commonly used levels:
 | **RAID 0+1** | A mirror of RAID 0 stripes. Very fast, but expensive in disks. |
 | **RAID 10** | A stripe of RAID 1 mirrors — generally preferred over 0+1, because rebuilding affects only one mirror pair rather than a whole stripe. |
 
-> [!note] Corrections from the original notes
-> RAID 6 was described as parity "distributed over one or two other disks in the
-> set". It is specifically *dual* parity, and both parity blocks are distributed
-> across all members — the fixed-disk variant is RAID DP, listed separately. RAID 10
-> has been added since it is what you would actually deploy today.
+> [!note] RAID 6 and RAID DP
+> RAID 6 is *dual* parity, and both parity blocks are distributed across all members.
+> The fixed-disk variant is RAID DP, listed separately.
 
 > [!warning] RAID 5 and large drives
 > Rebuild time scales with disk size, and during a rebuild the array has no
@@ -98,10 +96,6 @@ In Fibre Channel it is a World Wide Name, eight bytes:
 ```text
 22:00:00:0b:08:45:18:3c
 ```
-
-> [!note] Correction from the original notes
-> The original WWN example had only seven octets. A WWN is 64 bits — sixteen hex
-> digits in eight colon-separated pairs.
 
 ## ALUA
 

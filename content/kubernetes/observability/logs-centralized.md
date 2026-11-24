@@ -83,11 +83,10 @@ and a few roles and role bindings (to give fluentd the required permissions).
   (`/var/log/containers/pod-name_namespace_container-name-container-id.log`, a
   symlink into `/var/log/pods/`)
 
-> [!warning] Correction
-> The original said the line is written to a JSON file. That was Docker's
-> `json-file` driver. With a CRI runtime such as containerd or CRI-O, each line is
-> plain text: `<timestamp> <stream> <F|P> <message>` (`P` marks a partial line). Log
-> agents need a CRI parser for it.
+> [!note] The log format
+> With a CRI runtime such as containerd or CRI-O, each line is plain text:
+> `<timestamp> <stream> <F|P> <message>` (`P` marks a partial line). Log agents need a
+> CRI parser for it. JSON files came from Docker's `json-file` driver.
 
 - That file is read when we invoke `kubectl logs`; we can access it directly too
 

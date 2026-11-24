@@ -301,11 +301,6 @@ with pkgs; [ vim git htop ]
 > `pkgs.gti` gets. It is idiomatic in one specific place, `with pkgs; [ … ]` for
 > package lists, and best avoided elsewhere.
 
-> [!warning] Correction
-> An earlier version said the error points at the `with` instead of the mistake. It
-> does not: Nix points at the misspelled name. The real cost is the lost parse-time
-> check and the lost hint.
-
 ## Laziness
 
 Nothing is evaluated until needed:
@@ -417,11 +412,6 @@ in {
 > `lib.mkIf` exists to break that cycle: it lets the module system see the
 > structure first and the condition later. The same applies to `imports`, which
 > cannot depend on `config`.
-
-> [!warning] Correction
-> An earlier version said to break the cycle by reading the local `cfg` instead of
-> `config`. That changes nothing: `cfg` is only a shorter name for
-> `config.services.myapp`. Use `lib.mkIf` instead of `if`.
 
 Types are checked, which is the module system's main benefit — `types.port` rejects
 70000 at evaluation time rather than at runtime.

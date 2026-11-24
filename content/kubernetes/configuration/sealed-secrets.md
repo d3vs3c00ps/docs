@@ -75,11 +75,11 @@ also tell `kubeseal` later: use `kubeseal --controller-namespace`, or set the
 >   to `kubeseal` later. With another release name, the chart names the controller
 >   `<release>-sealed-secrets`, unless you set `fullnameOverride`.
 
-> [!warning] Correction
+> [!note] The Helm repository moved
 > The project moved from `bitnami-labs` to `bitnami` on GitHub. The old Helm repository
-> URL, `https://bitnami-labs.github.io/sealed-secrets/`, now returns 404: use
-> `https://bitnami.github.io/sealed-secrets/`. The release download links still redirect.
-> The version was v0.37.0; it is now v0.41.2.
+> URL, `https://bitnami-labs.github.io/sealed-secrets/`, returns 404: use
+> `https://bitnami.github.io/sealed-secrets/`. The release download links still
+> redirect.
 
 ## Creating a Secret
 
