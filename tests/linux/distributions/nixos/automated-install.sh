@@ -3,7 +3,7 @@
 # env: nix
 # timeout: 1200
 # The files and what they evaluate to. The install itself, in a VM, is
-# `scripts/nixos-iso.sh test` (CI runs it where KVM is available).
+# `scripts/nixos-iso.sh test` (the manual CI run, `env=iso`, has KVM).
 source "$NOTES_ROOT/tests/lib/assert.sh"
 
 NOTE=linux/distributions/nixos/automated-install

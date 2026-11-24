@@ -26,6 +26,12 @@ task check                         # fast checks: lint, MOCs, coverage, shellche
 task runner:shell                  # a shell in the runner, to debug a test by hand
 ```
 
+**Run the tests locally before you push:** `task check && task tests:changed`. CI on a pull
+request runs only the fast checks (lint, build, shellcheck, coverage), to keep Actions
+usage low. The note tests run in CI only when started by hand: Actions tab, workflow
+"Note tests", or `gh workflow run test-notes.yml -f env=leap` (one environment, `kind`,
+`iso`, or `all`).
+
 Logs go to `.test-results/<path>.tap`. The kind and k3d clusters (`notes-test`) stay up
 between runs to save time. `task k8s:kind-down` / `task k8s:k3d-down` delete them.
 `CLUSTER=other task test …` uses another cluster, so two runs can test Kubernetes notes
@@ -44,7 +50,7 @@ Dockerfile changes), then runs the command in it with:
   under the repository to `docker run -v`. For that reason a Kubernetes test's
   `TMPDIR` is under `.test-results/`, not `/tmp`.
 
-In CI and in the devcontainer, `runner.sh` runs the command directly. `RUNNER=native`
+In the devcontainer and in CI, `runner.sh` runs the command directly. `RUNNER=native`
 does the same anywhere; it then needs bash 4.3+ and the tools from
 `scripts/install-test-tools.sh` (Linux).
 
@@ -119,7 +125,7 @@ An env Dockerfile gets every `tests/versions.env` value as a build argument: dec
   `> [!warning] Correction` callout if the original claim changes.
 - **Never mark a claim as tested if it did not run.** Use `skip` with the real reason,
   or list the note in `untested.txt`.
-- Tests must pass on amd64 (CI) and arm64 (Apple Silicon devcontainers). Use
+- Tests must pass on amd64 (Linux, the manual CI run) and arm64 (Apple Silicon). Use
   multi-arch images.
 
 ## NixOS
@@ -130,9 +136,9 @@ is needed on your machine: builds run in the `nix` image, with the Nix store in 
 
 | Kind of claim | How | Where |
 | --- | --- | --- |
-| Services, users, files, firewall, systemd units | `# env: nixos`: the system boots in Docker, the test runs inside | here, CI |
-| What an option does, or that a block fails to build | `nixos_eval` from a `nixos` test | here, CI |
-| Kernel, sysctls, initrd, boot, disks | a NixOS VM test (`runNixOSTest`) from a `# env: nix` test | CI only: needs KVM |
+| Services, users, files, firewall, systemd units | `# env: nixos`: the system boots in Docker, the test runs inside | here |
+| What an option does, or that a block fails to build | `nixos_eval` from a `nixos` test | here |
+| Kernel, sysctls, initrd, boot, disks | a NixOS VM test (`runNixOSTest`) from a `# env: nix` test | a Linux host with KVM, or the manual CI run (`env=nix`) |
 
 A test's module takes the note's blocks with `notes.module "Heading" N`, the same
 selection as `note_block`:
@@ -190,8 +196,8 @@ task nixos:iso-test     # install it into an empty QEMU disk, boot the result, c
 ```
 
 The test needs QEMU (`scripts/install-vm-tools.sh`, run by the devcontainer). With KVM
-it takes a few minutes; emulated, much longer. CI runs it weekly, or on a pull request
-labelled `nixos-iso`.
+it takes a few minutes; emulated, much longer. The manual CI run with `env=iso` runs it on a
+runner with KVM.
 
 ## Versions
 
