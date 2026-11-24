@@ -136,6 +136,34 @@ bash_path=$(readlink -f "$(command -v bash)" | cut -d/ -f1-4)
 check_output "--referrers" '^/nix/store/' nix-store --query --referrers "$bash_path"
 check_output "--roots shows why GC keeps the system" 'profiles/system|current-system' nix-store --query --roots "$sys"
 
+section "References, requisites and referrers"
+H='References, requisites'
+note_block "$NOTE" "$H" 1 >chain.nix
+# names: store paths to their names, sorted, on one line; the order is checked separately.
+names() { sed 's|^/nix/store/[a-z0-9]\{32\}-||' | sort | tr '\n' ' '; }
+check "the note's commands run" bash -ec "$(note_block "$NOTE" "$H" 3)"
+p() { nix-build chain.nix -A "$1" --no-out-link 2>/dev/null; }
+assert_eq "--references tool: lib, one step down" "lib " "$(nix-store -q --references "$(p tool)" | names)"
+assert_eq "--requisites tool: lib and tool itself" "lib tool " "$(nix-store -q --requisites "$(p tool)" | names)"
+assert_eq "-qR app: dependencies first, the path last" "lib tool app" "$(nix-store -qR "$(p app)" | sed 's|^/nix/store/[a-z0-9]*-||' | paste -sd' ')"
+assert_eq "--referrers lib: tool only, one step up" "tool " "$(nix-store -q --referrers "$(p lib)" | names)"
+assert_eq "--referrers tool: app and other" "app other " "$(nix-store -q --referrers "$(p tool)" | names)"
+assert_eq "--referrers-closure lib: all four" "app lib other tool " "$(nix-store -q --referrers-closure "$(p lib)" | names)"
+assert_eq "nix path-info -r is the same closure" "$(nix-store -qR "$(p app)")" "$(nix path-info -r "$(p app)")"
+check_output "--tree shows app, then tool, then lib (from the note)" '^/nix/store/[a-z0-9]{32}-app .*-tool .*-lib $' \
+  bash -c "nix-store -q --tree $(p app) | tr '\n' ' '"
+assert_eq "lib refers to nothing, so it is not in its own references" "" "$(nix-store -q --references "$(p lib)")"
+self="derivation { name = \"self\"; system = \"$SYS\"; builder = \"/bin/sh\"; args = [ \"-c\" \"echo \$out > \$out\" ]; }"
+s=$(nix-build --no-out-link -E "$self" 2>/dev/null)
+assert_eq "a path that names itself is in its own references" "self " "$(nix-store -q --references "$s" | names)"
+assert_eq "  and in its own referrers" "self " "$(nix-store -q --referrers "$s" | names)"
+check "nix-store --delete other (nothing roots it)" nix-store --delete "$(p other)"
+assert_eq "other is gone from --referrers tool: referrers are what this store holds" "app " \
+  "$(nix-store -q --referrers "$(p tool)" | names)"
+drv=$(nix-instantiate chain.nix -A tool 2>/dev/null)
+assert_eq "-qR on tool.drv walks the build graph" "lib.drv tool.drv " "$(nix-store -qR "$drv" | names)"
+assert_eq "--include-outputs adds the outputs" "lib lib.drv tool tool.drv " "$(nix-store -qR --include-outputs "$drv" | names)"
+
 section "Binary caches"
 check_output "the substituters evaluate" 'cache.nixos.org.*myorg.cachix.org' nixos_eval --host --block "Binary caches" 1 nix.settings.substituters
 check_output "one key per cache" 'cache.nixos.org-1:.*myorg.cachix.org-1:' nixos_eval --host --block "Binary caches" 1 nix.settings.trusted-public-keys
