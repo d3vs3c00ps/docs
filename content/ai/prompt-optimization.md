@@ -232,7 +232,7 @@ you would rather not carry it in context for non-coding work.
 
 ## Where to go next
 
-- agent-skills — installing and writing skills
+- [[dev/agent-skills]] — installing and writing skills
 - [[ai/models]] — which models handle prompts best
 - [[ai/llama-cpp]] — the sampling parameters behind all of this
 

@@ -254,8 +254,8 @@ write into this tree, and disagreement means two managers fighting over it. See
 - [[containers/concepts]] — the other mechanisms a container is made of
 - [[containers/security]] — resource limits as a denial-of-service control
 - [[kubernetes/observability/resource-limits]] — requests and limits, which compile down to these files
-- disk-io-performance — reading `io.pressure` alongside the rest
-- systemd — the manager that owns the tree
+- [[linux/storage/disk-io-performance]] — reading `io.pressure` alongside the rest
+- [[linux/boot/systemd]] — the manager that owns the tree
 
 ## Sources
 

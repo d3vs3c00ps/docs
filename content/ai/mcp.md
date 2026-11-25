@@ -332,9 +332,8 @@ echo '{"jsonrpc":"2.0","method":"tools/list","id":1}' | python k8s_mcp.py
 
 ## Where to go next
 
-- agent-skills — the other way to extend an agent, without a running process
+- [[dev/agent-skills]] — the other way to extend an agent, without a running process
 - [[ai/zed-local-llm]] — the editor these servers plug into
-- Go — for writing servers in Go
 
 ## Further reading
 

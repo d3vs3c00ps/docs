@@ -172,8 +172,8 @@ organisational scale, not per project.
 
 ## Where to go next
 
-- secure-container-images — the Dockerfile-based approach in detail
-- sbom — what the generated SBOM is for
+- [[security/secure-container-images]] — the Dockerfile-based approach in detail
+- [[security/supply-chain/sbom]] — what the generated SBOM is for
 - [[containers/docker]] — building images the conventional way
 
 ## Further reading

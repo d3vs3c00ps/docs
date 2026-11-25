@@ -206,10 +206,10 @@ boot, which is a real cost to weigh against the guarantee.
 
 ## Where to go next
 
-- luks — the mechanism, and the reseal procedure
-- tpm — PCRs and what moves them
+- [[security/boot-integrity/luks]] — the mechanism, and the reseal procedure
+- [[security/boot-integrity/tpm]] — PCRs and what moves them
 - [[linux/distributions/nixos/hardening]] — the rest of the security configuration
-- lvm — the volume layer inside the container
+- [[linux/storage/lvm]] — the volume layer inside the container
 
 <!-- uplink -->
 Part of [[linux/distributions/nixos/index|NixOS]].

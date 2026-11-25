@@ -230,9 +230,9 @@ are separate packages.
 ## Where to go next
 
 - [[containers/security]] — hardening at the workload level
-- secure-container-images — what goes into the images this runs
+- [[security/secure-container-images]] — what goes into the images this runs
 - [[kubernetes/security/pod-security-admission]] — enforcing the pod-level rules
-- auditd — persisting the audit rules above
+- [[security/auditd]] — persisting the audit rules above
 
 <!-- uplink -->
 Part of [[containers/containerd/index|containerd]].

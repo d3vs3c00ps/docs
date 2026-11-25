@@ -310,11 +310,11 @@ environment.systemPackages = [ pkgs.distrobox ];
 ## Where to go next
 
 - [[linux/distributions/nixos/basics]] — rebuilding and generations
-- nixos — a tiling desktop with Sway
+- [[linux/desktop/sway/nixos]] — a tiling desktop with Sway
 - [[linux/distributions/nixos/testing]] — trying desktop changes in a VM
 - [[linux/distributions/nixos/language]] — the syntax used above
 - [[linux/distributions/nixos/disk-encryption]] — encrypting a laptop
-- zsh — the shell being configured here
+- [[linux/shell/zsh]] — the shell being configured here
 
 <!-- uplink -->
 Part of [[linux/distributions/nixos/index|NixOS]].

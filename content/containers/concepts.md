@@ -158,7 +158,7 @@ Consequences that matter operationally:
 - **Layers are shared.** Ten containers from one image use one copy on disk.
 - **Deleting a file does not shrink the image.** A later layer records a whiteout; the
   data is still in the earlier layer. This is why a secret `RUN`-ed in and `rm`-ed out
-  is still recoverable — see secure-container-images.
+  is still recoverable — see [[security/secure-container-images]].
 - **Writes to the container layer are ephemeral** and disappear with the container.
   Anything that must persist needs a volume.
 - **Copy-on-write costs on first write.** Modifying a large file in an image copies it
@@ -204,7 +204,7 @@ thirty seconds.
 - [[containers/cgroups-v2]] — the resource control layer in detail
 - [[containers/containerd/index|containerd]] — the runtime that assembles all this
 - [[containers/security]] — the hardening that follows from these mechanisms
-- virtual-interfaces — how network namespaces get connected
+- [[linux/networking/virtual-interfaces]] — how network namespaces get connected
 
 <!-- uplink -->
 Part of [[containers/index|Containers]].

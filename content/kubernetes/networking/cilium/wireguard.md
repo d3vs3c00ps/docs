@@ -15,7 +15,7 @@ transparently, with no changes to workloads, using either **WireGuard** or **IPs
 WireGuard is the one to reach for. It is simpler to operate, needs no key
 distribution of your own, and is fast.
 
-For the cryptography underneath, see foundations.
+For the cryptography underneath, see [[security/cryptography/foundations]].
 
 ## Prerequisites
 
@@ -189,7 +189,7 @@ which needs `nodeEncryption=true`.
 
 - [[kubernetes/networking/cilium/security]] — policy, which is the other half of this
 - [[kubernetes/networking/cilium/troubleshooting]] — when connectivity breaks after enabling it
-- foundations — what ChaCha20-Poly1305 and Curve25519 are doing
+- [[security/cryptography/foundations]] — what ChaCha20-Poly1305 and Curve25519 are doing
 - [[kubernetes/networking/cilium/install]] — where these Helm values belong
 
 <!-- uplink -->

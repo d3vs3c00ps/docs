@@ -1586,7 +1586,7 @@ We will not use this component in production with the *Cilium* **CNI**, since Ci
 
 As a reminder, **kube-proxy** is — as the name says — a proxy running on every node. It maintains the network rules that allow pods to communicate inside and outside the cluster.
 
-It uses the operating system's packet filtering (Netfilter/iptables in our case — see iptables).
+It uses the operating system's packet filtering (Netfilter/iptables in our case — see [[networking/iptables]]).
 
 Create the configuration file:
 

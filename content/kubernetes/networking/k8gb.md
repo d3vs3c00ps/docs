@@ -126,7 +126,6 @@ that works from one cluster and not from outside.
 - [[kubernetes/networking/ingress]] — the in-cluster layer this sits above
 - [[kubernetes/networking/externaldns]] — the component publishing the records
 - [[kubernetes/observability/goldpinger]] — proving the clusters themselves are healthy
-- networking — the DNS mechanics underneath
 
 ## Sources
 

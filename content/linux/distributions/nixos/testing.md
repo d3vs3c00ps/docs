@@ -42,7 +42,7 @@ nixos-rebuild build-vm --flake .#workstation
 
 This builds a QEMU VM from your exact configuration, desktop included. It starts in
 seconds because it shares the host's `/nix/store` instead of copying it. It is the
-right tool to try a Sway or Waybar change — see nixos.
+right tool to try a Sway or Waybar change — see [[linux/desktop/sway/nixos]].
 
 Things to know:
 

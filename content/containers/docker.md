@@ -63,7 +63,7 @@ docker run hello-world
 ```
 
 After installation the host has a new network interface, `docker0`, which passes
-container packets through IP masquerade — see iptables.
+container packets through IP masquerade — see [[networking/iptables]].
 
 ## Commands worth knowing
 
@@ -306,7 +306,7 @@ docker run --rm -i hadolint/hadolint < Dockerfile
 
 - [[containers/security]] — hardening containers
 - [[containers/podman]] — the daemonless, rootless alternative
-- vaultwarden-docker — a worked Compose deployment
+- [[servers/vaultwarden-docker]] — a worked Compose deployment
 - [[kubernetes/index]] — orchestrating containers at scale
 
 <!-- uplink -->

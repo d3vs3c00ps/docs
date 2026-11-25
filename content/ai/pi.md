@@ -188,7 +188,7 @@ npm update -g @earendil-works/pi-coding-agent
 ## Where to go next
 
 - [[ai/llama-swap]] — the endpoint the `compat` block above points at
-- agent-skills — authoring the skills Pi loads
+- [[dev/agent-skills]] — authoring the skills Pi loads
 - [[ai/msty-claw]] — the desktop equivalent
 
 <!-- uplink -->

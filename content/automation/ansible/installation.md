@@ -125,7 +125,7 @@ ansible-config view
 ## AWX
 
 AWX is the community counterpart to Ansible Automation Platform (formerly Ansible
-Tower) — see awx-tower.
+Tower).
 
 > [!warning] AWX runs on Kubernetes
 > **AWX dropped Docker Compose support entirely at version 18.** Guides that install

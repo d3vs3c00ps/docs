@@ -19,8 +19,7 @@ Many teams do not back up the TSDB at all: metrics lose value with age, and a ne
 server starts collecting at once. Back it up when you need the history (capacity
 planning, SLA reports), or send it to long-term storage (see the end of this note).
 
-This note uses the lab of [[observability/prometheus/quickstart]]. For a general view of
-backups, see backup.
+This note uses the lab of [[observability/prometheus/quickstart]].
 
 ## Turn on the admin API
 

@@ -239,7 +239,7 @@ If the machine doing the inference is not the machine you are sitting at:
   container. A GPU is not namespaced: the device node and the driver have to be
   passed in explicitly, and the driver version inside the image must match the host
   kernel module
-- advanced — VFIO passthrough of a whole GPU to a VM, which
+- [[virtualization/kvm/advanced]] — VFIO passthrough of a whole GPU to a VM, which
   is the alternative when you want isolation a container cannot give you. Note the
   numbers on this page still apply: passthrough does not reduce what the model needs,
   it only changes who owns the card

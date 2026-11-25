@@ -216,7 +216,7 @@ Check the clock of each node from the node_exporter metrics (an offset in second
 abs(timestamp(node_time_seconds) - node_time_seconds) > 1
 ```
 
-Keep every host in sync with NTP: see chrony.
+Keep every host in sync with NTP: see [[servers/chrony]].
 
 ## Query from the command line
 

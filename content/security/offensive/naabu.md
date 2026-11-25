@@ -187,8 +187,7 @@ doing once.
 
 - [[security/offensive/nuclei]] — scanning what naabu found
 - [[security/offensive/interactsh]] — out-of-band detection
-- networking — writing your own scanner, and why bounding it matters
-- iptables — the filtering that should be producing the results you want
+- [[networking/iptables]] — the filtering that should be producing the results you want
 
 <!-- uplink -->
 Part of [[security/offensive/index|Offensive tooling]].

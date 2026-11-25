@@ -224,7 +224,7 @@ Being honest about the boundary is more useful than a longer feature list:
   but nothing crosses the wire — encryption is irrelevant there.
 - **A compromised pod with a legitimate identity** is allowed everything its identity
   permits. Policy limits blast radius; it does not detect misuse. That is what
-  runtime security tooling is for — see neuvector, and Cilium's sibling
+  runtime security tooling is for — see [[security/neuvector]], and Cilium's sibling
   project **Tetragon** for eBPF-based runtime enforcement.
 - **Encryption is a separate control.** Policy says who may talk; it does not make
   the traffic confidential. See [[kubernetes/networking/cilium/wireguard]].
@@ -257,7 +257,7 @@ the YAML shape right before applying it.
 - [[kubernetes/networking/cilium/hubble]] — watching verdicts, which is how you tune policy
 - [[kubernetes/networking/cilium/wireguard]] — confidentiality, the other half
 - [[kubernetes/security/index|Kubernetes security]] — authn, authz and the control plane
-- security-roadmap — where this sits among everything else
+- [[security/security-roadmap]] — where this sits among everything else
 
 <!-- uplink -->
 Part of [[kubernetes/networking/cilium/index|Cilium]].
