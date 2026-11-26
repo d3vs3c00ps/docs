@@ -547,9 +547,9 @@ Here is the rule that we need to add to the configuration:
 
 (See the pictures below!)
 
-![Latency over time](../_attachments/hpa-v2-pa-latency.png)
+![Latency over time](kubernetes/_attachments/hpa-v2-pa-latency.png)
 
-![Number of pods over time](../_attachments/hpa-v2-pa-pods.png)
+![Number of pods over time](kubernetes/_attachments/hpa-v2-pa-pods.png)
 
 ## What's going on?
 

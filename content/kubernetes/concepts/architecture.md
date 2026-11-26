@@ -20,7 +20,7 @@ You can split Kubernetes in two parts:
 Kubernetes also needs infrastructure underneath: servers and a network, plus optional
 parts like storage systems and load balancers.
 
-![Kubernetes architecture diagram: communication between components](../_attachments/k8s-arch4-thanks-luxas.png)
+![Kubernetes architecture diagram: communication between components](kubernetes/_attachments/k8s-arch4-thanks-luxas.png)
 
 ## What runs on a node
 
@@ -106,19 +106,19 @@ kubectl get nodes -o custom-columns=NAME:.metadata.name,TAINTS:.spec.taints[*].k
 On a kubeadm cluster, the control plane node shows
 `node-role.kubernetes.io/control-plane`.
 
-![control planes single node dev](../_attachments/control-planes-single-node-dev.svg)
+![control planes single node dev](kubernetes/_attachments/control-planes-single-node-dev.svg)
 
-![control planes managed kubernetes](../_attachments/control-planes-managed-kubernetes.svg)
+![control planes managed kubernetes](kubernetes/_attachments/control-planes-managed-kubernetes.svg)
 
-![control planes single control and workers](../_attachments/control-planes-single-control-and-workers.svg)
+![control planes single control and workers](kubernetes/_attachments/control-planes-single-control-and-workers.svg)
 
-![control planes stacked control plane](../_attachments/control-planes-stacked-control-plane.svg)
+![control planes stacked control plane](kubernetes/_attachments/control-planes-stacked-control-plane.svg)
 
-![control planes advanced control plane](../_attachments/control-planes-advanced-control-plane.svg)
+![control planes advanced control plane](kubernetes/_attachments/control-planes-advanced-control-plane.svg)
 
-![control planes advanced control plane split events](../_attachments/control-planes-advanced-control-plane-split-events.svg)
+![control planes advanced control plane split events](kubernetes/_attachments/control-planes-advanced-control-plane-split-events.svg)
 
-![control planes non dedicated stacked nodes](../_attachments/control-planes-non-dedicated-stacked-nodes.svg)
+![control planes non dedicated stacked nodes](kubernetes/_attachments/control-planes-non-dedicated-stacked-nodes.svg)
 
 ## The Kubernetes API
 

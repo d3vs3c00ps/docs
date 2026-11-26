@@ -20,7 +20,7 @@ upstream_sync: manual
 
 - The two clusters will have similar (but slightly different) workloads
 
-![ArgoCD Logo](../_attachments/argocdlogo.png)
+![ArgoCD Logo](kubernetes/_attachments/argocdlogo.png)
 
 ## ArgoCD concepts
 
@@ -141,7 +141,7 @@ ArgoCD manages **applications** by **syncing** their **live state** with their *
 
 - Let's have a look at ArgoCD architecture!
 
-![ArgoCD Architecture](../_attachments/argocd_architecture.png)
+![ArgoCD Architecture](kubernetes/_attachments/argocd_architecture.png)
 
 ## ArgoCD API Server
 

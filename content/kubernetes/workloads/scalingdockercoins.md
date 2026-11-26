@@ -17,7 +17,7 @@ on the web UI.
 
 Let's look at the architecture again:
 
-![DockerCoins architecture](../_attachments/dockercoins-diagram.png)
+![DockerCoins architecture](kubernetes/_attachments/dockercoins-diagram.png)
 
 The loop runs in the worker. Perhaps we can add more workers?
 

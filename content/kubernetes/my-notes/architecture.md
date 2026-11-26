@@ -8,7 +8,7 @@ status: complete
 
 # Kubernetes architecture and the API
 
-![Kubernetes architecture diagram: communication between components](../_attachments/k8s-arch4-thanks-luxas.png)
+![Kubernetes architecture diagram: communication between components](kubernetes/_attachments/k8s-arch4-thanks-luxas.png)
 
 My own notes, going further into the API than
 [[kubernetes/concepts/architecture]] does — particularly Group-Version-Kind and

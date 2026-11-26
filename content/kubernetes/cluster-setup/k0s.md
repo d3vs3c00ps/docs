@@ -180,7 +180,7 @@ Its single binary includes:
 >
 > - When the control plane needs to connect to a pod or node, it solicits the proxy
 
-![konnectivity architecture](../_attachments/konnectivity.png)
+![konnectivity architecture](kubernetes/_attachments/konnectivity.png)
 
 ## `k0sctl`
 
