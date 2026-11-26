@@ -22,9 +22,9 @@ Some of these components may share a machine (the controller pod and the app
 pod, say) — but each arrow is a potential hop between machines, and each hop
 adds latency.
 
-![kubernetes services 61 ING](../_attachments/kubernetes-services-61-ING.png)
+![kubernetes services 61 ING](kubernetes/_attachments/kubernetes-services-61-ING.png)
 
-![kubernetes services 62 ING path](../_attachments/kubernetes-services-62-ING-path.png)
+![kubernetes services 62 ING path](kubernetes/_attachments/kubernetes-services-62-ING-path.png)
 
 ## External traffic policy
 
@@ -37,13 +37,13 @@ to a controller pod on another node:
 HTTP client → load balancer → [NodePort + ingress controller Pod, same node] → app Pod
 ```
 
-![kubernetes services 63 ING policy](../_attachments/kubernetes-services-63-ING-policy.png)
+![kubernetes services 63 ING policy](kubernetes/_attachments/kubernetes-services-63-ING-policy.png)
 
 What if the node has **no** matching pod? The connection is refused. That is
 detectable from outside, and external load balancers use it as a health check:
 nodes without a controller pod are taken out of rotation.
 
-![kubernetes services 64 ING nolocal](../_attachments/kubernetes-services-64-ING-nolocal.png)
+![kubernetes services 64 ING nolocal](kubernetes/_attachments/kubernetes-services-64-ING-nolocal.png)
 
 > [!note] `internalTrafficPolicy`
 > Since Kubernetes 1.21 the same idea exists for internal traffic,

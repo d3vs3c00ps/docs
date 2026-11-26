@@ -86,15 +86,15 @@ several:
 | Pod-to-service network | internal communication and load balancing | `kube-proxy` by default |
 | Network policies | firewalling and isolation | bundled with the CNI, or a separate component |
 
-![Overview of the three Kubernetes network layers](../_attachments/k8s-net-0-overview.svg)
+![Overview of the three Kubernetes network layers](kubernetes/_attachments/k8s-net-0-overview.svg)
 
-![Pod-to-pod network](../_attachments/k8s-net-1-pod-to-pod.svg)
+![Pod-to-pod network](kubernetes/_attachments/k8s-net-1-pod-to-pod.svg)
 
-![Pod-to-service network](../_attachments/k8s-net-2-pod-to-svc.svg)
+![Pod-to-service network](kubernetes/_attachments/k8s-net-2-pod-to-svc.svg)
 
-![Network policies](../_attachments/k8s-net-3-netpol.svg)
+![Network policies](kubernetes/_attachments/k8s-net-3-netpol.svg)
 
-![View with all the layers again](../_attachments/k8s-net-4-overview.svg)
+![View with all the layers again](kubernetes/_attachments/k8s-net-4-overview.svg)
 
 > [!note]- Even more moving parts
 > Inbound traffic can be handled by several components: kube-proxy or kube-router

@@ -30,13 +30,13 @@ The default type. Kubernetes allocates a virtual IP address in an internal, priv
 range (for example 10.96.0.0/12). That address is reachable only from within the
 cluster — nodes and pods. Clients connect to the service's port number, unchanged.
 
-![kubernetes services 11 CIP by addr](../_attachments/kubernetes-services-11-CIP-by-addr.png)
+![kubernetes services 11 CIP by addr](kubernetes/_attachments/kubernetes-services-11-CIP-by-addr.png)
 
-![kubernetes services 12 CIP by name](../_attachments/kubernetes-services-12-CIP-by-name.png)
+![kubernetes services 12 CIP by name](kubernetes/_attachments/kubernetes-services-12-CIP-by-name.png)
 
-![kubernetes services 13 CIP both](../_attachments/kubernetes-services-13-CIP-both.png)
+![kubernetes services 13 CIP both](kubernetes/_attachments/kubernetes-services-13-CIP-both.png)
 
-![kubernetes services 14 CIP headless](../_attachments/kubernetes-services-14-CIP-headless.png)
+![kubernetes services 14 CIP headless](kubernetes/_attachments/kubernetes-services-14-CIP-headless.png)
 
 ## `LoadBalancer`
 
@@ -52,23 +52,23 @@ practice it often flows through a `NodePort` first.
 
 [MetalLB]: https://metallb.io/
 
-![kubernetes services 31 LB no service](../_attachments/kubernetes-services-31-LB-no-service.png)
+![kubernetes services 31 LB no service](kubernetes/_attachments/kubernetes-services-31-LB-no-service.png)
 
-![kubernetes services 32 LB plus cip](../_attachments/kubernetes-services-32-LB-plus-cip.png)
+![kubernetes services 32 LB plus cip](kubernetes/_attachments/kubernetes-services-32-LB-plus-cip.png)
 
-![kubernetes services 33 LB plus lb](../_attachments/kubernetes-services-33-LB-plus-lb.png)
+![kubernetes services 33 LB plus lb](kubernetes/_attachments/kubernetes-services-33-LB-plus-lb.png)
 
-![kubernetes services 34 LB internal traffic](../_attachments/kubernetes-services-34-LB-internal-traffic.png)
+![kubernetes services 34 LB internal traffic](kubernetes/_attachments/kubernetes-services-34-LB-internal-traffic.png)
 
-![kubernetes services 35 LB pending](../_attachments/kubernetes-services-35-LB-pending.png)
+![kubernetes services 35 LB pending](kubernetes/_attachments/kubernetes-services-35-LB-pending.png)
 
-![kubernetes services 36 LB ccm](../_attachments/kubernetes-services-36-LB-ccm.png)
+![kubernetes services 36 LB ccm](kubernetes/_attachments/kubernetes-services-36-LB-ccm.png)
 
-![kubernetes services 37 LB externalip](../_attachments/kubernetes-services-37-LB-externalip.png)
+![kubernetes services 37 LB externalip](kubernetes/_attachments/kubernetes-services-37-LB-externalip.png)
 
-![kubernetes services 38 LB external traffic](../_attachments/kubernetes-services-38-LB-external-traffic.png)
+![kubernetes services 38 LB external traffic](kubernetes/_attachments/kubernetes-services-38-LB-external-traffic.png)
 
-![kubernetes services 39 LB all traffic](../_attachments/kubernetes-services-39-LB-all-traffic.png)
+![kubernetes services 39 LB all traffic](kubernetes/_attachments/kubernetes-services-39-LB-all-traffic.png)
 
 ## `NodePort`
 
@@ -83,19 +83,19 @@ Under the hood, `kube-proxy` sets up forwarding rules on the nodes — with
 `NodePort` is the useful option for external traffic when `LoadBalancer` services
 are not available — for example on clusters deployed on-premises with kubeadm.
 
-![kubernetes services 41 NP why](../_attachments/kubernetes-services-41-NP-why.png)
+![kubernetes services 41 NP why](kubernetes/_attachments/kubernetes-services-41-NP-why.png)
 
-![kubernetes services 42 NP how 1](../_attachments/kubernetes-services-42-NP-how-1.png)
+![kubernetes services 42 NP how 1](kubernetes/_attachments/kubernetes-services-42-NP-how-1.png)
 
-![kubernetes services 43 NP how 2](../_attachments/kubernetes-services-43-NP-how-2.png)
+![kubernetes services 43 NP how 2](kubernetes/_attachments/kubernetes-services-43-NP-how-2.png)
 
-![kubernetes services 44 NP how 3](../_attachments/kubernetes-services-44-NP-how-3.png)
+![kubernetes services 44 NP how 3](kubernetes/_attachments/kubernetes-services-44-NP-how-3.png)
 
-![kubernetes services 45 NP how 4](../_attachments/kubernetes-services-45-NP-how-4.png)
+![kubernetes services 45 NP how 4](kubernetes/_attachments/kubernetes-services-45-NP-how-4.png)
 
-![kubernetes services 46 NP how 5](../_attachments/kubernetes-services-46-NP-how-5.png)
+![kubernetes services 46 NP how 5](kubernetes/_attachments/kubernetes-services-46-NP-how-5.png)
 
-![kubernetes services 47 NP only](../_attachments/kubernetes-services-47-NP-only.png)
+![kubernetes services 47 NP only](kubernetes/_attachments/kubernetes-services-47-NP-only.png)
 
 ## `ExternalName`
 
@@ -172,13 +172,13 @@ Ingresses are another resource type, specifically for HTTP services — not TCP 
 UDP. They can handle TLS certificates and URL rewriting, and they require an
 *Ingress controller* to function. See [[kubernetes/networking/ingress]].
 
-![kubernetes services 61 ING](../_attachments/kubernetes-services-61-ING.png)
+![kubernetes services 61 ING](kubernetes/_attachments/kubernetes-services-61-ING.png)
 
-![kubernetes services 62 ING path](../_attachments/kubernetes-services-62-ING-path.png)
+![kubernetes services 62 ING path](kubernetes/_attachments/kubernetes-services-62-ING-path.png)
 
-![kubernetes services 63 ING policy](../_attachments/kubernetes-services-63-ING-policy.png)
+![kubernetes services 63 ING policy](kubernetes/_attachments/kubernetes-services-63-ING-policy.png)
 
-![kubernetes services 64 ING nolocal](../_attachments/kubernetes-services-64-ING-nolocal.png)
+![kubernetes services 64 ING nolocal](kubernetes/_attachments/kubernetes-services-64-ING-nolocal.png)
 
 ## Traffic engineering
 

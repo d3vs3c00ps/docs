@@ -148,7 +148,7 @@ then make or request changes where needed.*
 [ac-vap]: https://kubernetes.io/docs/reference/access-authn-authz/validating-admission-policy/
 [ac-map]: https://kubernetes.io/docs/reference/access-authn-authz/mutating-admission-policy/
 
-![API request lifecycle; from Kubernetes documentation](../_attachments/admission-control-phases.svg)
+![API request lifecycle; from Kubernetes documentation](kubernetes/_attachments/admission-control-phases.svg)
 
 ## Admission controllers
 

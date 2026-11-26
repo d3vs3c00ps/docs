@@ -41,43 +41,43 @@ kubectl get events --field-selector involvedObject.kind=Pod
 The events show `Scheduled` (from the scheduler), then `Pulled`, `Created` and
 `Started` (from the kubelet).
 
-![kubectl create deployment slideshow 01](../_attachments/kubectl-create-deployment-slideshow-01.svg)
+![kubectl create deployment slideshow 01](kubernetes/_attachments/kubectl-create-deployment-slideshow-01.svg)
 
-![kubectl create deployment slideshow 02](../_attachments/kubectl-create-deployment-slideshow-02.svg)
+![kubectl create deployment slideshow 02](kubernetes/_attachments/kubectl-create-deployment-slideshow-02.svg)
 
-![kubectl create deployment slideshow 03](../_attachments/kubectl-create-deployment-slideshow-03.svg)
+![kubectl create deployment slideshow 03](kubernetes/_attachments/kubectl-create-deployment-slideshow-03.svg)
 
-![kubectl create deployment slideshow 04](../_attachments/kubectl-create-deployment-slideshow-04.svg)
+![kubectl create deployment slideshow 04](kubernetes/_attachments/kubectl-create-deployment-slideshow-04.svg)
 
-![kubectl create deployment slideshow 05](../_attachments/kubectl-create-deployment-slideshow-05.svg)
+![kubectl create deployment slideshow 05](kubernetes/_attachments/kubectl-create-deployment-slideshow-05.svg)
 
-![kubectl create deployment slideshow 06](../_attachments/kubectl-create-deployment-slideshow-06.svg)
+![kubectl create deployment slideshow 06](kubernetes/_attachments/kubectl-create-deployment-slideshow-06.svg)
 
-![kubectl create deployment slideshow 07](../_attachments/kubectl-create-deployment-slideshow-07.svg)
+![kubectl create deployment slideshow 07](kubernetes/_attachments/kubectl-create-deployment-slideshow-07.svg)
 
-![kubectl create deployment slideshow 08](../_attachments/kubectl-create-deployment-slideshow-08.svg)
+![kubectl create deployment slideshow 08](kubernetes/_attachments/kubectl-create-deployment-slideshow-08.svg)
 
-![kubectl create deployment slideshow 09](../_attachments/kubectl-create-deployment-slideshow-09.svg)
+![kubectl create deployment slideshow 09](kubernetes/_attachments/kubectl-create-deployment-slideshow-09.svg)
 
-![kubectl create deployment slideshow 10](../_attachments/kubectl-create-deployment-slideshow-10.svg)
+![kubectl create deployment slideshow 10](kubernetes/_attachments/kubectl-create-deployment-slideshow-10.svg)
 
-![kubectl create deployment slideshow 11](../_attachments/kubectl-create-deployment-slideshow-11.svg)
+![kubectl create deployment slideshow 11](kubernetes/_attachments/kubectl-create-deployment-slideshow-11.svg)
 
-![kubectl create deployment slideshow 12](../_attachments/kubectl-create-deployment-slideshow-12.svg)
+![kubectl create deployment slideshow 12](kubernetes/_attachments/kubectl-create-deployment-slideshow-12.svg)
 
-![kubectl create deployment slideshow 13](../_attachments/kubectl-create-deployment-slideshow-13.svg)
+![kubectl create deployment slideshow 13](kubernetes/_attachments/kubectl-create-deployment-slideshow-13.svg)
 
-![kubectl create deployment slideshow 14](../_attachments/kubectl-create-deployment-slideshow-14.svg)
+![kubectl create deployment slideshow 14](kubernetes/_attachments/kubectl-create-deployment-slideshow-14.svg)
 
-![kubectl create deployment slideshow 15](../_attachments/kubectl-create-deployment-slideshow-15.svg)
+![kubectl create deployment slideshow 15](kubernetes/_attachments/kubectl-create-deployment-slideshow-15.svg)
 
-![kubectl create deployment slideshow 16](../_attachments/kubectl-create-deployment-slideshow-16.svg)
+![kubectl create deployment slideshow 16](kubernetes/_attachments/kubectl-create-deployment-slideshow-16.svg)
 
-![kubectl create deployment slideshow 17](../_attachments/kubectl-create-deployment-slideshow-17.svg)
+![kubectl create deployment slideshow 17](kubernetes/_attachments/kubectl-create-deployment-slideshow-17.svg)
 
-![kubectl create deployment slideshow 18](../_attachments/kubectl-create-deployment-slideshow-18.svg)
+![kubectl create deployment slideshow 18](kubernetes/_attachments/kubectl-create-deployment-slideshow-18.svg)
 
-![kubectl create deployment slideshow 19](../_attachments/kubectl-create-deployment-slideshow-19.svg)
+![kubectl create deployment slideshow 19](kubernetes/_attachments/kubectl-create-deployment-slideshow-19.svg)
 
 ---
 

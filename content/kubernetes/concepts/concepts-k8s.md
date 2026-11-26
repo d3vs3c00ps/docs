@@ -54,7 +54,7 @@ with Docker Compose. Let's see how to deploy this app on Kubernetes.
 The picture below is a canary cage with an oxygen bottle, made to keep the canary
 alive. See https://post.lurk.org/@zilog/109632335293371919 for details.
 
-![Canary cage](../_attachments/canary-cage.jpg)
+![Canary cage](kubernetes/_attachments/canary-cage.jpg)
 
 ## Kubernetes, level 3
 
@@ -97,13 +97,13 @@ do not mention observability and alerting.
 
 ## Kubernetes architecture
 
-![haha only kidding](../_attachments/k8s-arch1.png)
+![haha only kidding](kubernetes/_attachments/k8s-arch1.png)
 
 ## Kubernetes architecture, for real
 
 Ha ha. That was a joke, to scare you. It is much simpler than that:
 
-![that one is more like the real thing](../_attachments/k8s-arch2.png)
+![that one is more like the real thing](kubernetes/_attachments/k8s-arch2.png)
 
 ## Credits for the two diagrams
 
@@ -141,7 +141,7 @@ The logic of Kubernetes (its "brains") is a set of services:
 Together, these services form the *control plane* of the cluster. It used to be
 called the "master". See [[kubernetes/concepts/architecture]] for more.
 
-![One of the best Kubernetes architecture diagrams available](../_attachments/k8s-arch4-thanks-luxas.png)
+![One of the best Kubernetes architecture diagrams available](kubernetes/_attachments/k8s-arch4-thanks-luxas.png)
 
 > [!note]- Extra details
 > ## Running the control plane on special nodes
@@ -178,19 +178,19 @@ called the "master". See [[kubernetes/concepts/architecture]] for more.
 >
 > *For this reason, "control plane" is more accurate than "master".*
 
-![control planes single node dev](../_attachments/control-planes-single-node-dev.svg)
+![control planes single node dev](kubernetes/_attachments/control-planes-single-node-dev.svg)
 
-![control planes managed kubernetes](../_attachments/control-planes-managed-kubernetes.svg)
+![control planes managed kubernetes](kubernetes/_attachments/control-planes-managed-kubernetes.svg)
 
-![control planes single control and workers](../_attachments/control-planes-single-control-and-workers.svg)
+![control planes single control and workers](kubernetes/_attachments/control-planes-single-control-and-workers.svg)
 
-![control planes stacked control plane](../_attachments/control-planes-stacked-control-plane.svg)
+![control planes stacked control plane](kubernetes/_attachments/control-planes-stacked-control-plane.svg)
 
-![control planes non dedicated stacked nodes](../_attachments/control-planes-non-dedicated-stacked-nodes.svg)
+![control planes non dedicated stacked nodes](kubernetes/_attachments/control-planes-non-dedicated-stacked-nodes.svg)
 
-![control planes advanced control plane](../_attachments/control-planes-advanced-control-plane.svg)
+![control planes advanced control plane](kubernetes/_attachments/control-planes-advanced-control-plane.svg)
 
-![control planes advanced control plane split events](../_attachments/control-planes-advanced-control-plane-split-events.svg)
+![control planes advanced control plane split events](kubernetes/_attachments/control-planes-advanced-control-plane-split-events.svg)
 
 > [!note]- Extra details
 > ## How many nodes should a cluster have?
@@ -247,7 +247,7 @@ called the "master". See [[kubernetes/concepts/architecture]] for more.
   - pod: a group of containers that run together on a node;
   - service: a stable network endpoint to connect to one or more containers.
 
-![Node, pod, container](../_attachments/k8s-arch3-thanks-weave.png)
+![Node, pod, container](kubernetes/_attachments/k8s-arch3-thanks-weave.png)
 
 ## Scaling
 

@@ -19,7 +19,7 @@
  */
 
 import { existsSync, readFileSync, readdirSync, statSync } from "node:fs"
-import { join, relative, dirname, resolve } from "node:path"
+import { join, relative } from "node:path"
 import { fileURLToPath } from "node:url"
 
 const ROOT = "content"
@@ -133,6 +133,7 @@ const notePaths = new Set([
   ...published,
 ])
 const noteBasenames = new Set([...notePaths].map((p) => p.split("/").pop()))
+const contentPaths = files.map((f) => relative(ROOT, f).split("\\").join("/"))
 
 // --- secrets, across every file including binaries and SVGs -----------------
 for (const file of files) {
@@ -184,12 +185,15 @@ for (const file of markdown) {
     for (const m of prose.matchAll(/!\[[^\]]*\]\(([^)\s]+)\)/g)) {
       const target = m[1]
       if (/^https?:/.test(target)) continue
-      const abs = resolve(dirname(file), target.split("#")[0])
-      try {
-        statSync(abs)
-      } catch {
-        errors.push(`${file}:${n}: image not found — ${target}`)
+      // Quartz "shortest" mode: drops ./ and ../, then needs exactly one file whose path ends with what is left.
+      const path = target.split("#")[0]
+      if (path.split("/").some((s) => s === "." || s === "..")) {
+        errors.push(`${file}:${n}: image path with ./ or ../ breaks in Quartz — ${target}`)
+        continue
       }
+      const hits = contentPaths.filter((p) => p === path || p.endsWith("/" + path))
+      if (hits.length === 0) errors.push(`${file}:${n}: image not found — ${target}`)
+      else if (hits.length > 1) errors.push(`${file}:${n}: image path is ambiguous — ${target}`)
     }
   }
 

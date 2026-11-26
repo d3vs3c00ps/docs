@@ -103,7 +103,7 @@ These 5 services are visible in the application's Compose file,
 - Every second, `worker` updates `redis` with the number of loops done.
 - `webui` queries `redis`, computes the "hashing speed", and shows it in the browser.
 
-![Diagram showing the 5 containers of the applications](../_attachments/dockercoins-diagram.png)
+![Diagram showing the 5 containers of the applications](kubernetes/_attachments/dockercoins-diagram.png)
 
 ## Service discovery in container-land
 

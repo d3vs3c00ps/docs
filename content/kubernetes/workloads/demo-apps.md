@@ -76,7 +76,7 @@ An app with 5 microservices:
 It uses a mix of Node, Python and Ruby. The components are very simple: about 50 lines
 of code for the most complex one.
 
-![Dockercoins application diagram](../_attachments/dockercoins-diagram.png)
+![Dockercoins application diagram](kubernetes/_attachments/dockercoins-diagram.png)
 
 ## Deploying Dockercoins
 

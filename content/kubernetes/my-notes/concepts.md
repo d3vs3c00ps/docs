@@ -40,11 +40,11 @@ it is called out.
 
 ## Architecture
 
-![Kubernetes architecture, in full](../_attachments/k8s-arch1.png)
+![Kubernetes architecture, in full](kubernetes/_attachments/k8s-arch1.png)
 
 The same thing, simplified:
 
-![Simplified Kubernetes architecture](../_attachments/k8s-arch2.png)
+![Simplified Kubernetes architecture](kubernetes/_attachments/k8s-arch2.png)
 
 ### The nodes
 
@@ -99,7 +99,7 @@ The Kubernetes control plane is a collection of these services:
   underlying cloud provider. See
   [[kubernetes/cluster-setup/cloud-controller-manager]].
 
-![One of the best Kubernetes architecture diagrams available](../_attachments/k8s-arch4-thanks-luxas.png)
+![One of the best Kubernetes architecture diagrams available](kubernetes/_attachments/k8s-arch4-thanks-luxas.png)
 
 ## Control plane placement
 
@@ -121,20 +121,20 @@ The Kubernetes control plane is a collection of these services:
 
 A single-node cluster is perfectly workable for development or testing:
 
-![Single node development cluster](../_attachments/control-planes-single-node-dev.svg)
+![Single node development cluster](kubernetes/_attachments/control-planes-single-node-dev.svg)
 
 With a cloud provider's managed service, the control plane is invisible:
 
-![Managed Kubernetes](../_attachments/control-planes-managed-kubernetes.svg)
+![Managed Kubernetes](kubernetes/_attachments/control-planes-managed-kubernetes.svg)
 
 A good-practice deployment for a real cluster looks like this:
 
-![Stacked control plane](../_attachments/control-planes-stacked-control-plane.svg)
+![Stacked control plane](kubernetes/_attachments/control-planes-stacked-control-plane.svg)
 
 And here is a cluster large enough that the control plane services have to be split
 out to absorb the load:
 
-![Advanced control plane](../_attachments/control-planes-advanced-control-plane.svg)
+![Advanced control plane](kubernetes/_attachments/control-planes-advanced-control-plane.svg)
 
 ## How many nodes should a cluster have?
 
@@ -174,7 +174,7 @@ The basic resources we manage are:
 - **pods** — the wrappers holding our containers
 - **containers**
 
-![Node, pod, container](../_attachments/k8s-arch3-thanks-weave.png)
+![Node, pod, container](kubernetes/_attachments/k8s-arch3-thanks-weave.png)
 
 ## Scaling
 
