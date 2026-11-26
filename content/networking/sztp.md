@@ -50,7 +50,10 @@ flowchart TD
     S --> S2["DNS"]
     S --> S3["Removable media"]
     S --> S4["Well-known bootstrap server"]
-    S1 & S2 & S3 & S4 --> B["Bootstrap server"]
+    S1 --> B["Bootstrap server"]
+    S2 --> B
+    S3 --> B
+    S4 --> B
     B -->|"TLS, mutual auth<br/>using the IDevID"| V{"Device validates<br/>the signed<br/>bootstrapping data"}
     V -->|"signature valid"| A["Apply: image, config, scripts"]
     V -->|"invalid"| R["Refuse, and report"]
